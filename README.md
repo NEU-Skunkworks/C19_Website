@@ -7,8 +7,8 @@ Everyone working on this Repository please follow the below rules:
 <li>You need 2 reviewers to review your pull request before it can me merged to master branch of the Organization Repo</li>
 <li>I have added gitignore for VS code. If you are using any other code editor add appropriate git ignore</li>
 <li> Basic Folder Structure has been added to the project. Please follow the same for your development</li>
-
-Folder Structure Explained
+<br>
+**Folder Structure Explained**
 <ul>
 <li>Route folder is used to add files that contains all the routes</li>
 <li>Service folder is for files that contain the required business logic </li>
