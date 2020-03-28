@@ -20,3 +20,18 @@ Everyone working on this Repository please follow the below rules:
 <ul>
 
 </ol>
+
+
+### Installing
+ 1. Clone the repository on your local machine
+ 2. Once cloned cd into the folder and open the files in your favourite editor.
+ 3. Open a terminal in your folder and run npm i to install all the packages.
+ 4. Once all the packages are installed run npm start to start the api
+
+### API Paths
+
+| API's                        | Functionality                                           |
+| ---------------------------- |-------------------------------------------------------- | 
+| /volunteer                   | Adds the volunteer information to the database          |
+| /volunteer/:volunteerID      | Gets, Updates and Deletes the volunter data based on id |
+| /volunteer/login             | Authenticates a volunteer and assigns token             |
