@@ -5,12 +5,12 @@
  * Created Date: 03/27/2020
  * @description user routes
  */
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const CONSTANTS = require("../CONSTANTS/constants");
-const LOGGER = require("../Logger/logger");
+const CONSTANTS = require('../CONSTANTS/constants');
+const LOGGER = require('../Logger/logger');
 // File name to be logged
-const FILE_NAME = "basicRoute.js";
+const FILE_NAME = 'basicRoute.js';
 /*
  * Hello world Route
  * @memberof basicRoute.js
@@ -26,5 +26,5 @@ router.get("/hello", function (req, res) {
     res.statusMessage = CONSTANTS.ERROR_DESCRIPTION.SUCCESS
     responseObj.result = "Hello World"
     res.send(responseObj);
-})
-module.exports = router;
+});
+module.exports=router
