@@ -5,41 +5,59 @@
  * createdDate: 03/27/2020
  */
 
-const express = require("express");
-const bodyParser = require("body-parser");
-const mongoose=require('mongoose');
-const app = express();
-const cors = require("cors");
-const path = require("path");
+const express = require('express')
+const bodyParser = require('body-parser')
+const mongoose = require('mongoose')
+const app = express()
+const cors = require('cors')
+const path = require('path')
 
 //Save the log details
-const LOGGER = require(path.resolve(".") + "/src/Logger/logger.js");
+const LOGGER = require(path.resolve('.') + '/src/Logger/logger.js')
 
 //Port to expose
-const port = 8080;
-require('dotenv').config();
+const port = 3000
+require('dotenv').config()
 
-//import the routes
-const basicRoutes = require(path.resolve(".") + "/src/Routes/basicroutes.js");
-const volunteerRoutes=require(path.resolve(".") + "/src/Routes/volunteerRoutes.js");
+//import the basic routes folder
+const basicRoutes = require(path.resolve('.') + '/src/Routes/basicroutes.js')
+//import the volunteers route
+const volunteerRoutes = require(path.resolve('.') +
+  '/src/Routes/volunteerRoutes.js')
+//import the researchers route
+const researcherRoutes = require(path.resolve('.') +
+  '/src/Routes/researcherRoutes.js')
+//import the job postings route
+const jobPostingRoutes = require(path.resolve('.') +
+  '/src/Routes/jobPostingRoutes.js')
+//import the job applications route
+const jobApplicationsRoutes = require(path.resolve('.') +
+  '/src/Routes/jobApplicationsRoutes.js')
 
 //mongoose connection
 mongoose.Promise = global.Promise
-mongoose.connect('mongodb://localhost/Volunteers', {
+mongoose.connect('mongodb://localhost/CVD19', {
   useNewUrlParser: 'true',
-  useUnifiedTopology: 'true'
-});
+  useUnifiedTopology: 'true',
+  useCreateIndex: true
+})
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(cors());
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
+app.use(cors())
 
-//Routes
-app.use("/", basicRoutes);
-app.use("/volunteer", volunteerRoutes);
-
+//basic route
+app.use('/', basicRoutes)
+//Routes for volunteers
+app.use('/volunteer', volunteerRoutes)
+//Routes for Researchers
+app.use('/researcher', researcherRoutes)
+//Routes for job Postings
+app.use('/jobPosting', jobPostingRoutes)
+//Routes for job Applications
+app.use('/jobApplications', jobApplicationsRoutes)
 
 app.listen(port, function () {
-  LOGGER.debug("Express server listening on port %s.", port);
-});
-module.exports = app;
+  LOGGER.debug('Express server listening on port %s.', port)
+})
+module.exports = app
