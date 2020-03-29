@@ -5,51 +5,72 @@
  * createdDate: 03/27/2020
  */
 
-const mongoose=require('mongoose');
+const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 //This model defines the data fields we will be storing in the database.
-module.exports= VolunteerSchema = new Schema({
-  firstName: {
+module.exports = VolunteerSchema = new Schema({
+  vfirstName: {
     type: String,
     required: 'First name is required'
   },
-  lastName: {
+  vlastName: {
     type: String,
     required: 'Last name is required'
   },
-  email: {
+  vemail: {
     type: String,
-    required: 'Email ID is required'
+    required: 'Email ID is required',
+    unique: true
   },
-  password:{
-    type:String,
+
+  vpassword: {
+    type: String,
     required: 'Password is required'
   },
-  phone: {
-    type: Number
+  vphone: {
+    type: Number,
+    unique: true
   },
-  created_date: {
+  vcreated_date: {
     type: Date,
     default: Date.now
   },
-  age: {
+  vage: {
     type: Number,
     min: 18,
     max: 65
   },
-  skills: {
+  vskills: {
     type: Schema.Types.Mixed,
     required: 'Skills are required'
   },
-  description: {
+  vwork_experience: [
+    {
+      company: String,
+      position: String,
+      description: String,
+      from: Date,
+      to: Date
+    }
+  ],
+  vworks_experience_years: {
+    type: Number,
+    required: 'Enter the number of years'
+  },
+  veducation: [
+    {
+      school: String,
+      major: String,
+      state: String,
+      city: String,
+      country: String,
+      from: Date,
+      to: Date
+    }
+  ],
+  type: {
     type: String,
-    required: 'A short description is required'
-  },
-  work_experience: {
-    type: Schema.Types.Mixed
-  },
-  education: {
-    type: Schema.Types.Mixed
+    default: 'Volunteer'
   }
 })
