@@ -30,6 +30,9 @@ const researcherRoutes = require(path.resolve('.') +
 //import the job postings route
 const jobPostingRoutes = require(path.resolve('.') +
   '/src/Routes/jobPostingRoutes.js')
+//import the job applications route
+const jobApplicationsRoutes = require(path.resolve('.') +
+  '/src/Routes/jobApplicationsRoutes.js')
 
 //mongoose connection
 mongoose.Promise = global.Promise
@@ -51,6 +54,8 @@ app.use('/volunteer', volunteerRoutes)
 app.use('/researcher', researcherRoutes)
 //Routes for job Postings
 app.use('/jobPosting', jobPostingRoutes)
+//Routes for job Applications
+app.use('/jobApplications', jobApplicationsRoutes)
 
 app.listen(port, function () {
   LOGGER.debug('Express server listening on port %s.', port)
