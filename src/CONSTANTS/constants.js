@@ -39,7 +39,8 @@ const ERROR_DESCRIPTION = {
   NOT_FOUND: 'Data not found',
   UNAUTHORIZED: 'User unauthorized to access this data',
   LOGINERROR: 'Invalid email/password',
-  SERVERERROR: 'Server error'
+  SERVERERROR: 'Server error',
+  ATTEMPTERROR:'Too many login attempts'
 }
 
 //Specifying the success messages
@@ -89,12 +90,12 @@ const authenticateUser = (req, res, next, publicKEY, FILE_NAME, id) => {
   //If token is undefined send back the unauthorized error.
   if (token === undefined) {
     //Create the log message
-    CONSTANTS.createLogMessage(FILE_NAME, 'User not authorized', 'UNAUTHORIZED')
+    createLogMessage(FILE_NAME, 'User not authorized', 'UNAUTHORIZED')
     //Send the reponses
     createResponses(
       res,
-      CONSTANTS.ERROR_CODE.UNAUTHORIZED,
-      CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED,
+      ERROR_CODE.UNAUTHORIZED,
+      ERROR_DESCRIPTION.UNAUTHORIZED,
       next
     )
   }
@@ -112,8 +113,8 @@ const authenticateUser = (req, res, next, publicKEY, FILE_NAME, id) => {
     //Send the response
     createResponses(
       res,
-      CONSTANTS.ERROR_CODE.UNAUTHORIZED,
-      CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED,
+      ERROR_CODE.UNAUTHORIZED,
+      ERROR_DESCRIPTION.UNAUTHORIZED,
       next
     )
   }
@@ -124,8 +125,8 @@ const authenticateUser = (req, res, next, publicKEY, FILE_NAME, id) => {
     //Send the response
     createResponses(
       res,
-      CONSTANTS.ERROR_CODE.UNAUTHORIZED,
-      CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED,
+      ERROR_CODE.UNAUTHORIZED,
+      ERROR_DESCRIPTION.UNAUTHORIZED,
       next
     )
   } else if (checkForAuthentication.id != id) {
@@ -137,8 +138,8 @@ That was we maintain authentication that only the user who has logged in is view
     //Send the response
     createResponses(
       res,
-      CONSTANTS.ERROR_CODE.UNAUTHORIZED,
-      CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED,
+      ERROR_CODE.UNAUTHORIZED,
+      ERROR_DESCRIPTION.UNAUTHORIZED,
       next
     )
   }

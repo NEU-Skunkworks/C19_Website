@@ -25,6 +25,8 @@ var publicKEY = fs.readFileSync('./.env/researcher_keys/public.key', 'utf8')
 const CONSTANTS = require('../CONSTANTS/constants')
 //Declaring the file name
 const FILE_NAME = 'volunteerController.js'
+//import mongoose queries
+const mongooseQueries = require('../CONSTANTS/mongooseQueries')
 
 //This functionality adds a new volunteer with all the required fields from the body.
 const addNewVolunteer = (req, res, next) => {
@@ -55,73 +57,22 @@ const addNewVolunteer = (req, res, next) => {
       vphone: req.body.vphone,
       vage: req.body.vage,
       vskills: skillsArr,
+      vgender: req.body.vgender,
       vworks_experience_years: req.body.vworks_experience_years
     })
     //Adding multiple values for work Experience.
     newVolunteer.vwork_experience = Object.values(req.body.vwork_experience)
     //Adding multiple values  for education.
     newVolunteer.veducation = Object.values(req.body.veducation)
-    //Saving the data into the database.
-    newVolunteer.save((err, volunteer) => {
-      //Error
-      if (err) {
-        //Log in the error
-        CONSTANTS.createLogMessage(FILE_NAME, err, 'Error')
-        //Send the response
-        CONSTANTS.createResponses(
-          res,
-          CONSTANTS.ERROR_CODE.FAILED,
-          err.errmsg,
-          next
-        )
-      }
-      //Return the success message if successfully added.
-      CONSTANTS.createLogMessage(
-        FILE_NAME,
-        'Successfully created user',
-        'SUCCESS'
-      )
-      //Send the success reponse
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.SUCCESS,
-        CONSTANTS.SUCCESS_DESCRIPTION.SUCCESS,
-        next
-      )
-    })
+    //Save the data
+    mongooseQueries.addNewData(newVolunteer, req, res, next, FILE_NAME)
   })
 }
 
 //This function gets all the volunteers currently in the database. (Can be used for analytical purposes)
 const getVolunteers = (req, res, next) => {
   //Mongoose function to find all the volunteers from the volunteer schema
-  Volunteer.find({}, (err, volunteer) => {
-    //error
-    if (err) {
-      //Log the error
-      CONSTANTS.createLogMessage(FILE_NAME, 'ERROR', 'Error')
-      //Send the response
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_DESCRIPTION.FAILED,
-        err.errmsg,
-        next
-      )
-    }
-    //Log success message
-    CONSTANTS.createLogMessage(
-      FILE_NAME,
-      'Successfully searched all volunteers',
-      'SUCCESS'
-    )
-    //Send back the response
-    CONSTANTS.createResponses(
-      res,
-      CONSTANTS.ERROR_CODE.SUCCESS,
-      volunteer,
-      next
-    )
-  })
+  mongooseQueries.findALL(Volunteer, req, res, next, FILE_NAME)
 }
 
 /*This function will retrieve a volunteers info based on it's ID which is auto generated in mongoDB.
@@ -136,39 +87,7 @@ const getVolunteerWithID = (req, res, next) => {
     FILE_NAME,
     req.params.volunteerID
   )
-  Volunteer.findById(req.params.volunteerID, (err, volunteer) => {
-    //Error
-    if (err) {
-      CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.NOT_FOUND,
-        err.errmsg,
-        next
-      )
-    }
-    if (volunteer === null) {
-      CONSTANTS.createLogMessage(FILE_NAME, 'User not Found', 'NODATA')
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.NOT_FOUND,
-        CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
-        next
-      )
-    } else {
-      CONSTANTS.createLogMessage(
-        FILE_NAME,
-        'Successfully searched user',
-        'SUCCESS'
-      )
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.SUCCESS,
-        volunteer,
-        next
-      )
-    }
-  })
+  mongooseQueries.findbyID(Volunteer, req, res, next, FILE_NAME,req.params.volunteerID)
 }
 
 //Updates the volunteer information.
@@ -193,48 +112,26 @@ const updateVolunteer = (req, res, next) => {
     vphone: req.body.vphone,
     vage: req.body.vage,
     vskills: skillsArr,
-    vworks_experience_years: req.body.vworks_experience_years
+    vworks_experience_years: req.body.vworks_experience_years,
+    vgender: req.body.vgender
   })
   //Adding multiple values for work Experience.
   newVolunteer.vwork_experience = Object.values(req.body.vwork_experience)
   //Adding multiple values  for education.
   newVolunteer.veducation = Object.values(req.body.veducation)
-
   //Parse the new volunteer variable as a object
   var upsertData = newVolunteer.toObject()
   //delete the id parameter in it
   delete upsertData._id
   //Mongoose function to update a single volunteer
-  Volunteer.updateOne(
-    { _id: req.params.volunteerID },
-    { $set: upsertData },
-    { new: true, useFindAndModify: false },
-    (err, volunteer) => {
-      if (err) {
-        //Create the log message
-        CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
-        //Send the response
-        CONSTANTS.createResponses(
-          res,
-          CONSTANTS.ERROR_CODE.FAILED,
-          err.errmsg,
-          next
-        )
-      }
-      //Create the log message
-      CONSTANTS.createLogMessage(
-        FILE_NAME,
-        'Successfully updated user',
-        'SUCCESS'
-      )
-      //Send back the volunteer data along with the success update message
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.SUCCESS,
-        volunteer,
-        next
-      )
-    }
+  mongooseQueries.updateData(
+    Volunteer,
+    req,
+    res,
+    next,
+    FILE_NAME,
+    req.params.volunteerID,
+    upsertData
   )
 }
 
@@ -250,35 +147,13 @@ const deleteVolunteer = (req, res, next) => {
     req.params.volunteerID
   )
   //mongoose function to delete one Volunteer
-  Volunteer.findOneAndDelete(
-    { _id: req.params.volunteerID },
-    (err, volunteer) => {
-      //Error
-      if (err) {
-        //Create log message
-        CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
-        //Create the response
-        CONSTANTS.createResponses(
-          res,
-          CONSTANTS.ERROR_CODE.FAILED,
-          err.errmsg,
-          next
-        )
-      }
-      //Create the log message
-      CONSTANTS.createLogMessage(
-        FILE_NAME,
-        'User successfully deleted',
-        'SUCCESS'
-      )
-      //Send the response
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.SUCCESS,
-        CONSTANTS.SUCCESS_DESCRIPTION.SUCCESS_DELETE,
-        next
-      )
-    }
+  mongooseQueries.deleteData(
+    Volunteer,
+    req,
+    res,
+    next,
+    FILE_NAME,
+    req.params.volunteerID
   )
 }
 
@@ -286,7 +161,7 @@ const deleteVolunteer = (req, res, next) => {
 const getVolunteerLogin = (req, res, next) => {
   //Check of the volunteer exists using their email ID.
   Volunteer.findOne({ vemail: req.body.vemail }, (err, volunteer) => {
-    if(err){
+    if (err) {
       CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
       CONSTANTS.createResponses(
         res,
@@ -302,6 +177,14 @@ const getVolunteerLogin = (req, res, next) => {
         res,
         CONSTANTS.ERROR_CODE.NO_DATA_FOUND,
         CONSTANTS.ERROR_DESCRIPTION.LOGINERROR,
+        next
+      )
+    } else if (volunteer.loginAttempts === 3) {
+      CONSTANTS.createLogMessage(FILE_NAME, 'Too many login attempts', 'ERROR')
+      CONSTANTS.createResponses(
+        res,
+        CONSTANTS.ERROR_CODE.BAD_REQUEST,
+        CONSTANTS.ERROR_DESCRIPTION.ATTEMPTERROR,
         next
       )
     } else {
@@ -320,6 +203,9 @@ const getVolunteerLogin = (req, res, next) => {
             )
           }
           if (match === true) {
+            var searchCriteria={ vemail: req.body.vemail }
+            var data={ $set: { loginAttempts: 0 } }
+            mongooseQueries.updateOne(Volunteer,req,res,next,FILE_NAME,searchCriteria,data)
             var payload = {
               id: volunteer._id.toString()
             }
@@ -336,6 +222,9 @@ const getVolunteerLogin = (req, res, next) => {
               responsedata
             )
           } else {
+            var searchCriteria={ vemail: req.body.vemail }
+            var data={ $inc: { loginAttempts: 1 } }
+            mongooseQueries.updateOne(Volunteer,req,res,next,FILE_NAME,searchCriteria,data)
             //error
             CONSTANTS.createLogMessage(
               FILE_NAME,
@@ -358,38 +247,7 @@ const getVolunteerLogin = (req, res, next) => {
 Does not require authentication of any kind. Can be used to share the profile and for a researcher to see 
 a volunteer's profile*/
 const getVolunteerInfoWithID = (req, res, next) => {
-  Volunteer.findById(req.params.volunteerID, (err, volunteer) => {
-    if (err) {
-      CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.NOT_FOUND,
-        err.errmsg,
-        next
-      )
-    }
-    if (volunteer === null) {
-      CONSTANTS.createLogMessage(FILE_NAME, 'User not found', 'ERROR')
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.NOT_FOUND,
-        'User does not Exist',
-        next
-      )
-    } else {
-      CONSTANTS.createLogMessage(
-        FILE_NAME,
-        'User found successfully',
-        'SUCCESS'
-      )
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.SUCCESS,
-        volunteer,
-        next
-      )
-    }
-  })
+  mongooseQueries.findbyID(Volunteer,req,res,next,FILE_NAME,req.params.volunteerID);
 }
 module.exports = {
   addNewVolunteer,
