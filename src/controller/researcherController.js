@@ -22,11 +22,6 @@ var privateKEY = fs.readFileSync('./.env/researcher_keys/private.key', 'utf8')
 //public key path
 var publicKEY = fs.readFileSync('./.env/researcher_keys/public.key', 'utf8')
 
-//Defining the Sign in options. To be used in json web tokens
-var signOptions = {
-  expiresIn: '12h',
-  algorithm: 'RS256'
-}
 const FILE_NAME = 'researcherController.js'
 //import constants file
 const CONSTANTS = require('../CONSTANTS/constants')
@@ -285,7 +280,7 @@ const getResearcherLogin = (req, res, next) => {
             var payload = {
               id: researcher._id.toString()
             }
-            var token = jwt.sign(payload, privateKEY, signOptions)
+            var token = jwt.sign(payload, privateKEY, CONSTANTS.signOptions)
             //return the token
             CONSTANTS.createLogMessage(FILE_NAME, 'Token Generated', 'SUCCESS')
             var responsedata = {
