@@ -87,7 +87,14 @@ const getVolunteerWithID = (req, res, next) => {
     FILE_NAME,
     req.params.volunteerID
   )
-  mongooseQueries.findbyID(Volunteer, req, res, next, FILE_NAME,req.params.volunteerID)
+  mongooseQueries.findbyID(
+    Volunteer,
+    req,
+    res,
+    next,
+    FILE_NAME,
+    req.params.volunteerID
+  )
 }
 
 //Updates the volunteer information.
@@ -203,9 +210,17 @@ const getVolunteerLogin = (req, res, next) => {
             )
           }
           if (match === true) {
-            var searchCriteria={ vemail: req.body.vemail }
-            var data={ $set: { loginAttempts: 0 } }
-            mongooseQueries.updateOne(Volunteer,req,res,next,FILE_NAME,searchCriteria,data)
+            var searchCriteria = { vemail: req.body.vemail }
+            var data = { $set: { loginAttempts: 0 } }
+            mongooseQueries.updateOne(
+              Volunteer,
+              req,
+              res,
+              next,
+              FILE_NAME,
+              searchCriteria,
+              data
+            )
             var payload = {
               id: volunteer._id.toString()
             }
@@ -222,9 +237,17 @@ const getVolunteerLogin = (req, res, next) => {
               responsedata
             )
           } else {
-            var searchCriteria={ vemail: req.body.vemail }
-            var data={ $inc: { loginAttempts: 1 } }
-            mongooseQueries.updateOne(Volunteer,req,res,next,FILE_NAME,searchCriteria,data)
+            var searchCriteria = { vemail: req.body.vemail }
+            var data = { $inc: { loginAttempts: 1 } }
+            mongooseQueries.updateOne(
+              Volunteer,
+              req,
+              res,
+              next,
+              FILE_NAME,
+              searchCriteria,
+              data
+            )
             //error
             CONSTANTS.createLogMessage(
               FILE_NAME,
@@ -247,7 +270,14 @@ const getVolunteerLogin = (req, res, next) => {
 Does not require authentication of any kind. Can be used to share the profile and for a researcher to see 
 a volunteer's profile*/
 const getVolunteerInfoWithID = (req, res, next) => {
-  mongooseQueries.findbyID(Volunteer,req,res,next,FILE_NAME,req.params.volunteerID);
+  mongooseQueries.findbyID(
+    Volunteer,
+    req,
+    res,
+    next,
+    FILE_NAME,
+    req.params.volunteerID
+  )
 }
 module.exports = {
   addNewVolunteer,

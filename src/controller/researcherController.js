@@ -25,6 +25,8 @@ var publicKEY = fs.readFileSync('./.env/researcher_keys/public.key', 'utf8')
 const FILE_NAME = 'researcherController.js'
 //import constants file
 const CONSTANTS = require('../CONSTANTS/constants')
+//import mongoose queries
+const mongooseQueries = require('../CONSTANTS/mongooseQueries')
 
 //This functionality adds a new researcher with all the required fields from the body.
 const addNewResearcher = (req, res, next) => {
@@ -52,64 +54,13 @@ const addNewResearcher = (req, res, next) => {
       rinstitute: req.body.rinstitute
     })
     //Saving the data into the database.
-    newResearcher.save((err, researcher) => {
-      //Error
-      if (err) {
-        //Log in the error
-        CONSTANTS.createLogMessage(FILE_NAME, err, 'Error')
-        //Send the response
-        CONSTANTS.createResponses(
-          res,
-          CONSTANTS.ERROR_CODE.FAILED,
-          err.errmsg,
-          next
-        )
-      }
-      //Return the success message if successfully added.
-      CONSTANTS.createLogMessage(
-        FILE_NAME,
-        'Successfully created user',
-        'SUCCESS'
-      )
-      //Send the success reponse
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.SUCCESS,
-        CONSTANTS.SUCCESS_DESCRIPTION.SUCCESS,
-        next
-      )
-    })
+    mongooseQueries.addNewData(newResearcher, req, res, next, FILE_NAME)
   })
 }
 
 //This function gets all the researchers currently in the database.
 const getResearchers = (req, res, next) => {
-  Researcher.find({}, (err, researcher) => {
-    if (err) {
-      //Log the error
-      CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
-      //Send the response
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_DESCRIPTION.FAILED,
-        err.errmsg,
-        next
-      )
-    }
-    //Log success message
-    CONSTANTS.createLogMessage(
-      FILE_NAME,
-      'Successfully searched all volunteers',
-      'SUCCESS'
-    )
-    //Send back the response
-    CONSTANTS.createResponses(
-      res,
-      CONSTANTS.ERROR_CODE.SUCCESS,
-      researcher,
-      next
-    )
-  })
+  mongooseQueries.findALL(Researcher, req, res, next, FILE_NAME)
 }
 
 //This function will retrieve a researchers info based on it's ID which is auto generated in mongoDB.
@@ -122,38 +73,14 @@ const getResearcherWithID = (req, res, next) => {
     FILE_NAME,
     req.params.researcherID
   )
-  Researcher.findById(req.params.researcherID, (err, researcher) => {
-    if (err) {
-      CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.NOT_FOUND,
-        err.errmsg,
-        next
-      )
-    }
-    if (researcher === null) {
-      CONSTANTS.createLogMessage(FILE_NAME, 'User not Found', 'NODATA')
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.NOT_FOUND,
-        CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
-        next
-      )
-    } else {
-      CONSTANTS.createLogMessage(
-        FILE_NAME,
-        'Successfully searched user',
-        'SUCCESS'
-      )
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.SUCCESS,
-        researcher,
-        next
-      )
-    }
-  })
+  mongooseQueries.findbyID(
+    Researcher,
+    req,
+    res,
+    next,
+    FILE_NAME,
+    req.params.researcherID
+  )
 }
 
 //Updates the researchers information.
@@ -178,33 +105,14 @@ const updateResearcher = (req, res, next) => {
   })
   var upsertData = newResearcher.toObject()
   delete upsertData._id
-  Researcher.findOneAndUpdate(
-    { _id: req.params.researcherID },
-    { $set: upsertData },
-    { new: true, useFindAndModify: false },
-    (err, researcher) => {
-      if (err) {
-        CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
-        CONSTANTS.createResponses(
-          res,
-          CONSTANTS.ERROR_CODE.FAILED,
-          err.errmsg,
-          next
-        )
-      }
-      CONSTANTS.createLogMessage(
-        FILE_NAME,
-        'Successfully updated user',
-        'SUCCESS'
-      )
-      //Send back the volunteer data along with the success update message
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.SUCCESS,
-        researcher,
-        next
-      )
-    }
+  mongooseQueries.updateData(
+    Researcher,
+    req,
+    res,
+    next,
+    FILE_NAME,
+    req.params.researcherID,
+    upsertData
   )
 }
 
@@ -219,38 +127,21 @@ const deleteResearcher = (req, res, next) => {
     req.params.researcherID
   )
 
-  Researcher.findOneAndDelete(
-    { _id: req.params.researcherID },
-    (err, researcher) => {
-      if (err) {
-        CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
-        CONSTANTS.createResponses(
-          res,
-          CONSTANTS.ERROR_CODE.FAILED,
-          err.errmsg,
-          next
-        )
-      }
-      CONSTANTS.createLogMessage(
-        FILE_NAME,
-        'User successfully deleted',
-        'SUCCESS'
-      )
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.SUCCESS,
-        CONSTANTS.SUCCESS_DESCRIPTION.SUCCESS_DELETE,
-        next
-      )
-    }
+  mongooseQueries.deleteData(
+    Researcher,
+    req,
+    res,
+    next,
+    FILE_NAME,
+    req.params.researcher
   )
 }
 
 //Authenticate the researcher.
 const getResearcherLogin = (req, res, next) => {
   //Check of the researcher exists using their email ID.
-  Researcher.findOne({ remail: req.body.remail },(err,researcher) => {
-    if(err){
+  Researcher.findOne({ remail: req.body.remail }, (err, researcher) => {
+    if (err) {
       CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
       CONSTANTS.createResponses(
         res,
@@ -269,6 +160,14 @@ const getResearcherLogin = (req, res, next) => {
         CONSTANTS.ERROR_DESCRIPTION.LOGINERROR,
         next
       )
+    } else if (researcher.loginAttempts === 3) {
+      CONSTANTS.createLogMessage(FILE_NAME, 'Too many login attempts', 'ERROR')
+      CONSTANTS.createResponses(
+        res,
+        CONSTANTS.ERROR_CODE.BAD_REQUEST,
+        CONSTANTS.ERROR_DESCRIPTION.ATTEMPTERROR,
+        next
+      )
     } else {
       //If the researcher exists then compare their password entered with the password in the database
       bcrypt.compare(
@@ -285,6 +184,17 @@ const getResearcherLogin = (req, res, next) => {
           }
           //If password same create the json web token.
           if (match == true) {
+            var searchCriteria = { vemail: req.body.remail }
+            var data = { $set: { loginAttempts: 0 } }
+            mongooseQueries.updateOne(
+              Researcher,
+              req,
+              res,
+              next,
+              FILE_NAME,
+              searchCriteria,
+              data
+            )
             var payload = {
               id: researcher._id.toString()
             }
@@ -301,6 +211,17 @@ const getResearcherLogin = (req, res, next) => {
               responsedata
             )
           } else {
+            var searchCriteria = { vemail: req.body.remail }
+            var data = { $inc: { loginAttempts: 1 } }
+            mongooseQueries.updateOne(
+              Researcher,
+              req,
+              res,
+              next,
+              FILE_NAME,
+              searchCriteria,
+              data
+            )
             //error
             CONSTANTS.createLogMessage(
               FILE_NAME,

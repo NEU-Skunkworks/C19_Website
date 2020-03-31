@@ -54,5 +54,9 @@ module.exports = ResearcherSchema = new Schema({
   type: {
     type: String,
     default: 'Researcher'
+  },
+  loginAttempts:{
+    type:Number,
+    default:0
   }
 })
