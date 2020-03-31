@@ -9,7 +9,7 @@ const mongoose=require('mongoose');
 const Schema = mongoose.Schema
 
 //This model defines the data fields we will be storing in the database.
-const ResearcherSchema = new Schema({
+module.exports= ResearcherSchema = new Schema({
   rfirstName: {
     type: String,
     required: 'First name is required'
@@ -52,5 +52,3 @@ const ResearcherSchema = new Schema({
     default:'Researcher'
   }
 })
-ResearcherSchema.index({'remail':1,'rphone':1},{unique:true})
-module.exports={ResearcherSchema}
