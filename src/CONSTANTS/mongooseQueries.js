@@ -1,3 +1,10 @@
+/**
+ * @file mongooseQueries.js
+ * @author Rahul Handoo
+ * @version 1.0
+ * createdDate: 03/31/2020
+ */
+
 //import constants file
 const CONSTANTS = require('../CONSTANTS/constants')
 

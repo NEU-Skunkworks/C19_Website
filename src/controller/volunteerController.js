@@ -13,8 +13,6 @@ const VolunteerSchema = require('../model/volunteerModel')
 const Volunteer = mongoose.model('VolunteerSchema', VolunteerSchema)
 //importing bcrypt to hash the user entered password for security.
 const bcrypt = require('bcrypt')
-//importing jwt token to assign to the user once authenticated
-const jwt = require('jsonwebtoken')
 //importing file system to get the public and private key for creating public and private keys.
 const fs = require('fs')
 //private key path
@@ -27,6 +25,9 @@ const CONSTANTS = require('../CONSTANTS/constants')
 const FILE_NAME = 'volunteerController.js'
 //import mongoose queries
 const mongooseQueries = require('../CONSTANTS/mongooseQueries')
+//import login controller
+const loginController = require('./loginController')
+
 
 //This functionality adds a new volunteer with all the required fields from the body.
 const addNewVolunteer = (req, res, next) => {
@@ -167,103 +168,17 @@ const deleteVolunteer = (req, res, next) => {
 //Authenticate the volunteer.
 const getVolunteerLogin = (req, res, next) => {
   //Check of the volunteer exists using their email ID.
-  Volunteer.findOne({ vemail: req.body.vemail }, (err, volunteer) => {
-    if (err) {
-      CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.FAILED,
-        err.errmsg,
-        next
-      )
-    }
-    //If the volunteer does not exist.
-    if (!volunteer) {
-      CONSTANTS.createLogMessage(FILE_NAME, 'Invalid email/username', 'ERROR')
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.NO_DATA_FOUND,
-        CONSTANTS.ERROR_DESCRIPTION.LOGINERROR,
-        next
-      )
-    } else if (volunteer.loginAttempts === 3) {
-      CONSTANTS.createLogMessage(FILE_NAME, 'Too many login attempts', 'ERROR')
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.BAD_REQUEST,
-        CONSTANTS.ERROR_DESCRIPTION.ATTEMPTERROR,
-        next
-      )
-    } else {
-      //If the volunteer exists then compare their password entered with the password in the database
-      bcrypt.compare(
-        req.body.vpassword.toString(),
-        volunteer.vpassword.toString(),
-        function (err, match) {
-          //If password same create the json web token.
-          if (err) {
-            CONSTANTS.createLogMessage(FILE_NAME, 'Server Error', 'ERROR')
-            CONSTANTS.createResponseWithoutNext(
-              res,
-              CONSTANTS.ERROR_CODE.NO_DATA_FOUND,
-              CONSTANTS.ERROR_DESCRIPTION.LOGINERROR
-            )
-          }
-          if (match === true) {
-            var searchCriteria = { vemail: req.body.vemail }
-            var data = { $set: { loginAttempts: 0 } }
-            mongooseQueries.updateOne(
-              Volunteer,
-              req,
-              res,
-              next,
-              FILE_NAME,
-              searchCriteria,
-              data
-            )
-            var payload = {
-              id: volunteer._id.toString()
-            }
-            var token = jwt.sign(payload, privateKEY, CONSTANTS.signOptions)
-            //return the token
-            CONSTANTS.createLogMessage(FILE_NAME, 'Token Generated', 'SUCCESS')
-            var responsedata = {
-              token: token,
-              userid: volunteer._id
-            }
-            CONSTANTS.createResponseWithoutNext(
-              res,
-              CONSTANTS.ERROR_CODE.SUCCESS,
-              responsedata
-            )
-          } else {
-            var searchCriteria = { vemail: req.body.vemail }
-            var data = { $inc: { loginAttempts: 1 } }
-            mongooseQueries.updateOne(
-              Volunteer,
-              req,
-              res,
-              next,
-              FILE_NAME,
-              searchCriteria,
-              data
-            )
-            //error
-            CONSTANTS.createLogMessage(
-              FILE_NAME,
-              'Invalid Email/Password',
-              'ERROR'
-            )
-            CONSTANTS.createResponseWithoutNext(
-              res,
-              CONSTANTS.ERROR_CODE.NO_DATA_FOUND,
-              CONSTANTS.ERROR_DESCRIPTION.LOGINERROR
-            )
-          }
-        }
-      )
-    }
-  })
+  loginController.loginAuthentication(
+    Volunteer,
+    req,
+    res,
+    next,
+    req.body.vemail,
+    req.body.vpassword,
+    FILE_NAME,
+    privateKEY,
+    'Volunteer'
+  )
 }
 
 /*This function will retrieve a volunteers info based on it's ID which is auto generated in mongoDB.

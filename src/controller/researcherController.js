@@ -13,8 +13,7 @@ const ResearcherSchema = require('../model/researcherModel')
 const Researcher = mongoose.model('ResearcherSchema', ResearcherSchema)
 //importing bcrypt to hash the user entered password for security.
 const bcrypt = require('bcrypt')
-//importing jwt token to assign to the user once authenticated
-const jwt = require('jsonwebtoken')
+
 //importing file system to get the public and private key for creating public and private keys.
 const fs = require('fs')
 //private key path
@@ -27,6 +26,9 @@ const FILE_NAME = 'researcherController.js'
 const CONSTANTS = require('../CONSTANTS/constants')
 //import mongoose queries
 const mongooseQueries = require('../CONSTANTS/mongooseQueries')
+//import login controller
+const loginController = require('./loginController')
+
 
 //This functionality adds a new researcher with all the required fields from the body.
 const addNewResearcher = (req, res, next) => {
@@ -140,140 +142,19 @@ const deleteResearcher = (req, res, next) => {
 //Authenticate the researcher.
 const getResearcherLogin = (req, res, next) => {
   //Check of the researcher exists using their email ID.
-  Researcher.findOne({ remail: req.body.remail }, (err, researcher) => {
-    if (err) {
-      CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.FAILED,
-        err.errmsg,
-        next
-      )
-    }
-    //If the researcher doesnot exist.
-    if (!researcher) {
-      //Error
-      CONSTANTS.createLogMessage(FILE_NAME, 'Invalid email/username', 'ERROR')
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.NO_DATA_FOUND,
-        CONSTANTS.ERROR_DESCRIPTION.LOGINERROR,
-        next
-      )
-    } else if (researcher.loginAttempts === 3) {
-      CONSTANTS.createLogMessage(FILE_NAME, 'Too many login attempts', 'ERROR')
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.BAD_REQUEST,
-        CONSTANTS.ERROR_DESCRIPTION.ATTEMPTERROR,
-        next
-      )
-    } else {
-      //If the researcher exists then compare their password entered with the password in the database
-      bcrypt.compare(
-        req.body.rpassword.toString(),
-        researcher.rpassword.toString(),
-        function (err, match) {
-          if (err) {
-            CONSTANTS.createLogMessage(FILE_NAME, 'Server Error', 'ERROR')
-            CONSTANTS.createResponseWithoutNext(
-              res,
-              CONSTANTS.ERROR_CODE.NO_DATA_FOUND,
-              err.errmsg
-            )
-          }
-          //If password same create the json web token.
-          if (match == true) {
-            var searchCriteria = { vemail: req.body.remail }
-            var data = { $set: { loginAttempts: 0 } }
-            mongooseQueries.updateOne(
-              Researcher,
-              req,
-              res,
-              next,
-              FILE_NAME,
-              searchCriteria,
-              data
-            )
-            var payload = {
-              id: researcher._id.toString()
-            }
-            var token = jwt.sign(payload, privateKEY, CONSTANTS.signOptions)
-            //return the token
-            CONSTANTS.createLogMessage(FILE_NAME, 'Token Generated', 'SUCCESS')
-            var responsedata = {
-              token: token,
-              userid: researcher._id
-            }
-            CONSTANTS.createResponseWithoutNext(
-              res,
-              CONSTANTS.ERROR_CODE.SUCCESS,
-              responsedata
-            )
-          } else {
-            var searchCriteria = { vemail: req.body.remail }
-            var data = { $inc: { loginAttempts: 1 } }
-            mongooseQueries.updateOne(
-              Researcher,
-              req,
-              res,
-              next,
-              FILE_NAME,
-              searchCriteria,
-              data
-            )
-            //error
-            CONSTANTS.createLogMessage(
-              FILE_NAME,
-              'Invalid Email/Password',
-              'ERROR'
-            )
-            CONSTANTS.createResponseWithoutNext(
-              res,
-              CONSTANTS.ERROR_CODE.NO_DATA_FOUND,
-              CONSTANTS.ERROR_DESCRIPTION.LOGINERROR
-            )
-          }
-        }
-      )
-    }
-  })
+  loginController.loginAuthentication(Researcher,req,res,next,req.body.remail,req.body.rpassword,FILE_NAME,privateKEY,"Researcher")
 }
 
 //This can be used if a volunteer wants to pull up a Researcher info before applying for the job.
 const getResearcherInfoWithID = (req, res, next) => {
-  Researcher.findById(req.params.researcherID, (err, researcher) => {
-    if (err) {
-      CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.NOT_FOUND,
-        err.errmsg,
-        next
-      )
-    }
-    if (researcher === null) {
-      CONSTANTS.createLogMessage(FILE_NAME, 'User not found', 'ERROR')
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.NOT_FOUND,
-        'User does not Exist',
-        next
-      )
-    } else {
-      CONSTANTS.createLogMessage(
-        FILE_NAME,
-        'User found successfully',
-        'SUCCESS'
-      )
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.SUCCESS,
-        researcher,
-        next
-      )
-    }
-  })
+  mongooseQueries.findbyID(
+    Researcher,
+    req,
+    res,
+    next,
+    FILE_NAME,
+    req.params.researcherID
+  )
 }
 
 module.exports = {
