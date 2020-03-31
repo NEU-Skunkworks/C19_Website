@@ -23,7 +23,8 @@ const ERROR_DESCRIPTION = {
   SERVERERROR: 'Server error'
 }
 const SUCCESS_DESCRIPTION = {
-  SUCCESS: 'Operation successfull'
+  SUCCESS: 'Operation successfull',
+  SUCCESS_UPDATE: 'Updated Successfully'
 }
 module.exports = {
   ERROR_CODE,
