@@ -38,13 +38,14 @@ const addNewVolunteer = (req, res, next) => {
       CONSTANTS.createResponses(
         res,
         CONSTANTS.ERROR_CODE.FAILED,
-        CONSTANTS.ERROR_DESCRIPTION.SERVERERROR,
+        err.errmsg,
         next
       )
     }
     //Parse the skills as string and split it based on "," to create an array of skills for the user.
     var skills = req.body.vskills
     var skillsArr = skills.split(',')
+
     //Creating the variable to hold the data for fields
     let newVolunteer = new Volunteer({
       vfirstName: req.body.vfirstName,
@@ -60,7 +61,6 @@ const addNewVolunteer = (req, res, next) => {
     newVolunteer.vwork_experience = Object.values(req.body.vwork_experience)
     //Adding multiple values  for education.
     newVolunteer.veducation = Object.values(req.body.veducation)
-    console.log(newVolunteer.vfirstName)
     //Saving the data into the database.
     newVolunteer.save((err, volunteer) => {
       //Error
@@ -104,7 +104,7 @@ const getVolunteers = (req, res, next) => {
       CONSTANTS.createResponses(
         res,
         CONSTANTS.ERROR_DESCRIPTION.FAILED,
-        CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+        err.errmsg,
         next
       )
     }
@@ -124,8 +124,10 @@ const getVolunteers = (req, res, next) => {
   })
 }
 
-//This function will retrieve a volunteers info based on it's ID which is auto generated in mongoDB.
+/*This function will retrieve a volunteers info based on it's ID which is auto generated in mongoDB.
+This requires token authentication*/
 const getVolunteerWithID = (req, res, next) => {
+  //Authhenticate user
   CONSTANTS.authenticateUser(
     req,
     res,
@@ -141,7 +143,7 @@ const getVolunteerWithID = (req, res, next) => {
       CONSTANTS.createResponses(
         res,
         CONSTANTS.ERROR_CODE.NOT_FOUND,
-        CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+        err.errmsg,
         next
       )
     }
@@ -171,6 +173,7 @@ const getVolunteerWithID = (req, res, next) => {
 
 //Updates the volunteer information.
 const updateVolunteer = (req, res, next) => {
+  //Authenticate user
   CONSTANTS.authenticateUser(
     req,
     res,
@@ -208,14 +211,17 @@ const updateVolunteer = (req, res, next) => {
     { new: true, useFindAndModify: false },
     (err, volunteer) => {
       if (err) {
+        //Create the log message
         CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
+        //Send the response
         CONSTANTS.createResponses(
           res,
           CONSTANTS.ERROR_CODE.FAILED,
-          CONSTANTS.ERROR_DESCRIPTION.SERVERERROR,
+          err.errmsg,
           next
         )
       }
+      //Create the log message
       CONSTANTS.createLogMessage(
         FILE_NAME,
         'Successfully updated user',
@@ -234,6 +240,7 @@ const updateVolunteer = (req, res, next) => {
 
 //Delete the volunteer information.
 const deleteVolunteer = (req, res, next) => {
+  //Authenticate user
   CONSTANTS.authenticateUser(
     req,
     res,
@@ -248,19 +255,23 @@ const deleteVolunteer = (req, res, next) => {
     (err, volunteer) => {
       //Error
       if (err) {
+        //Create log message
         CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
+        //Create the response
         CONSTANTS.createResponses(
           res,
           CONSTANTS.ERROR_CODE.FAILED,
-          CONSTANTS.ERROR_DESCRIPTION.SERVERERROR,
+          err.errmsg,
           next
         )
       }
+      //Create the log message
       CONSTANTS.createLogMessage(
         FILE_NAME,
         'User successfully deleted',
         'SUCCESS'
       )
+      //Send the response
       CONSTANTS.createResponses(
         res,
         CONSTANTS.ERROR_CODE.SUCCESS,
@@ -275,9 +286,17 @@ const deleteVolunteer = (req, res, next) => {
 const getVolunteerLogin = (req, res, next) => {
   //Check of the volunteer exists using their email ID.
   Volunteer.findOne({ vemail: req.body.vemail }, (err, volunteer) => {
+    if(err){
+      CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
+      CONSTANTS.createResponses(
+        res,
+        CONSTANTS.ERROR_CODE.FAILED,
+        err.errmsg,
+        next
+      )
+    }
     //If the volunteer does not exist.
     if (!volunteer) {
-      //Error
       CONSTANTS.createLogMessage(FILE_NAME, 'Invalid email/username', 'ERROR')
       CONSTANTS.createResponses(
         res,
@@ -345,7 +364,7 @@ const getVolunteerInfoWithID = (req, res, next) => {
       CONSTANTS.createResponses(
         res,
         CONSTANTS.ERROR_CODE.NOT_FOUND,
-        CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+        err.errmsg,
         next
       )
     }

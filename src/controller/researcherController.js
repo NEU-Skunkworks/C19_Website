@@ -36,7 +36,7 @@ const addNewResearcher = (req, res, next) => {
       CONSTANTS.createResponses(
         res,
         CONSTANTS.ERROR_CODE.FAILED,
-        CONSTANTS.ERROR_DESCRIPTION.SERVERERROR,
+        err.errmsg,
         next
       )
     }
@@ -65,7 +65,6 @@ const addNewResearcher = (req, res, next) => {
           next
         )
       }
-      //Return the success mesage if successfully added.
       //Return the success message if successfully added.
       CONSTANTS.createLogMessage(
         FILE_NAME,
@@ -88,12 +87,12 @@ const getResearchers = (req, res, next) => {
   Researcher.find({}, (err, researcher) => {
     if (err) {
       //Log the error
-      CONSTANTS.createLogMessage(FILE_NAME, 'ERROR', 'Error')
+      CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
       //Send the response
       CONSTANTS.createResponses(
         res,
         CONSTANTS.ERROR_DESCRIPTION.FAILED,
-        CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+        err.errmsg,
         next
       )
     }
@@ -129,7 +128,7 @@ const getResearcherWithID = (req, res, next) => {
       CONSTANTS.createResponses(
         res,
         CONSTANTS.ERROR_CODE.NOT_FOUND,
-        CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+        err.errmsg,
         next
       )
     }
@@ -189,7 +188,7 @@ const updateResearcher = (req, res, next) => {
         CONSTANTS.createResponses(
           res,
           CONSTANTS.ERROR_CODE.FAILED,
-          CONSTANTS.ERROR_DESCRIPTION.SERVERERROR,
+          err.errmsg,
           next
         )
       }
@@ -228,7 +227,7 @@ const deleteResearcher = (req, res, next) => {
         CONSTANTS.createResponses(
           res,
           CONSTANTS.ERROR_CODE.FAILED,
-          CONSTANTS.ERROR_DESCRIPTION.SERVERERROR,
+          err.errmsg,
           next
         )
       }
@@ -250,7 +249,16 @@ const deleteResearcher = (req, res, next) => {
 //Authenticate the researcher.
 const getResearcherLogin = (req, res, next) => {
   //Check of the researcher exists using their email ID.
-  Researcher.findOne({ remail: req.body.remail }).then(researcher => {
+  Researcher.findOne({ remail: req.body.remail },(err,researcher) => {
+    if(err){
+      CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
+      CONSTANTS.createResponses(
+        res,
+        CONSTANTS.ERROR_CODE.FAILED,
+        err.errmsg,
+        next
+      )
+    }
     //If the researcher doesnot exist.
     if (!researcher) {
       //Error
@@ -272,7 +280,7 @@ const getResearcherLogin = (req, res, next) => {
             CONSTANTS.createResponseWithoutNext(
               res,
               CONSTANTS.ERROR_CODE.NO_DATA_FOUND,
-              CONSTANTS.ERROR_DESCRIPTION.LOGINERROR
+              err.errmsg
             )
           }
           //If password same create the json web token.
@@ -319,7 +327,7 @@ const getResearcherInfoWithID = (req, res, next) => {
       CONSTANTS.createResponses(
         res,
         CONSTANTS.ERROR_CODE.NOT_FOUND,
-        CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+        err.errmsg,
         next
       )
     }

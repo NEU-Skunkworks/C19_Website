@@ -7,67 +7,30 @@
 
 //import mongoose
 const mongoose = require('mongoose')
-//import Schema
+//import Job Posting Schema
 const JobPostingSchema = require('../model/jobPostingModel')
+//Importing constants
 const CONSTANTS = require('../CONSTANTS/constants')
+//Create a variable of type mongoose schema for Job Posting 
 const JobPosting = mongoose.model('JobPostingSchema', JobPostingSchema)
+//import file systems
 const fs = require('fs')
 //public key path
 var publicKEY = fs.readFileSync('./.env/researcher_keys/public.key', 'utf8')
+//Declaring the file name
 const FILE_NAME = 'jobPostingController.js'
-const LOGGER = require('../Logger/logger')
 
-//Specifying the verifying options for json web token
-var verifyOptions = {
-  expiresIn: '12h',
-  algorithm: ['RS256']
-}
-//importing jwt token to assign to the user once authenticated
-const jwt = require('jsonwebtoken')
+
 //This functionality adds a new job posting with all the required fields from the body.
 const addNewJobPosting = (req, res, next) => {
-  let today = new Date()
-  let date =
-    today.getFullYear() +
-    '-' +
-    (today.getMonth() + 1) +
-    '-' +
-    today.getDate() +
-    '-' +
-    today.getHours() +
-    ':' +
-    today.getMinutes() +
-    ':' +
-    today.getSeconds()
-  let token = req.headers['x-access-token'] || req.headers['authorization']
-  if (token === undefined) {
-    LOGGER.info(date + ' User not authorized  ' + FILE_NAME)
-    res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-    res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-    next()
-  }
-  if (token.startsWith('Bearer ')) {
-    token = token.slice(7, token.length)
-  }
-  var checkForAuthentication = jwt.verify(token, publicKEY, verifyOptions)
-  if (checkForAuthentication.hasOwnProperty('id') === false) {
-    LOGGER.info(date + ' User not authorized  ' + FILE_NAME)
-    res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-    res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-    next()
-  } else if (checkForAuthentication.id != req.params.researcherID) {
-    LOGGER.info(date + ' User not authorized  ' + FILE_NAME)
-    res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-    res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-    next()
-  }
-  var checkForAuthentication = jwt.verify(token, publicKEY, verifyOptions)
-  if (checkForAuthentication === null) {
-    LOGGER.info(date + ' User not authorized  ' + FILE_NAME)
-    res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-    res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-    next()
-  }
+  CONSTANTS.authenticateUser(
+    req,
+    res,
+    next,
+    publicKEY,
+    FILE_NAME,
+    req.params.researcherID
+  )
   //Creating the variable to hold the data for fields
   let newJobPosting = new JobPosting({
     researcherID: req.params.researcherID,
@@ -81,103 +44,85 @@ const addNewJobPosting = (req, res, next) => {
   newJobPosting.save((err, jobposting) => {
     //Error
     if (err) {
-      LOGGER.info(date + ' Error occured in ' + FILE_NAME + ' message: ' + err)
-      res.status(CONSTANTS.ERROR_CODE.FAILED)
-      res.json({ error: CONSTANTS.ERROR_DESCRIPTION.SERVERERROR })
+      CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
+      CONSTANTS.createResponses(
+        res,
+        CONSTANTS.ERROR_CODE.NOT_FOUND,
+        err.errmsg,
+        next
+      )
     }
-    //Return the success mesage if successfully added.
-    LOGGER.info(date + ' Successfully added job posting ' + FILE_NAME)
-    res.status(CONSTANTS.ERROR_CODE.SUCCESS)
-    res.json({ data: CONSTANTS.SUCCESS_DESCRIPTION.SUCCESS })
-    next()
+    CONSTANTS.createLogMessage(FILE_NAME, 'Successfully added job posting', 'SUCCESS')
+      CONSTANTS.createResponses(
+        res,
+        CONSTANTS.ERROR_CODE.SUCCESS,
+        CONSTANTS.SUCCESS_DESCRIPTION.SUCCESS,
+        next
+      )
   })
 }
 
 //This function gets all the job postings currently in the database.
 const getJobPostings = (req, res, next) => {
-  let today = new Date()
-  let date =
-    today.getFullYear() +
-    '-' +
-    (today.getMonth() + 1) +
-    '-' +
-    today.getDate() +
-    '-' +
-    today.getHours() +
-    ':' +
-    today.getMinutes() +
-    ':' +
-    today.getSeconds()
   JobPosting.find({}, (err, jobposting) => {
     if (err) {
-      LOGGER.info(date + ' Error occured in ' + FILE_NAME + ' message: ' + err)
-      res.status(CONSTANTS.ERROR_CODE.NOT_FOUND)
-      res.json({ error: CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND })
-      next()
+     //Log the error
+     CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
+     //Send the response
+     CONSTANTS.createResponses(
+       res,
+       CONSTANTS.ERROR_DESCRIPTION.FAILED,
+       err.errmsg,
+       next
+     )
     }
-    LOGGER.info(
-      date + ' Successfully searched for all job postings ' + FILE_NAME
+    //Log success message
+    CONSTANTS.createLogMessage(
+      FILE_NAME,
+      'Successfully searched for all job postings',
+      'SUCCESS'
     )
-    res.status(CONSTANTS.ERROR_CODE.SUCCESS)
-    res.json({ data: jobposting })
-    next()
+    //Send back the response
+    CONSTANTS.createResponses(
+      res,
+      CONSTANTS.ERROR_CODE.SUCCESS,
+      jobposting,
+      next
+    )
   })
 }
 
 //This function will retrieve a job posting info based on it's ID which is auto generated in mongoDB.
 const getjobpostingwithID = (req, res, next) => {
-  let today = new Date()
-  let date =
-    today.getFullYear() +
-    '-' +
-    (today.getMonth() + 1) +
-    '-' +
-    today.getDate() +
-    '-' +
-    today.getHours() +
-    ':' +
-    today.getMinutes() +
-    ':' +
-    today.getSeconds()
   JobPosting.findById(req.params.jobID, (err, jobposting) => {
     if (err) {
-      LOGGER.info(date + ' Error occured in' + FILE_NAME + 'message: ' + err)
-      res.status(CONSTANTS.ERROR_CODE.FAILED)
-      res.json({ error: CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND })
-      next()
+      CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
+      //Send the response
+      CONSTANTS.createResponses(
+        res,
+        CONSTANTS.ERROR_DESCRIPTION.FAILED,
+        err.errmsg,
+        next
+      )
     }
-    LOGGER.info(date + ' Successfully searched for job posting ' + FILE_NAME)
-    res.status(CONSTANTS.ERROR_CODE.SUCCESS)
-    res.json({ data: jobposting })
-    next()
+   //Log success message
+   CONSTANTS.createLogMessage(
+    FILE_NAME,
+    'Successfully searched for job posting',
+    'SUCCESS'
+  )
+  //Send back the response
+  CONSTANTS.createResponses(
+    res,
+    CONSTANTS.ERROR_CODE.SUCCESS,
+    jobposting,
+    next
+  )
   })
 }
 
 //Updates the researchers information.
 const updateJobPosting = (req, res, next) => {
-  let today = new Date()
-  let date =
-    today.getFullYear() +
-    '-' +
-    (today.getMonth() + 1) +
-    '-' +
-    today.getDate() +
-    '-' +
-    today.getHours() +
-    ':' +
-    today.getMinutes() +
-    ':' +
-    today.getSeconds()
-  let token = req.headers['x-access-token'] || req.headers['authorization']
-  if (token === undefined) {
-    LOGGER.info(date + ' User not authorized  ' + FILE_NAME)
-    res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-    res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-    next()
-  }
-  if (token.startsWith('Bearer ')) {
-    token = token.slice(7, token.length)
-  }
   let newJobPosting = new JobPosting({
     researcherID: req.body.researcherID,
     jobTitle: req.body.jobTitle,
@@ -188,227 +133,184 @@ const updateJobPosting = (req, res, next) => {
   })
   var upsertData = newJobPosting.toObject()
   delete upsertData._id
-  var checkForAuthentication = jwt.verify(token, publicKEY, verifyOptions)
-  if (checkForAuthentication === null) {
-    LOGGER.info(date + ' User not authorized  ' + FILE_NAME)
-    res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-    res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-    next()
-  }
-  if (checkForAuthentication.hasOwnProperty('id') === false) {
-    LOGGER.info(date + ' User not authorized  ' + FILE_NAME)
-    res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-    res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-    next()
-  } else if (checkForAuthentication.id != upsertData.researcherID) {
-    LOGGER.info(date + ' User not authorized  ' + FILE_NAME)
-    res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-    res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-    next()
-  }
+  CONSTANTS.authenticateUser(
+    req,
+    res,
+    next,
+    publicKEY,
+    FILE_NAME,
+    req.body.researcherID
+  )
   JobPosting.findOneAndUpdate(
     { _id: req.params.jobID },
     { $set: upsertData },
     { new: true, useFindAndModify: false },
     (err, jobposting) => {
       if (err) {
-        LOGGER.info(
-          date + ' Error occured in ' + FILE_NAME + ' message: ' + err
+        CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
+        CONSTANTS.createResponses(
+          res,
+          CONSTANTS.ERROR_CODE.FAILED,
+          err.errmsg,
+          next
         )
-        res.status(CONSTANTS.ERROR_CODE.NOT_FOUND)
-        res.json({ error: CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND })
       }
-      LOGGER.info(date + ' Successfully updated job posting ' + FILE_NAME)
-      res.status(CONSTANTS.ERROR_CODE.SUCCESS)
-      res.json({ data: jobposting })
-      next()
+      CONSTANTS.createLogMessage(
+        FILE_NAME,
+        'Successfully updated job posting',
+        'SUCCESS'
+      )
+      //Send back the volunteer data along with the success update message
+      CONSTANTS.createResponses(
+        res,
+        CONSTANTS.ERROR_CODE.SUCCESS,
+        jobposting,
+        next
+      )
     }
   )
 }
 
 //Delete the job posting
 const deleteJobPosting = (req, res, next) => {
-  let today = new Date()
-  let date =
-    today.getFullYear() +
-    '-' +
-    (today.getMonth() + 1) +
-    '-' +
-    today.getDate() +
-    '-' +
-    today.getHours() +
-    ':' +
-    today.getMinutes() +
-    ':' +
-    today.getSeconds()
-  let token = req.headers['x-access-token'] || req.headers['authorization']
-  if (token === undefined) {
-    LOGGER.info(date + ' User not authorized  ' + FILE_NAME)
-    res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-    res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-    next()
-  }
-  if (token.startsWith('Bearer ')) {
-    token = token.slice(7, token.length)
-  }
-  JobPosting.findById(req.params.jobID, (err, jobposting) => {
+  JobPosting.findById(req.params.jobID, (err, job) => {
     if (err) {
-      LOGGER.info(date + ' Error occured in' + FILE_NAME + 'message: ' + err)
-      res.status(CONSTANTS.ERROR_CODE.FAILED)
-      res.json({ error: CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND })
-      next()
+      CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
+      CONSTANTS.createResponses(
+        res,
+        CONSTANTS.ERROR_CODE.FAILED,
+        err.errmsg,
+        next
+      )
     }
-    var checkForAuthentication = jwt.verify(token, publicKEY, verifyOptions)
-    if (checkForAuthentication === null) {
-      LOGGER.info(date + ' User not authorized  ' + FILE_NAME)
-      res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-      res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-      next()
-    } else if (checkForAuthentication.hasOwnProperty('id') === false) {
-      LOGGER.info(date + ' User not authorized  ' + FILE_NAME)
-      res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-      res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-      next()
-    } else if (checkForAuthentication.id != jobposting.researcherID) {
-      LOGGER.info(date + ' User not authorized  ' + FILE_NAME)
-      res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-      res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-      next()
-    }
+    CONSTANTS.authenticateUser(
+      req,
+      res,
+      next,
+      publicKEY,
+      FILE_NAME,
+      job.researcherID
+    )
     JobPosting.deleteOne({ _id: req.params.jobID }, (err, jobPosting) => {
       if (err) {
-        LOGGER.info(date + ' Error occured in' + FILE_NAME + 'message: ' + err)
-        res.status(CONSTANTS.ERROR_CODE.NOT_FOUND)
-        res.json({ error: CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND })
-        next()
+        CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
+        CONSTANTS.createResponses(
+          res,
+          CONSTANTS.ERROR_CODE.FAILED,
+          err.errmsg,
+          next
+        )
       }
-      LOGGER.info(date + ' Successfully deleted job Posting ' + FILE_NAME)
-      res.status(CONSTANTS.ERROR_CODE.SUCCESS)
-      res.json({ data: CONSTANTS.SUCCESS_DESCRIPTION.SUCCESS })
-      next()
+      CONSTANTS.createLogMessage(
+        FILE_NAME,
+        'Successfully deleted job Posting',
+        'SUCCESS'
+      )
+      //Send back the volunteer data along with the success update message
+      CONSTANTS.createResponses(
+        res,
+        CONSTANTS.ERROR_CODE.SUCCESS,
+        CONSTANTS.SUCCESS_DESCRIPTION.SUCCESS_DELETE,
+        next
+      )
     })
   })
 }
 
 //Search a job posting based on skills
 const getJobPostingonSkills = (req, res, next) => {
-  let today = new Date()
-  let date =
-    today.getFullYear() +
-    '-' +
-    (today.getMonth() + 1) +
-    '-' +
-    today.getDate() +
-    '-' +
-    today.getHours() +
-    ':' +
-    today.getMinutes() +
-    ':' +
-    today.getSeconds()
   let skills = req.params.skills
   let skillsarr = skills.split(', ')
   JobPosting.find({ skills: { $in: skillsarr } }, (err, jobposting) => {
     if (err) {
-      LOGGER.info(date + ' Error occured in' + FILE_NAME + 'message: ' + err)
-      res.status(CONSTANTS.ERROR_CODE.NOT_FOUND)
-      res.json({ error: CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND })
-      next()
+      CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
+        CONSTANTS.createResponses(
+          res,
+          CONSTANTS.ERROR_CODE.FAILED,
+          err.errmsg,
+          next
+        )
     }
-    LOGGER.info(date + ' Successfully searched for job posting ' + FILE_NAME)
-    res.status(CONSTANTS.ERROR_CODE.SUCCESS)
-    res.json({ data: jobposting })
-    next()
+    CONSTANTS.createLogMessage(
+      FILE_NAME,
+      'Successfully searched for job posting',
+      'SUCCESS'
+    )
+    //Send back the volunteer data along with the success update message
+    CONSTANTS.createResponses(
+      res,
+      CONSTANTS.ERROR_CODE.SUCCESS,
+      jobposting,
+      next
+    )
   })
 }
 
 //Search a job posting based on years of Work Experience
 const getjobPostingbasedonWEYears = (req, res, next) => {
-  let today = new Date()
-  let date =
-    today.getFullYear() +
-    '-' +
-    (today.getMonth() + 1) +
-    '-' +
-    today.getDate() +
-    '-' +
-    today.getHours() +
-    ':' +
-    today.getMinutes() +
-    ':' +
-    today.getSeconds()
   JobPosting.find(
     { work_experience_required: { $in: req.params.years } },
     (err, jobposting) => {
       if (err) {
-        LOGGER.info(date + ' Error occured in' + FILE_NAME + 'message: ' + err)
-        res.status(CONSTANTS.ERROR_CODE.NOT_FOUND)
-        res.json({ error: CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND })
-        next()
+        CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
+        CONSTANTS.createResponses(
+          res,
+          CONSTANTS.ERROR_CODE.FAILED,
+          err.errmsg,
+          next
+        )
       }
-      LOGGER.info(date + ' Successfully searched for job posting ' + FILE_NAME)
-      res.status(CONSTANTS.ERROR_CODE.SUCCESS)
-      res.json({ data: jobposting })
-      next()
+      CONSTANTS.createLogMessage(
+        FILE_NAME,
+        'Successfully searched for job posting',
+        'SUCCESS'
+      )
+      //Send back the volunteer data along with the success update message
+      CONSTANTS.createResponses(
+        res,
+        CONSTANTS.ERROR_CODE.SUCCESS,
+        jobposting,
+        next
+      )
     }
   )
 }
 
 //Search Job Postings based on Researcher ID
 const getMyJobPostings = (req, res, next) => {
-  let today = new Date()
-  let date =
-    today.getFullYear() +
-    '-' +
-    (today.getMonth() + 1) +
-    '-' +
-    today.getDate() +
-    '-' +
-    today.getHours() +
-    ':' +
-    today.getMinutes() +
-    ':' +
-    today.getSeconds()
-  let token = req.headers['x-access-token'] || req.headers['authorization']
-  if (token === undefined) {
-    LOGGER.info(date + ' User not authorized  ' + FILE_NAME)
-    res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-    res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-    next()
-  }
-  if (token.startsWith('Bearer ')) {
-    token = token.slice(7, token.length)
-  }
-  var checkForAuthentication = jwt.verify(token, publicKEY, verifyOptions)
-  if (checkForAuthentication === null) {
-    LOGGER.info(date + ' User not authorized  ' + FILE_NAME)
-    res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-    res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-    next()
-  } else if (checkForAuthentication.hasOwnProperty('id') === false) {
-    LOGGER.info(date + ' User not authorized  ' + FILE_NAME)
-    res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-    res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-    next()
-  } else if (checkForAuthentication.id != req.params.researcherID) {
-    LOGGER.info(date + ' User not authorized  ' + FILE_NAME)
-    res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-    res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-    next()
-  }
+  CONSTANTS.authenticateUser(
+    req,
+    res,
+    next,
+    publicKEY,
+    FILE_NAME,
+    req.params.researcherID
+  )
 
   JobPosting.find(
     { researcherID: { $in: req.params.researcherID } },
     (err, jobposting) => {
       if (err) {
-        LOGGER.info(date + ' Error occured in' + FILE_NAME + 'message: ' + err)
-        res.status(CONSTANTS.ERROR_CODE.NOT_FOUND)
-        res.json({ error: CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND })
-        next()
+        CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
+        CONSTANTS.createResponses(
+          res,
+          CONSTANTS.ERROR_CODE.FAILED,
+          err.errmsg,
+          next
+        )
       }
-      LOGGER.info(date + ' Successfully searched for job posting ' + FILE_NAME)
-      res.status(CONSTANTS.ERROR_CODE.SUCCESS)
-      res.json({ data: jobposting })
-      next()
+      CONSTANTS.createLogMessage(
+        FILE_NAME,
+        'Successfully searched for job posting',
+        'SUCCESS'
+      )
+      //Send back the volunteer data along with the success update message
+      CONSTANTS.createResponses(
+        res,
+        CONSTANTS.ERROR_CODE.SUCCESS,
+        jobposting,
+        next
+      )
     }
   )
 }
