@@ -9,7 +9,7 @@
 const mongoose = require('mongoose')
 //import Schema
 const ResearcherSchema = require('../model/researcherModel')
-
+//Create a variable of type mongoose schema for Researcher
 const Researcher = mongoose.model('ResearcherSchema', ResearcherSchema)
 //importing bcrypt to hash the user entered password for security.
 const bcrypt = require('bcrypt')
@@ -21,7 +21,7 @@ const fs = require('fs')
 var privateKEY = fs.readFileSync('./.env/researcher_keys/private.key', 'utf8')
 //public key path
 var publicKEY = fs.readFileSync('./.env/researcher_keys/public.key', 'utf8')
-
+//Declare the file name
 const FILE_NAME = 'researcherController.js'
 //import constants file
 const CONSTANTS = require('../CONSTANTS/constants')

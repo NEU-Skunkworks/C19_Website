@@ -49,9 +49,16 @@ const SUCCESS_DESCRIPTION = {
   SUCCESS_DELETE: 'Deleted Successfully'
 }
 
-//Function to create log messages function
+/*
+Function to create the log message and insert it in the log file. Takes the following input
+1. FILE_NAME = The file name for which the log entry has to be made
+2. message = Message to be logged
+3. type = What type of message
+*/
 const createLogMessage = (FILE_NAME, message, type) => {
+  //Declare a date variable
   let today = new Date()
+  //Extract all the information needed from the above variable
   let date =
     today.getFullYear() +
     '-' +
@@ -64,19 +71,32 @@ const createLogMessage = (FILE_NAME, message, type) => {
     today.getMinutes() +
     ':' +
     today.getSeconds()
+  //Log the data in the log into
   LOGGER.info(date + ' ' + type + ' ' + FILE_NAME + ' message: ' + message)
 }
 
-//Function to authenticate the user
+/*
+Function to authenticate the user. Takes the following input
+1. req = request
+2. res = response
+3. publicKEY = the public key required to decode the token
+4. FILE_NAME = The file name for which the log entry has to be made
+5. id = To compare the id of with the token id for authentication 
+*/
 const authenticateUser = (req, res, next, publicKEY, FILE_NAME, id) => {
   //Get the token value from the header
   let token = req.headers['x-access-token'] || req.headers['authorization']
   //If token is undefined send back the unauthorized error.
   if (token === undefined) {
+    //Create the log message
     CONSTANTS.createLogMessage(FILE_NAME, 'User not authorized', 'UNAUTHORIZED')
-    res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-    res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-    next()
+    //Send the reponses
+    createResponses(
+      res,
+      CONSTANTS.ERROR_CODE.UNAUTHORIZED,
+      CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED,
+      next
+    )
   }
   //If token starts with Bearer then slice the token
   if (token.startsWith('Bearer ')) {
@@ -87,42 +107,69 @@ const authenticateUser = (req, res, next, publicKEY, FILE_NAME, id) => {
   var checkForAuthentication = jwt.verify(token, publicKEY, verifyOptions)
   //Check if the token returns null
   if (checkForAuthentication === null) {
+    //Create the log message
     createLogMessage(FILE_NAME, 'User not authorized', 'UNAUTHORIZED')
-    res.status(UNAUTHORIZED)
-    res.json({ error: ERROR_DESCRIPTION.UNAUTHORIZED })
-    next()
+    //Send the response
+    createResponses(
+      res,
+      CONSTANTS.ERROR_CODE.UNAUTHORIZED,
+      CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED,
+      next
+    )
   }
   //If the checkauthentication variable does not have an id property then give unauthorized error.
   else if (checkForAuthentication.hasOwnProperty('id') === false) {
+    //Create the log messages
     createLogMessage(FILE_NAME, 'User not authorized', 'UNAUTHORIZED')
-    res.status(ERROR_CODE.UNAUTHORIZED)
-    res.json({ error: ERROR_DESCRIPTION.UNAUTHORIZED })
-    next()
+    //Send the response
+    createResponses(
+      res,
+      CONSTANTS.ERROR_CODE.UNAUTHORIZED,
+      CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED,
+      next
+    )
   } else if (checkForAuthentication.id != id) {
     /*Check if the user sending the request and the user the request id made for are equal or not. 
 That was we maintain authentication that only the user who has logged in is viewing their data*/
+
+    //Create the log message
     createLogMessage(FILE_NAME, 'User not authorized', 'UNAUTHORIZED')
-    res.status(ERROR_CODE.UNAUTHORIZED)
-    res.json({ error: ERROR_DESCRIPTION.UNAUTHORIZED })
-    next()
+    //Send the response
+    createResponses(
+      res,
+      CONSTANTS.ERROR_CODE.UNAUTHORIZED,
+      CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED,
+      next
+    )
   }
 }
 
-//Create responses
-const createResponses=(res,statuscode,data,next)=>{
+/*
+Function to create a response. Takes the following input
+1. res = response
+2. statuscode = the status code to be sent
+3. data = data to be sent
+4. next 
+*/
+const createResponses = (res, statuscode, data, next) => {
   res.status(statuscode)
-  var responsedata={
-    message:data
+  var responsedata = {
+    message: data
   }
   res.json(responsedata)
   next()
 }
 
-//create response without next
-const createResponseWithoutNext=(res,statuscode,data)=>{
+/*
+Function to create a response without next. Takes the following input
+1. res = response
+2. statuscode = the status code to be sent
+3. data = data to be sent
+*/
+const createResponseWithoutNext = (res, statuscode, data) => {
   res.status(statuscode)
-  var responsedata={
-    message:data
+  var responsedata = {
+    message: data
   }
   res.json(responsedata)
 }
