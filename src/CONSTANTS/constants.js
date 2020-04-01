@@ -100,7 +100,7 @@ const authenticateUser = (req, res, next, publicKEY, FILE_NAME, id) => {
     )
   }
   //If token starts with Bearer then slice the token
-  if (token.startsWith('Bearer ')) {
+  else if (token.startsWith('Bearer ')) {
     // Remove Bearer from string
     token = token.slice(7, token.length)
   }
@@ -129,10 +129,9 @@ const authenticateUser = (req, res, next, publicKEY, FILE_NAME, id) => {
       ERROR_DESCRIPTION.UNAUTHORIZED,
       next
     )
-  } else if (checkForAuthentication.id != id) {
+  } else if (checkForAuthentication.id.toString() != id.toString()) {
     /*Check if the user sending the request and the user the request id made for are equal or not. 
 That was we maintain authentication that only the user who has logged in is viewing their data*/
-
     //Create the log message
     createLogMessage(FILE_NAME, 'User not authorized', 'UNAUTHORIZED')
     //Send the response
@@ -158,7 +157,7 @@ const createResponses = (res, statuscode, data, next) => {
     message: data
   }
   res.json(responsedata)
-  next()
+  next
 }
 
 /*
@@ -173,6 +172,7 @@ const createResponseWithoutNext = (res, statuscode, data) => {
     message: data
   }
   res.json(responsedata)
+  return
 }
 
 //Export the modules

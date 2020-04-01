@@ -39,13 +39,14 @@ Everyone working on this Repository please follow the below rules:
 | 3. | vemail | Email ID | Yes | String |
 | 4. | vpassword | Password(hashable password) | Yes | String |
 | 5. | vphone | Phone Number | Yes | Number |
-| 6. | vcreated_date | Created Date (Default value of today's date. Do not need to pass it from the UI) | No | Date |
-| 7. | vage | Between 18 and 65 (Can be changed. Open for discussion) | Yes | Number |
-| 8. | vskills | Holds an array of skills. Value to be given , seperated | Yes | Mixed |
-| 9. | vwork_experience | Holds arrays of different values [company, position, description, from, to] | No | Mixed |
-| 10. | vworks_experience_years | Years of Experience | Yes (Can be 0) | Number |
-| 11. | veducation | Holds Array of different values regarding the education of a volunteer [school, major, state, city, country, from, to] | Yes | Mixed |
-| 12. | type | Holds default value of Volunteer. No need to pass from the frontend | No | String | 
+| 6. | vgender | Gender | Yes | String |
+| 7. | vcreated_date | Created Date (Default value of today's date. Do not need to pass it from the UI) | No | Date |
+| 8. | vage | Between 18 and 65 (Can be changed. Open for discussion) | Yes | Number |
+| 9. | vskills | Holds an array of skills. Value to be given , seperated | Yes | Mixed |
+| 10. | vwork_experience | Holds arrays of different values [company, position, description, from, to] | No | Mixed |
+| 11. | vworks_experience_years | Years of Experience | Yes (Can be 0) | Number |
+| 12. | veducation | Holds Array of different values regarding the education of a volunteer [school, major, state, city, country, from, to] | Yes | Mixed |
+| 13. | type | Holds default value of Volunteer. No need to pass from the frontend | No | String | 
 
 ### 2. Researcher Schema
 
@@ -56,10 +57,11 @@ Everyone working on this Repository please follow the below rules:
 | 3. | remail | Email ID | Yes | String |
 | 4. | rpassword | Password(hashable password) | Yes | String |
 | 5. | rphone | Phone Number | Yes | Number |
-| 6. | rcreated_date | Created Date (Default value of today's date. Do not need to pass it from the UI) | No | Date |
-| 7. | rage | Between 18 and 65 (Can be changed. Open for discussion) | Yes | Number |
-| 8. | rinstitute | Holds the value for Institutes | Yes | String |
-| 9. | type | Holds default value of Researcher. No need to pass from the frontend | No | String |
+| 6. | rgender | Gender | Yes | String |
+| 7. | rcreated_date | Created Date (Default value of today's date. Do not need to pass it from the UI) | No | Date |
+| 8. | rage | Between 18 and 65 (Can be changed. Open for discussion) | Yes | Number |
+| 9. | rinstitute | Holds the value for Institutes | Yes | String |
+| 10. | type | Holds default value of Researcher. No need to pass from the frontend | No | String |
 
 ### 3. Job Posting Schema
 
@@ -97,6 +99,7 @@ Everyone working on this Repository please follow the below rules:
 | /volunteer/update/:volunteerID | Updates a volunteer information based on user ID | http://localhost:3000/volunteer/update/_id | PUT | Yes |
 | /volunteer/login | Authenticates a volunteer and assigns token | http://localhost:3000/volunteer/login?vemail=your_email&vpassword=yourPassword | POST | Yes |
 | /volunteerinfo/:volunteerID | Can be used when a volunteer applies for an application that the researcher wants to view their profile | http://localhost:3000/volunteer/volunteerinfo/_id | GET | No |
+| /findvolunteer/:search | Can be used to search a volunter based on First Name,Last Name and email | http://localhost:3000/volunteer/findvolunteer/Rahul | GET | No |
 
 ### <b>NOTE</b>: Data Format for Adding/Updating Volunteer:
 1. /volunteer/registration & /volunteer/update/:volunteerID -:<br> `{"vfirstName":"FirstName",
@@ -122,6 +125,7 @@ Everyone working on this Repository please follow the below rules:
 | /researcher/update/:researcherID | Updates a researcher information based on user ID | http://localhost:3000/researcher/update/_id | PUT | Yes |
 | /researcher/login | Authenticates a volunteer and assigns token | http://localhost:3000/researcher/login?vemail=your_email&vpassword=your_password | POST | Yes |
 | /researcherinfo/:researcherID | Can be used when a volunteer wants to see the researcher info | http://localhost:3000/researcher/researcherinfo/_id | GET | No |
+| /findresearcher/:search | Can be used to search a researcher based on First Name,Last Name and email | http://localhost:3000/researcher/findresearcher/Rahul | GET | No |
 
 ### 3. Job Posting API's
 <p>PS: The <i>researcherID</i> and <i>jobID</i> mentioned here means the auto generated id from mongoDB (_id)</p>

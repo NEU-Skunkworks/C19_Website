@@ -12,7 +12,7 @@ const router = express.Router()
 
 //Get all the researchers
 router.get('/', function (req, res,next) {
-  researchController.getResearchers(req, res,next)
+  researchController.getResearchers(res,next)
 })
 //Get a new Researcher
 router.post('/registration', function (req, res,next) {
@@ -41,5 +41,10 @@ router.post('/login', function (req, res,next) {
 //Get a researcher with by id without authentication
 router.get('/researcherinfo/:researcherID', function (req, res,next) {
   researchController.getResearcherInfoWithID(req, res,next)
+})
+
+//Get Researcher Info based on first name last name or emailid
+router.get('/findresearcher/:search',function(req,res,next){
+  volunteerController.findVolunteer(req,res,next)
 })
 module.exports = router

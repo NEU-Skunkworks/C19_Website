@@ -12,7 +12,7 @@ const router = express.Router()
 
 //get all the volunteers
 router.get('/', function (req, res,next) {
-  volunteerController.getVolunteers(req,res,next);
+  volunteerController.getVolunteers(res,next);
 })
 
 //Register a new Volunteer
@@ -21,7 +21,7 @@ router.post('/registration', function (req, res,next) {
 })
 
 //Get a particular volunteer
-router.get('/:volunteerID/', function (req, res,next) {
+router.get('/:volunteerID', function (req, res,next) {
   volunteerController.getVolunteerWithID(req,res,next) 
 })
 
@@ -43,5 +43,10 @@ router.post('/login',function(req,res,next){
 //Get Volunteer Info
 router.get('/volunteerinfo/:volunteerID',function(req,res,next){
   volunteerController.getVolunteerInfoWithID(req,res,next)
+})
+
+//Get Volunteer Info based on first name last name or emailid
+router.get('/findvolunteer/:search',function(req,res,next){
+  volunteerController.findVolunteer(req,res,next)
 })
 module.exports = router
