@@ -6,7 +6,7 @@
  */
 
 //import constants file
-const CONSTANTS = require('../CONSTANTS/constants')
+const CONSTANTS = require('./constants')
 
 //Function add new Data
 const addNewData = (schema, res, next, FILE_NAME) => {
@@ -183,34 +183,12 @@ const deleteData = (schema, res, next, FILE_NAME, param) => {
   } catch (Exception) {}
 }
 
-//Function to update one data entry in database
-const updateOne = (schema, res, next, FILE_NAME, searchCriteria, data) => {
-  try {
-    schema.updateOne(
-      searchCriteria,
-      data,
-      { new: true, useFindAndModify: false },
-      (err, data) => {
-        if (err) {
-          //Create the log message
-          CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
-          //Send the response
-          CONSTANTS.createResponses(
-            res,
-            CONSTANTS.ERROR_CODE.FAILED,
-            err.errmsg,
-            next
-          )
-        }
-      }
-    )
-  } catch (Exception) {}
-}
+
 
 //Function to find a specific data
 const findOne = (schema, res, next, FILE_NAME, searchCriteria) => {
   try {
-    schema.findOne(searchCriteria, (err, data) => {
+   schema.findOne(searchCriteria, (err, data) => {
       if (err) {
         //Create the log message
         CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
@@ -229,29 +207,7 @@ const findOne = (schema, res, next, FILE_NAME, searchCriteria) => {
     })
   } catch (Exception) {}
 }
-//Function to find a specific data
-const checkifUserExists = (schema, searchCriteria,FILE_NAME) => {
-  try {
-    return schema.findOne(searchCriteria, (err, data) => {
-      if (err) {
-        //Create the log message
-        //Create the log message
-        CONSTANTS.createLogMessage(
-          FILE_NAME,
-          'ERROR in searching for user for adding new data',
-          'ERROR'
-        )
-      } else {
-        //Create the log message
-        CONSTANTS.createLogMessage(
-          FILE_NAME,
-          'Successfully searched for data when adding',
-          'SUCCESS'
-        )
-      }
-    })
-  } catch (Exception) {}
-}
+
 //Export the modules
 module.exports = {
   addNewData,
@@ -259,7 +215,5 @@ module.exports = {
   findbyID,
   updateData,
   deleteData,
-  updateOne,
-  findOne,
-  checkifUserExists
+  findOne
 }

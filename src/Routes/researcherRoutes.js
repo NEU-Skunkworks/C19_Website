@@ -45,6 +45,6 @@ router.get('/researcherinfo/:researcherID', function (req, res,next) {
 
 //Get Researcher Info based on first name last name or emailid
 router.get('/findresearcher/:search',function(req,res,next){
-  volunteerController.findVolunteer(req,res,next)
+  researchController.findResearcher(req,res,next)
 })
 module.exports = router

@@ -20,22 +20,15 @@ module.exports = ResearcherSchema = new Schema({
   },
   remail: {
     type: String,
-    required: 'Email ID is required',
-    unique: true,
-    index: true
+    required: 'Email ID is required'
   },
 
   rpassword: {
     type: String,
     required: 'Password is required'
   },
-  rphone: {
-    type: Number,
-    unique: true,
-    index: true
-  },
   rgender: {
-    type: Number,
+    type: String,
     required: 'Gender is required'
   },
   rcreated_date: {

@@ -20,20 +20,16 @@ module.exports= VolunteerSchema = new Schema({
   },
   vemail: {
     type: String,
-    required: 'Email ID is required',
-    unique: true
+    required: 'Email ID is required'
   },
 
   vpassword: {
     type: String,
     required: 'Password is required'
   },
-  vphone: {
-    type: Number,
-    unique: true
-  },
   vgender:{
-    type:String
+    type:String,
+    required: 'Gender is required'
   },
   vcreated_date: {
     type: Date,

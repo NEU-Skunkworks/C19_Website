@@ -49,13 +49,13 @@ app.use(cors())
 //basic route
 app.use('/', basicRoutes)
 //Routes for volunteers
-app.use('/volunteer', volunteerRoutes)
+app.use('/dev/volunteer', volunteerRoutes)
 //Routes for Researchers
-app.use('/researcher', researcherRoutes)
+app.use('/dev/researcher', researcherRoutes)
 //Routes for job Postings
-app.use('/jobPosting', jobPostingRoutes)
+app.use('/dev/jobPosting', jobPostingRoutes)
 //Routes for job Applications
-app.use('/jobApplications', jobApplicationsRoutes)
+app.use('/dev/jobApplications', jobApplicationsRoutes)
 
 app.listen(port, function () {
   LOGGER.debug('Express server listening on port %s.', port)

@@ -29,6 +29,8 @@ const mongooseQueries = require('../CONSTANTS/mongooseQueries')
 const loginController = require('./common_controllers/loginController')
 //import add user queries
 const adduser = require('./common_controllers/addUserController')
+//import post authentication controller
+const postAuthentication = require('./common_controllers/postAuthenticationController')
 
 //This functionality adds a new volunteer with all the required fields from the body.
 const addNewVolunteer = (req, res, next) => {
@@ -41,8 +43,6 @@ const addNewVolunteer = (req, res, next) => {
     vfirstName: req.body.vfirstName,
     vlastName: req.body.vlastName,
     vemail: req.body.vemail,
-    vpassword: hash,
-    vphone: req.body.vphone,
     vage: req.body.vage,
     vskills: skillsArr,
     vgender: req.body.vgender,
@@ -59,7 +59,8 @@ const addNewVolunteer = (req, res, next) => {
     searchcriteria,
     FILE_NAME,
     req.body.vpassword,
-    newVolunteer
+    newVolunteer,
+    'Volunteer'
   )
 }
 
@@ -72,117 +73,70 @@ const getVolunteers = (res, next) => {
 /*This function will retrieve a volunteers info based on it's ID which is auto generated in mongoDB.
 This requires token authentication*/
 const getVolunteerWithID = (req, res, next) => {
-  //Authhenticate user
-  CONSTANTS.authenticateUser(
+  //Authenticate user
+  postAuthentication.postAuthentication(
     req,
     res,
     next,
     publicKEY,
     FILE_NAME,
-    req.params.volunteerID
+    req.params.volunteerID,
+    mongooseQueries.findbyID,
+    Volunteer,
+    null
   )
-  if (req.params === undefined) {
-    CONSTANTS.createLogMessage(FILE_NAME, 'Parameter not found', 'ERROR')
-    CONSTANTS.createResponses(
-      res,
-      CONSTANTS.ERROR_CODE.NOT_FOUND,
-      'Parameter not found',
-      next
-    )
-  } else {
-    mongooseQueries.findbyID(
-      Volunteer,
-      res,
-      next,
-      FILE_NAME,
-      req.params.volunteerID
-    )
-  }
 }
 
 //Updates the volunteer information.
 const updateVolunteer = (req, res, next) => {
   //Authenticate user
-  CONSTANTS.authenticateUser(
+  let hash = bcrypt.hash(req.body.vpassword, 10)
+  var skills = req.body.vskills
+  var skillsArr = skills.split(', ')
+  let newVolunteer = new Volunteer({
+    vfirstName: req.body.vfirstName,
+    vlastName: req.body.vlastName,
+    vemail: req.body.vemail,
+    vpassword: hash,
+    vage: req.body.vage,
+    vskills: skillsArr,
+    vworks_experience_years: req.body.vworks_experience_years,
+    vgender: req.body.vgender
+  })
+  //Adding multiple values for work Experience.
+  newVolunteer.vwork_experience = Object.values(req.body.vwork_experience)
+  //Adding multiple values  for education.
+  newVolunteer.veducation = Object.values(req.body.veducation)
+  //Parse the new volunteer variable as a object
+  var upsertData = newVolunteer.toObject()
+  //delete the id parameter in it
+  delete upsertData._id
+  postAuthentication.postAuthentication(
     req,
     res,
     next,
     publicKEY,
     FILE_NAME,
-    req.params.volunteerID
+    req.params.volunteerID,
+    mongooseQueries.updateData,
+    Volunteer,
+    upsertData
   )
-  if (req.params === undefined) {
-    CONSTANTS.createLogMessage(FILE_NAME, 'Parameter not found', 'ERROR')
-    CONSTANTS.createResponses(
-      res,
-      CONSTANTS.ERROR_CODE.NOT_FOUND,
-      'Parameter not found',
-      next
-    )
-  } else {
-    let hash = bcrypt.hash(req.body.vpassword, 10)
-    var skills = req.body.vskills
-    var skillsArr = skills.split(', ')
-    let newVolunteer = new Volunteer({
-      vfirstName: req.body.vfirstName,
-      vlastName: req.body.vlastName,
-      vemail: req.body.vemail,
-      vpassword: hash,
-      vphone: req.body.vphone,
-      vage: req.body.vage,
-      vskills: skillsArr,
-      vworks_experience_years: req.body.vworks_experience_years,
-      vgender: req.body.vgender
-    })
-    //Adding multiple values for work Experience.
-    newVolunteer.vwork_experience = Object.values(req.body.vwork_experience)
-    //Adding multiple values  for education.
-    newVolunteer.veducation = Object.values(req.body.veducation)
-    //Parse the new volunteer variable as a object
-    var upsertData = newVolunteer.toObject()
-    //delete the id parameter in it
-    delete upsertData._id
-    //Mongoose function to update a single volunteer
-    mongooseQueries.updateData(
-      Volunteer,
-      res,
-      next,
-      FILE_NAME,
-      req.params.volunteerID,
-      upsertData
-    )
-  }
 }
 
 //Delete the volunteer information.
 const deleteVolunteer = (req, res, next) => {
-  //Authenticate user
-  CONSTANTS.authenticateUser(
+  postAuthentication.postAuthentication(
     req,
     res,
     next,
     publicKEY,
     FILE_NAME,
-    req.params.volunteerID
+    req.params.volunteerID,
+    mongooseQueries.deleteData,
+    Volunteer,
+    null
   )
-  if (req.params === undefined) {
-    CONSTANTS.createLogMessage(FILE_NAME, 'Parameter not found', 'ERROR')
-    CONSTANTS.createResponses(
-      res,
-      CONSTANTS.ERROR_CODE.NOT_FOUND,
-      'Parameter not found',
-      next
-    )
-  } else {
-    //mongoose function to delete one Volunteer
-    mongooseQueries.deleteData(
-      Volunteer,
-      res,
-      next,
-      FILE_NAME,
-      req.params.volunteerID
-    )
-  }
 }
 
 //Authenticate the volunteer.
@@ -202,7 +156,6 @@ const getVolunteerLogin = (req, res, next) => {
       req,
       res,
       next,
-      req.body.vemail,
       req.body.vpassword,
       FILE_NAME,
       privateKEY,
@@ -245,10 +198,13 @@ const findVolunteer = (req, res, next) => {
       next
     )
   } else {
-    if (req.params.search.contains(' ')) {
-      var name = req.params.searchCriteria.toString().split(' ')
-      var searchcriteria = { vfirstName: name[0].toString(), vlastName: name[1].toString() }
-    } else if (req.params.search.contains('@')) {
+    if (req.params.search.toString().includes(' ')) {
+      var name = req.params.search.toString().split(' ')
+      var searchcriteria = {
+        vfirstName: name[0].toString(),
+        vlastName: name[1].toString()
+      }
+    } else if (req.params.search.toString().includes('@')) {
       var searchcriteria = { vemail: req.params.search.toString() }
     } else {
       var searchcriteria = {
