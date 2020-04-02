@@ -21,8 +21,7 @@ const addnewUser = (
   searchcriteria,
   FILE_NAME,
   password,
-  data,
-  type
+  data
 ) => {
   loginMiddleware
     .checkifDataExists(schema, searchcriteria, FILE_NAME)
@@ -42,11 +41,7 @@ const addnewUser = (
               next
             )
           }
-          if (type === 'Volunteer') {
-            data.vpassword = hash
-          } else if (type === 'Researcher') {
-            data.rpassword = hash
-          }
+          data.password = hash
           //Save the data
           mongooseMiddleware.addNewData(data, res, next, FILE_NAME)
         })

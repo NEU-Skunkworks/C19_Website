@@ -21,13 +21,9 @@ require('dotenv').config()
 
 //import the basic routes folder
 const basicRoutes = require(path.resolve('.') + '/src/Routes/basicroutes.js')
-//import the volunteers route
-const volunteerRoutes = require(path.resolve('.') +
-  '/src/Routes/volunteerRoutes.js')
-//import the researchers route
-const researcherRoutes = require(path.resolve('.') +
-  '/src/Routes/researcherRoutes.js')
-//import the job postings route
+//import the user routes
+const userRoutes = require(path.resolve('.') +
+  '/src/Routes/userRoutes.js')
 const jobPostingRoutes = require(path.resolve('.') +
   '/src/Routes/jobPostingRoutes.js')
 //import the job applications route
@@ -48,10 +44,8 @@ app.use(cors())
 
 //basic route
 app.use('/', basicRoutes)
-//Routes for volunteers
-app.use('/dev/volunteer', volunteerRoutes)
-//Routes for Researchers
-app.use('/dev/researcher', researcherRoutes)
+//Routes for users
+app.use('/dev/user', userRoutes)
 //Routes for job Postings
 app.use('/dev/jobPosting', jobPostingRoutes)
 //Routes for job Applications

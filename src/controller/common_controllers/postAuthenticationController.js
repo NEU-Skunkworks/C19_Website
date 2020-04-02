@@ -35,6 +35,7 @@ const postAuthentication = (
     publicKEY,
     FILE_NAME
   )
+  
   if (result === 'Token not present') {
     //Create the log message
     CONSTANTS.createLogMessage(FILE_NAME, 'Token invalid', 'UNAUTHORIZED')
@@ -46,7 +47,8 @@ const postAuthentication = (
       next
     )
   }
-  if (result.message !== null) {
+  if (result.message !== undefined && result.message !== null) {
+    //console.log(result.message);
     if (result.message === 'invalid token') {
       //Create the log message
       CONSTANTS.createLogMessage(FILE_NAME, 'Token invalid', 'UNAUTHORIZED')
@@ -114,10 +116,11 @@ const postAuthentication = (
         CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED,
         next
       )
-    } else {
+    } else if (result !==null) {
       if (data !== null || data !== undefined) {
         methodtoCall(schema, res, next, FILE_NAME, parameterToPassToMethod, data)
       } else {
+        console.log(methodtoCall(schema, res, next, FILE_NAME, parameterToPassToMethod))
         methodtoCall(schema, res, next, FILE_NAME, parameterToPassToMethod)
       }
     }
