@@ -18,7 +18,7 @@ module.exports= JobApplicationSchema = new Schema({
   },
   appliedDate: {
     type: Date,
-    default: Date.now
+    default: Date.now()
   },
   currentStatus:{
       type:String,

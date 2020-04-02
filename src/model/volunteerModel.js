@@ -9,7 +9,7 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 //This model defines the data fields we will be storing in the database.
-module.exports = VolunteerSchema = new Schema({
+module.exports= VolunteerSchema = new Schema({
   vfirstName: {
     type: String,
     required: 'First name is required'
@@ -32,9 +32,12 @@ module.exports = VolunteerSchema = new Schema({
     type: Number,
     unique: true
   },
+  vgender:{
+    type:String
+  },
   vcreated_date: {
     type: Date,
-    default: Date.now
+    default: Date.now()
   },
   vage: {
     type: Number,
@@ -72,5 +75,9 @@ module.exports = VolunteerSchema = new Schema({
   type: {
     type: String,
     default: 'Volunteer'
+  },
+  loginAttempts:{
+    type:Number,
+    default:0
   }
 })

@@ -9,125 +9,34 @@
 const mongoose = require('mongoose')
 //import Schema
 const VolunteerSchema = require('../model/volunteerModel')
-
-const CONSTANTS = require('../CONSTANTS/constants')
-const LOGGER = require('../Logger/logger')
+//Create a variable of type mongoose schema for Volunteer
 const Volunteer = mongoose.model('VolunteerSchema', VolunteerSchema)
 //importing bcrypt to hash the user entered password for security.
 const bcrypt = require('bcrypt')
-//importing jwt token to assign to the user once authenticated
-const jwt = require('jsonwebtoken')
 //importing file system to get the public and private key for creating public and private keys.
 const fs = require('fs')
 //private key path
-var privateKEY = fs.readFileSync('./.env/private.key', 'utf8')
+var privateKEY = fs.readFileSync('./.env/researcher_keys/private.key', 'utf8')
 //public key path
-var publicKEY = fs.readFileSync('./.env/public.key', 'utf8')
-
-//Defining the Sign in options. To be used in json web tokens
-var signOptions = {
-  expiresIn: '12h',
-  algorithm: 'RS256'
-}
-
+var publicKEY = fs.readFileSync('./.env/researcher_keys/public.key', 'utf8')
+//import constants file
+const CONSTANTS = require('../CONSTANTS/constants')
+//Declaring the file name
 const FILE_NAME = 'volunteerController.js'
+//import mongoose queries
+const mongooseQueries = require('../CONSTANTS/mongooseQueries')
+//import login controller
+const loginController = require('./common_controllers/loginController')
+//import add user queries
+const adduser = require('./common_controllers/addUserController')
+
 //This functionality adds a new volunteer with all the required fields from the body.
-const addNewVolunteer = (req, res) => {
-  //Encrypt the password
-  bcrypt.hash(req.body.vpassword, 10, function (err, hash) {
-    //Error
-    if (err) {
-      LOGGER.info(
-        Date.now + ' Error occured in ' + FILE_NAME + ' message: ' + err
-      )
-      res.json({ error: CONSTANTS.ERROR_DESCRIPTION.SERVERERROR })
-    }
-    //Parse the skills as string and split it based on ", " to create an array of skills for the user.
-    var skills = req.body.vskills
-    var skillsArr = skills.split(', ')
-
-    //Creating the variable to hold the data for fields
-    let newVolunteer = new Volunteer({
-      vfirstName: req.body.vfirstName,
-      vlastName: req.body.vlastName,
-      vemail: req.body.vemail,
-      vpassword: hash,
-      vphone: req.body.vphone,
-      vage: req.body.vage,
-      vskills: skillsArr,
-      vworks_experience_years: req.body.vworks_experience_years
-    })
-    //Adding multiple values for work Experience.
-    newVolunteer.vwork_experience = Object.values(req.body.vwork_experience)
-    //Adding multiple values  for education.
-    newVolunteer.veducation = Object.values(req.body.veducation)
-    //Saving the data into the database.
-    newVolunteer.save((err, volunteer) => {
-      //Error
-      if (err) {
-        LOGGER.info(
-          Date.now + ' Error occured in ' + FILE_NAME + ' message: ' + err
-        )
-        res.json({ error: CONSTANTS.ERROR_DESCRIPTION.SERVERERROR })
-      }
-      //Return the success message if successfully added.
-      LOGGER.info(
-        Date.now +
-          ' Successfully created user ' +
-          FILE_NAME +
-          ' user: ' +
-          req.body.vemail
-      )
-      res.json({ data: CONSTANTS.SUCCESS_DESCRIPTION.SUCCESS })
-    })
-  })
-}
-
-//This function gets all the volunteers currently in the database.
-const getVolunteers = (req, res) => {
-  Volunteer.find({}, (err, volunteer) => {
-    if (err) {
-      LOGGER.info(
-        Date.now + ' Error occured in ' + FILE_NAME + ' message: ' + err
-      )
-      res.json({ error: CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND })
-    }
-    LOGGER.info(
-      Date.now +
-        ' Successfully searched all volunteers ' +
-        FILE_NAME +
-        ' user: ' +
-        req.body.vemail
-    )
-    res.json({ data: volunteer })
-  })
-}
-
-//This function will retrieve a volunteers info based on it's ID which is auto generated in mongoDB.
-const getVolunteerWithID = (req, res) => {
-  Volunteer.findById(req.params.volunteerID, (err, volunteer) => {
-    if (err) {
-      LOGGER.info(
-        Date.now + ' Error occured in ' + FILE_NAME + ' message: ' + err
-      )
-      res.json({ error: CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND })
-    }
-    LOGGER.info(
-      Date.now +
-        ' Successfully searched for a volunteer ' +
-        FILE_NAME +
-        ' user: ' +
-        req.body.vemail
-    )
-    res.json({ data: volunteer })
-  })
-}
-
-//Updates the volunteer information.
-const updateVolunteer = (req, res) => {
-  let hash = bcrypt.hash(req.body.vpassword, 10)
+const addNewVolunteer = (req, res, next) => {
+  var searchcriteria = { vemail: req.body.vemail }
   var skills = req.body.vskills
-  var skillsArr = skills.split(', ')
+  var skillsArr = skills.split(',')
+
+  //Creating the variable to hold the data for fields
   let newVolunteer = new Volunteer({
     vfirstName: req.body.vfirstName,
     vlastName: req.body.vlastName,
@@ -136,111 +45,229 @@ const updateVolunteer = (req, res) => {
     vphone: req.body.vphone,
     vage: req.body.vage,
     vskills: skillsArr,
-    vwork_experience: req.body.vwork_experience,
-    vworks_experience_years: req.body.vworks_experience_years,
-    veducation: req.body.veducation
+    vgender: req.body.vgender,
+    vworks_experience_years: req.body.vworks_experience_years
   })
-  Volunteer.findOneAndUpdate(
-    { _id: req.params.volunteerID },
-    newVolunteer,
-    { new: true, useFindAndModify: false },
-    (err, volunteer) => {
-      if (err) {
-        LOGGER.info(
-          Date.now + ' Error occured in ' + FILE_NAME + ' message: ' + err
-        )
-        res.json({ error: CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND })
-      }
-      LOGGER.info(
-        Date.now +
-          ' Successfully updated user ' +
-          FILE_NAME +
-          ' user: ' +
-          req.body.vemail
-      )
-      res.json({ data: volunteer })
-    }
+  //Adding multiple values for work Experience.
+  newVolunteer.vwork_experience = Object.values(req.body.vwork_experience)
+  //Adding multiple values  for education.
+  newVolunteer.veducation = Object.values(req.body.veducation)
+  adduser.addnewUser(
+    res,
+    next,
+    Volunteer,
+    searchcriteria,
+    FILE_NAME,
+    req.body.vpassword,
+    newVolunteer
   )
 }
 
-//Delete the volunteer information.
-const deleteVolunteer = (req, res) => {
-  Volunteer.deleteOne({ _id: req.params.volunteerID }, (err, volunteer) => {
-    if (err) {
-      LOGGER.info(
-        Date.now + ' Error occured in ' + FILE_NAME + ' message: ' + err
-      )
-      res.json({ error: CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND })
-    }
-    LOGGER.info(
-      Date.now +
-        ' Successfully deleted user ' +
-        FILE_NAME +
-        ' user: ' +
-        req.body.vemail
+//This function gets all the volunteers currently in the database. (Can be used for analytical purposes)
+const getVolunteers = (res, next) => {
+  //Mongoose function to find all the volunteers from the volunteer schema
+  mongooseQueries.findALL(Volunteer, res, next, FILE_NAME)
+}
+
+/*This function will retrieve a volunteers info based on it's ID which is auto generated in mongoDB.
+This requires token authentication*/
+const getVolunteerWithID = (req, res, next) => {
+  //Authhenticate user
+  CONSTANTS.authenticateUser(
+    req,
+    res,
+    next,
+    publicKEY,
+    FILE_NAME,
+    req.params.volunteerID
+  )
+  if (req.params === undefined) {
+    CONSTANTS.createLogMessage(FILE_NAME, 'Parameter not found', 'ERROR')
+    CONSTANTS.createResponses(
+      res,
+      CONSTANTS.ERROR_CODE.NOT_FOUND,
+      'Parameter not found',
+      next
     )
-    res.json({ data: CONSTANTS.SUCCESS_DESCRIPTION.SUCCESS })
-  })
+  } else {
+    mongooseQueries.findbyID(
+      Volunteer,
+      res,
+      next,
+      FILE_NAME,
+      req.params.volunteerID
+    )
+  }
+}
+
+//Updates the volunteer information.
+const updateVolunteer = (req, res, next) => {
+  //Authenticate user
+  CONSTANTS.authenticateUser(
+    req,
+    res,
+    next,
+    publicKEY,
+    FILE_NAME,
+    req.params.volunteerID
+  )
+  if (req.params === undefined) {
+    CONSTANTS.createLogMessage(FILE_NAME, 'Parameter not found', 'ERROR')
+    CONSTANTS.createResponses(
+      res,
+      CONSTANTS.ERROR_CODE.NOT_FOUND,
+      'Parameter not found',
+      next
+    )
+  } else {
+    let hash = bcrypt.hash(req.body.vpassword, 10)
+    var skills = req.body.vskills
+    var skillsArr = skills.split(', ')
+    let newVolunteer = new Volunteer({
+      vfirstName: req.body.vfirstName,
+      vlastName: req.body.vlastName,
+      vemail: req.body.vemail,
+      vpassword: hash,
+      vphone: req.body.vphone,
+      vage: req.body.vage,
+      vskills: skillsArr,
+      vworks_experience_years: req.body.vworks_experience_years,
+      vgender: req.body.vgender
+    })
+    //Adding multiple values for work Experience.
+    newVolunteer.vwork_experience = Object.values(req.body.vwork_experience)
+    //Adding multiple values  for education.
+    newVolunteer.veducation = Object.values(req.body.veducation)
+    //Parse the new volunteer variable as a object
+    var upsertData = newVolunteer.toObject()
+    //delete the id parameter in it
+    delete upsertData._id
+    //Mongoose function to update a single volunteer
+    mongooseQueries.updateData(
+      Volunteer,
+      res,
+      next,
+      FILE_NAME,
+      req.params.volunteerID,
+      upsertData
+    )
+  }
+}
+
+//Delete the volunteer information.
+const deleteVolunteer = (req, res, next) => {
+  //Authenticate user
+  CONSTANTS.authenticateUser(
+    req,
+    res,
+    next,
+    publicKEY,
+    FILE_NAME,
+    req.params.volunteerID
+  )
+  if (req.params === undefined) {
+    CONSTANTS.createLogMessage(FILE_NAME, 'Parameter not found', 'ERROR')
+    CONSTANTS.createResponses(
+      res,
+      CONSTANTS.ERROR_CODE.NOT_FOUND,
+      'Parameter not found',
+      next
+    )
+  } else {
+    //mongoose function to delete one Volunteer
+    mongooseQueries.deleteData(
+      Volunteer,
+      res,
+      next,
+      FILE_NAME,
+      req.params.volunteerID
+    )
+  }
 }
 
 //Authenticate the volunteer.
-const getVolunteerLogin = (req, res) => {
+const getVolunteerLogin = (req, res, next) => {
   //Check of the volunteer exists using their email ID.
-  Volunteer.findOne({ vemail: req.body.vemail }).then(volunteer => {
-    //If the volunteer does not exist.
-    if (!volunteer) {
-      //Error
-      LOGGER.info(
-        Date.now +
-          ' Invalid email/password ' +
-          FILE_NAME +
-          ' user: ' +
-          req.body.vemail
-      )
-      res.json({ error: CONSTANTS.ERROR_DESCRIPTION.LOGINERROR })
-    } else {
-      //If the volunteer exists then compare their password entered with the password in the database
-      bcrypt.compare(
-        req.body.vpassword.toString(),
-        volunteer.vpassword.toString(),
-        function (err, match) {
-          //If password same create the json web token.
-          if (match == true) {
-            var payload = {
-              email: volunteer.vemail.toString()
-            }
-            var token = jwt.sign(payload, privateKEY, signOptions)
-            //return the token
-            LOGGER.info(
-              Date.now +
-                ' Successful Login ' +
-                FILE_NAME +
-                ' user: ' +
-                req.body.vemail
-            )
-            res.json({ token: token })
-          } else {
-            //error
-            LOGGER.info(
-              Date.now +
-                ' Invalid email/password ' +
-                FILE_NAME +
-                ' user: ' +
-                req.body.vemail
-            )
-            res.json({ error: CONSTANTS.ERROR_DESCRIPTION.LOGINERROR })
-          }
-        }
-      )
-    }
-  })
+  if (req.params === undefined) {
+    CONSTANTS.createLogMessage(FILE_NAME, 'Parameter not found', 'ERROR')
+    CONSTANTS.createResponses(
+      res,
+      CONSTANTS.ERROR_CODE.NOT_FOUND,
+      'Parameter not found',
+      next
+    )
+  } else {
+    loginController.loginAuthentication(
+      Volunteer,
+      req,
+      res,
+      next,
+      req.body.vemail,
+      req.body.vpassword,
+      FILE_NAME,
+      privateKEY,
+      'Volunteer'
+    )
+  }
 }
 
+/*This function will retrieve a volunteers info based on it's ID which is auto generated in mongoDB.
+Does not require authentication of any kind. Can be used to share the profile and for a researcher to see 
+a volunteer's profile*/
+const getVolunteerInfoWithID = (req, res, next) => {
+  if (req.params === undefined) {
+    CONSTANTS.createLogMessage(FILE_NAME, 'Parameter not found', 'ERROR')
+    CONSTANTS.createResponses(
+      res,
+      CONSTANTS.ERROR_CODE.NOT_FOUND,
+      'Parameter not found',
+      next
+    )
+  } else {
+    mongooseQueries.findbyID(
+      Volunteer,
+      res,
+      next,
+      FILE_NAME,
+      req.params.volunteerID
+    )
+  }
+}
+
+//Function to find user based on name or email
+const findVolunteer = (req, res, next) => {
+  if (req.params === undefined) {
+    CONSTANTS.createLogMessage(FILE_NAME, 'Parameter not found', 'ERROR')
+    CONSTANTS.createResponses(
+      res,
+      CONSTANTS.ERROR_CODE.NOT_FOUND,
+      'Parameter not found',
+      next
+    )
+  } else {
+    if (req.params.search.contains(' ')) {
+      var name = req.params.searchCriteria.toString().split(' ')
+      var searchcriteria = { vfirstName: name[0].toString(), vlastName: name[1].toString() }
+    } else if (req.params.search.contains('@')) {
+      var searchcriteria = { vemail: req.params.search.toString() }
+    } else {
+      var searchcriteria = {
+        $or: [
+          { vfirstName: req.params.search.toString() },
+          { vlastName: req.params.search.toString() }
+        ]
+      }
+    }
+    mongooseQueries.findOne(Volunteer, res, next, FILE_NAME, searchcriteria)
+  }
+}
 module.exports = {
   addNewVolunteer,
   getVolunteerLogin,
   getVolunteerWithID,
   deleteVolunteer,
   getVolunteers,
-  updateVolunteer
+  updateVolunteer,
+  getVolunteerInfoWithID,
+  findVolunteer
 }

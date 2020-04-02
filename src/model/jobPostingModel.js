@@ -32,9 +32,10 @@ module.exports= JobPostingSchema = new Schema({
   },
   postedDate: {
     type: Date,
-    default: Date.now
+    default: Date.now()
   },
   work_experience_required: {
     type: Number,
+    required:'Work experience is required'
   }
 })

@@ -1,0 +1,265 @@
+/**
+ * @file mongooseQueries.js
+ * @author Rahul Handoo
+ * @version 1.0
+ * createdDate: 03/31/2020
+ */
+
+//import constants file
+const CONSTANTS = require('../CONSTANTS/constants')
+
+//Function add new Data
+const addNewData = (schema, res, next, FILE_NAME) => {
+  //Saving the data into the database.
+  try {
+    schema.save((err, data) => {
+      //Error
+      if (err) {
+        //Log in the error
+        CONSTANTS.createLogMessage(FILE_NAME, err, 'Error')
+        //Send the response
+        CONSTANTS.createResponses(
+          res,
+          CONSTANTS.ERROR_CODE.FAILED,
+          err.errmsg,
+          next
+        )
+      }
+      //Return the success message if successfully added.
+      CONSTANTS.createLogMessage(
+        FILE_NAME,
+        'Successfully created user',
+        'SUCCESS'
+      )
+      //Send the success reponse
+      CONSTANTS.createResponses(
+        res,
+        CONSTANTS.ERROR_CODE.SUCCESS,
+        CONSTANTS.SUCCESS_DESCRIPTION.SUCCESS,
+        next
+      )
+    })
+  } catch (Exception) {}
+}
+
+//Function to find all the data from the database
+const findALL = (schema, res, next, FILE_NAME) => {
+  try {
+    schema.find({}, (err, data) => {
+      //error
+      if (err) {
+        //Log the error
+        CONSTANTS.createLogMessage(FILE_NAME, 'ERROR', 'Error')
+        //Send the response
+        CONSTANTS.createResponses(
+          res,
+          CONSTANTS.ERROR_DESCRIPTION.FAILED,
+          err.errmsg,
+          next
+        )
+      }
+      //Log success message
+      CONSTANTS.createLogMessage(
+        FILE_NAME,
+        'Successfully searched all data',
+        'SUCCESS'
+      )
+      //Send back the response
+      CONSTANTS.createResponses(res, CONSTANTS.ERROR_CODE.SUCCESS, data, next)
+    })
+  } catch (Exception) {}
+}
+
+//Function to find by ID
+const findbyID = (schema, res, next, FILE_NAME, params) => {
+  try {
+    schema.findById(params, (err, data) => {
+      //Error
+      if (err) {
+        CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
+        CONSTANTS.createResponses(
+          res,
+          CONSTANTS.ERROR_CODE.NOT_FOUND,
+          err.errmsg,
+          next
+        )
+      }
+      if (data === null) {
+        CONSTANTS.createLogMessage(FILE_NAME, 'User not Found', 'NODATA')
+        CONSTANTS.createResponses(
+          res,
+          CONSTANTS.ERROR_CODE.NOT_FOUND,
+          CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+          next
+        )
+      } else {
+        CONSTANTS.createLogMessage(
+          FILE_NAME,
+          'Successfully searched user',
+          'SUCCESS'
+        )
+        CONSTANTS.createResponses(res, CONSTANTS.ERROR_CODE.SUCCESS, data, next)
+      }
+    })
+  } catch (Exception) {}
+}
+
+//Function to update data
+const updateData = (schema, res, next, FILE_NAME, parameter, data) => {
+  try {
+    if (parameter === undefined || parameter === null) {
+      CONSTANTS.createLogMessage(FILE_NAME, 'Parameter not found', 'ERROR')
+      CONSTANTS.createResponses(
+        res,
+        CONSTANTS.ERROR_CODE.NOT_FOUND,
+        'Parameter not found',
+        next
+      )
+    }
+    schema.updateOne(
+      { _id: parameter },
+      { $set: data },
+      { new: true, useFindAndModify: false },
+      (err, finalData) => {
+        if (err) {
+          //Create the log message
+          CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
+          //Send the response
+          CONSTANTS.createResponses(
+            res,
+            CONSTANTS.ERROR_CODE.FAILED,
+            err.errmsg,
+            next
+          )
+        }
+        //Create the log message
+        CONSTANTS.createLogMessage(
+          FILE_NAME,
+          'Successfully updated user',
+          'SUCCESS'
+        )
+        //Send back the data along with the success update message
+        CONSTANTS.createResponses(
+          res,
+          CONSTANTS.ERROR_CODE.SUCCESS,
+          finalData,
+          next
+        )
+      }
+    )
+  } catch (Exception) {}
+}
+
+//Function to delete the data
+const deleteData = (schema, res, next, FILE_NAME, param) => {
+  try {
+    schema.findOneAndDelete({ _id: param }, (err, data) => {
+      //Error
+      if (err) {
+        //Create log message
+        CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
+        //Create the response
+        CONSTANTS.createResponses(
+          res,
+          CONSTANTS.ERROR_CODE.FAILED,
+          err.errmsg,
+          next
+        )
+      }
+      //Create the log message
+      CONSTANTS.createLogMessage(
+        FILE_NAME,
+        'User successfully deleted',
+        'SUCCESS'
+      )
+      //Send the response
+      CONSTANTS.createResponses(
+        res,
+        CONSTANTS.ERROR_CODE.SUCCESS,
+        CONSTANTS.SUCCESS_DESCRIPTION.SUCCESS_DELETE,
+        next
+      )
+    })
+  } catch (Exception) {}
+}
+
+//Function to update one data entry in database
+const updateOne = (schema, res, next, FILE_NAME, searchCriteria, data) => {
+  try {
+    schema.updateOne(
+      searchCriteria,
+      data,
+      { new: true, useFindAndModify: false },
+      (err, data) => {
+        if (err) {
+          //Create the log message
+          CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
+          //Send the response
+          CONSTANTS.createResponses(
+            res,
+            CONSTANTS.ERROR_CODE.FAILED,
+            err.errmsg,
+            next
+          )
+        }
+      }
+    )
+  } catch (Exception) {}
+}
+
+//Function to find a specific data
+const findOne = (schema, res, next, FILE_NAME, searchCriteria) => {
+  try {
+    schema.findOne(searchCriteria, (err, data) => {
+      if (err) {
+        //Create the log message
+        CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
+        //Send the response
+        CONSTANTS.createResponses(
+          res,
+          CONSTANTS.ERROR_CODE.FAILED,
+          err.errmsg,
+          next
+        )
+      }
+      //Create the log message
+      CONSTANTS.createLogMessage(FILE_NAME, 'Searched for data', 'SUCCESS')
+      //Send the response
+      CONSTANTS.createResponses(res, CONSTANTS.ERROR_CODE.SUCCESS, data, next)
+    })
+  } catch (Exception) {}
+}
+//Function to find a specific data
+const checkifUserExists = (schema, searchCriteria,FILE_NAME) => {
+  try {
+    return schema.findOne(searchCriteria, (err, data) => {
+      if (err) {
+        //Create the log message
+        //Create the log message
+        CONSTANTS.createLogMessage(
+          FILE_NAME,
+          'ERROR in searching for user for adding new data',
+          'ERROR'
+        )
+      } else {
+        //Create the log message
+        CONSTANTS.createLogMessage(
+          FILE_NAME,
+          'Successfully searched for data when adding',
+          'SUCCESS'
+        )
+      }
+    })
+  } catch (Exception) {}
+}
+//Export the modules
+module.exports = {
+  addNewData,
+  findALL,
+  findbyID,
+  updateData,
+  deleteData,
+  updateOne,
+  findOne,
+  checkifUserExists
+}
