@@ -8,7 +8,7 @@
 //import constants file
 const CONSTANTS = require('../../CONSTANTS/constants')
 //import authenticate user constants
-const authenticateUserConstant = require('../../CONSTANTS/authenticationConstants')
+const authenticationMiddleware = require('../../middleware/authenticationMiddleware')
 
 const postAuthentication = (
   req,
@@ -30,7 +30,7 @@ const postAuthentication = (
     var parameterToCompareToken=paramterID.toString()
     var parameterToPassToMethod=paramterID.toString()
   }
-  var result = authenticateUserConstant.authenticateUser(
+  var result = authenticationMiddleware.authenticateUser(
     req,
     publicKEY,
     FILE_NAME

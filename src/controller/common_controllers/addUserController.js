@@ -10,9 +10,9 @@ const bcrypt = require('bcrypt')
 //import constants file
 const CONSTANTS = require('../../CONSTANTS/constants')
 //import mongoose queries
-const mongooseQueries = require('../../CONSTANTS/mongooseQueries')
+const mongooseMiddleware = require('../../middleware/mongooseMiddleware')
 //import login constants
-const loginConstants=require('../../CONSTANTS/loginConstants')
+const loginMiddleware=require('../../middleware/loginMiddleware')
 
 const addnewUser = (
   res,
@@ -24,7 +24,7 @@ const addnewUser = (
   data,
   type
 ) => {
-  loginConstants
+  loginMiddleware
     .checkifDataExists(schema, searchcriteria, FILE_NAME)
     .then(result => {
       if (result === null) {
@@ -48,7 +48,7 @@ const addnewUser = (
             data.rpassword = hash
           }
           //Save the data
-          mongooseQueries.addNewData(data, res, next, FILE_NAME)
+          mongooseMiddleware.addNewData(data, res, next, FILE_NAME)
         })
       } else {
         //Create the log message

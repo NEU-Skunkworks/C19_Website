@@ -7,10 +7,10 @@
 
 //import mongoose
 const mongoose = require('mongoose')
-//import Job Posting Schema
-const JobPostingSchema = require('../model/jobPostingModel')
 //Importing constants
 const CONSTANTS = require('../CONSTANTS/constants')
+//import Job Posting Schema
+const JobPostingSchema = require('../model/jobPostingModel')
 //Create a variable of type mongoose schema for Job Posting
 const JobPosting = mongoose.model('JobPostingSchema', JobPostingSchema)
 //import file systems
@@ -20,11 +20,11 @@ var publicKEY = fs.readFileSync('./.env/researcher_keys/public.key', 'utf8')
 //import post authentication controller
 const postAuthentication = require('./common_controllers/postAuthenticationController')
 //import mongoose queries
-const mongooseQueries = require('../CONSTANTS/mongooseQueries')
+const mongooseMiddleware = require('../middleware/mongooseMiddleware')
 //Declaring the file name
 const FILE_NAME = 'jobPostingController.js'
 //import login constants
-const loginConstants = require('../CONSTANTS/loginConstants')
+const loginMiddleware = require('../middleware/loginMiddleware')
 
 //This functionality adds a new job posting with all the required fields from the body.
 const addNewJobPosting = (req, res, next) => {
@@ -50,7 +50,7 @@ const addNewJobPosting = (req, res, next) => {
     publicKEY,
     FILE_NAME,
     req.params.researcherID,
-    mongooseQueries.addNewData,
+    mongooseMiddleware.addNewData,
     newJobPosting,
     null
   )
@@ -58,7 +58,7 @@ const addNewJobPosting = (req, res, next) => {
 
 //This function gets all the job postings currently in the database.
 const getJobPostings = (req, res, next) => {
-  mongooseQueries.findALL(JobPosting, res, next, FILE_NAME)
+  mongooseMiddleware.findALL(JobPosting, res, next, FILE_NAME)
 }
 
 //This function will retrieve a job posting info based on it's ID which is auto generated in mongoDB.
@@ -72,14 +72,14 @@ const getjobpostingwithID = (req, res, next) => {
       next
     )
   } else {
-    mongooseQueries.findbyID(JobPosting, res, next, FILE_NAME, req.params.jobID)
+    mongooseMiddleware.findbyID(JobPosting, res, next, FILE_NAME, req.params.jobID)
   }
 }
 
 //Updates the researchers information.
 const updateJobPosting = (req, res, next) => {
   var searchcriteria = { _id: req.params.jobID }
-  loginConstants
+  loginMiddleware
     .checkifDataExists(JobPosting, searchcriteria, FILE_NAME)
     .then(result => {
       if (result === null) {
@@ -110,7 +110,7 @@ const updateJobPosting = (req, res, next) => {
           publicKEY,
           FILE_NAME,
           parameterToPass,
-          mongooseQueries.updateData,
+          mongooseMiddleware.updateData,
           JobPosting,
           upsertData
         )
@@ -121,7 +121,7 @@ const updateJobPosting = (req, res, next) => {
 //Delete the job posting
 const deleteJobPosting = (req, res, next) => {
   var searchcriteria = { _id: req.params.jobID }
-  loginConstants
+  loginMiddleware
     .checkifDataExists(JobPosting, searchcriteria, FILE_NAME)
     .then(result => {
       if (result === null) {
@@ -142,7 +142,7 @@ const deleteJobPosting = (req, res, next) => {
           publicKEY,
           FILE_NAME,
           parameterToPass,
-          mongooseQueries.deleteData,
+          mongooseMiddleware.deleteData,
           JobPosting,
           null
         )
@@ -164,7 +164,7 @@ const getJobPostingbySearch = (req, res, next) => {
     var searchArr = [req.params.skills.toString()]
     var searchcriteria = { skills: { $in: searchArr } }
   }
-  mongooseQueries
+  mongooseMiddleware
     .findallbasedonCriteria(JobPosting, res, next, FILE_NAME, searchcriteria)
     .then(result => {
       if (result != null || result != []) {
@@ -206,7 +206,7 @@ const getMyJobPostings = (req, res, next) => {
     publicKEY,
     FILE_NAME,
     req.params.researcherID.toString(),
-    mongooseQueries.findALL,
+    mongooseMiddleware.findALL,
     JobPosting,
     null
   )

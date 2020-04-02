@@ -6,7 +6,7 @@
  */
 
 //import constants file
-const CONSTANTS = require('./constants')
+const CONSTANTS = require('../CONSTANTS/constants')
 //importing jwt token to assign to the user once authenticated
 const jwt = require('jsonwebtoken')
 /*
@@ -15,7 +15,6 @@ Function to authenticate the user. Takes the following input
 2. res = response
 3. publicKEY = the public key required to decode the token
 4. FILE_NAME = The file name for which the log entry has to be made
-5. id = To compare the id of with the token id for authentication 
 */
 const authenticateUser = (req, publicKEY, FILE_NAME) => {
   //Get the token value from the header

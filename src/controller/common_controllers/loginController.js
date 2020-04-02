@@ -12,7 +12,7 @@ const CONSTANTS = require('../../CONSTANTS/constants')
 //importing bcrypt to hash the user entered password for security.
 const bcrypt = require('bcrypt')
 //import login constants
-const loginConstants=require('../../CONSTANTS/loginConstants')
+const loginMiddleware=require('../../middleware/loginMiddleware')
 
 
 //Authentication Function
@@ -32,7 +32,7 @@ const loginAuthentication = (
   } else if (type === 'Researcher') {
     var searchCriteria = { remail: req.body.remail }
   }
-  loginConstants
+  loginMiddleware
     .checkifDataExists(schema, searchCriteria, FILE_NAME)
     .then(result => {
       if (result === null) {
@@ -76,7 +76,7 @@ const loginAuthentication = (
             //If password same create the json web token.
             if (match === true) {
               var data = { $set: { loginAttempts: 0 } }
-              loginConstants
+              loginMiddleware
                 .updateLoginAttempts(schema, FILE_NAME, searchCriteria, data)
                 .then(d => {
                   if (parseInt(d.n) === 1) {
@@ -120,7 +120,7 @@ const loginAuthentication = (
                 })
             } else {
               var data = { $inc: { 'loginAttempts': 1 } }
-              loginConstants
+              loginMiddleware
                 .updateLoginAttempts(schema, FILE_NAME, searchCriteria, data)
                 .then(d => {
                   if (parseInt(d.n) === 1) {

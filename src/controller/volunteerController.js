@@ -24,7 +24,7 @@ const CONSTANTS = require('../CONSTANTS/constants')
 //Declaring the file name
 const FILE_NAME = 'volunteerController.js'
 //import mongoose queries
-const mongooseQueries = require('../CONSTANTS/mongooseQueries')
+const mongooseMiddleware = require('../middleware/mongooseMiddleware')
 //import login controller
 const loginController = require('./common_controllers/loginController')
 //import add user queries
@@ -70,7 +70,7 @@ const addNewVolunteer = (req, res, next) => {
 //This function gets all the volunteers currently in the database. (Can be used for analytical purposes)
 const getVolunteers = (res, next) => {
   //Mongoose function to find all the volunteers from the volunteer schema
-  mongooseQueries.findALL(Volunteer, res, next, FILE_NAME)
+  mongooseMiddleware.findALL(Volunteer, res, next, FILE_NAME)
 }
 
 /*This function will retrieve a volunteers info based on it's ID which is auto generated in mongoDB.
@@ -84,7 +84,7 @@ const getVolunteerWithID = (req, res, next) => {
     publicKEY,
     FILE_NAME,
     req.params.volunteerID,
-    mongooseQueries.findbyID,
+    mongooseMiddleware.findbyID,
     Volunteer,
     null
   )
@@ -121,7 +121,7 @@ const updateVolunteer = (req, res, next) => {
     publicKEY,
     FILE_NAME,
     req.params.volunteerID,
-    mongooseQueries.updateData,
+    mongooseMiddleware.updateData,
     Volunteer,
     upsertData
   )
@@ -136,7 +136,7 @@ const deleteVolunteer = (req, res, next) => {
     publicKEY,
     FILE_NAME,
     req.params.volunteerID,
-    mongooseQueries.deleteData,
+    mongooseMiddleware.deleteData,
     Volunteer,
     null
   )
@@ -180,7 +180,7 @@ const getVolunteerInfoWithID = (req, res, next) => {
       next
     )
   } else {
-    mongooseQueries.findbyID(
+    mongooseMiddleware.findbyID(
       Volunteer,
       res,
       next,
@@ -221,7 +221,7 @@ const findVolunteer = (req, res, next) => {
         ]
       }
     }
-    mongooseQueries.findOne(Volunteer, res, next, FILE_NAME, searchcriteria)
+    mongooseMiddleware.findOne(Volunteer, res, next, FILE_NAME, searchcriteria)
   }
 }
 module.exports = {

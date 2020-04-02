@@ -1,5 +1,5 @@
 /**
- * @file loginConstants.js
+ * @file loginMiddleware.js
  * @author Rahul Handoo
  * @version 1.0
  * createdDate: 04/01/2020
@@ -7,7 +7,7 @@
 
 
 //import constants file
-const CONSTANTS = require('./constants')
+const CONSTANTS = require('../CONSTANTS/constants')
 
 //Function to update one data entry in database
 const updateLoginAttempts = (schema, FILE_NAME, searchCriteria, data) => {

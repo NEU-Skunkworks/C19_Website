@@ -1,12 +1,12 @@
 /**
- * @file mongooseQueries.js
+ * @file mongooseMiddleware.js
  * @author Rahul Handoo
  * @version 1.0
  * createdDate: 03/31/2020
  */
 
 //import constants file
-const CONSTANTS = require('./constants')
+const CONSTANTS = require('../CONSTANTS/constants')
 
 //Function add new Data
 const addNewData = (schema, res, next, FILE_NAME) => {
@@ -231,6 +231,29 @@ const findallbasedonCriteria = (schema, res, next, FILE_NAME,searchCriteria) => 
   } catch (Exception) {}
 }
 
+//Get count of the document
+const getCount = (schema, FILE_NAME) => {
+  try {
+    return schema.count({}, (err, data) => {
+      //error
+      if (err) {
+        //Log the error
+        CONSTANTS.createLogMessage(FILE_NAME, err.errmsg, 'ERROR')
+      }
+      else{
+        CONSTANTS.createLogMessage(
+          FILE_NAME,
+          'Get count',
+          'SUCCESS'
+        )
+      }
+      
+      //Log success message
+      
+    })
+  } catch (Exception) {}
+}
+
 
 //Export the modules
 module.exports = {
@@ -240,5 +263,6 @@ module.exports = {
   updateData,
   deleteData,
   findOne,
-  findallbasedonCriteria
+  findallbasedonCriteria,
+  getCount
 }

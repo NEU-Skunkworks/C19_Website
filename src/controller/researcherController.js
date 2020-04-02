@@ -24,7 +24,7 @@ const FILE_NAME = 'researcherController.js'
 //import constants file
 const CONSTANTS = require('../CONSTANTS/constants')
 //import mongoose queries
-const mongooseQueries = require('../CONSTANTS/mongooseQueries')
+const mongooseMiddleware = require('../middleware/mongooseMiddleware')
 //import login controller
 const loginController = require('./common_controllers/loginController')
 //import add user queries
@@ -57,7 +57,7 @@ const addNewResearcher = (req, res, next) => {
 
 //This function gets all the researchers currently in the database.
 const getResearchers = (res, next) => {
-  mongooseQueries.findALL(Researcher, res, next, FILE_NAME)
+  mongooseMiddleware.findALL(Researcher, res, next, FILE_NAME)
 }
 
 //This function will retrieve a researchers info based on it's ID which is auto generated in mongoDB.
@@ -69,7 +69,7 @@ const getResearcherWithID = (req, res, next) => {
     publicKEY,
     FILE_NAME,
     req.params.researcherID,
-    mongooseQueries.findbyID,
+    mongooseMiddleware.findbyID,
     Researcher,
     null
   )
@@ -96,7 +96,7 @@ const updateResearcher = (req, res, next) => {
       publicKEY,
       FILE_NAME,
       req.params.researcherID,
-      mongooseQueries.updateData,
+      mongooseMiddleware.updateData,
       Researcher,
       upsertData
     )
@@ -111,7 +111,7 @@ const deleteResearcher = (req, res, next) => {
     publicKEY,
     FILE_NAME,
     req.params.researcherID,
-    mongooseQueries.deleteData,
+    mongooseMiddleware.deleteData,
     Researcher,
     null
   )
@@ -153,7 +153,7 @@ const getResearcherInfoWithID = (req, res, next) => {
       next
     )
   } else {
-  mongooseQueries.findbyID(
+  mongooseMiddleware.findbyID(
     Researcher,
     res,
     next,
@@ -186,7 +186,7 @@ const findResearcher = (req, res, next) => {
         ]
       }
     }
-    mongooseQueries.findOne(Researcher, res, next, FILE_NAME, searchcriteria)
+    mongooseMiddleware.findOne(Researcher, res, next, FILE_NAME, searchcriteria)
   }
 }
 module.exports = {

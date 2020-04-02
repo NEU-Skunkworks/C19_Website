@@ -8,8 +8,6 @@
 
 //importing logger file
 const LOGGER = require('../Logger/logger')
-//importing json web token
-const jwt = require('jsonwebtoken')
 //Specifying the verifying options for json web token
 var verifyOptions = {
   expiresIn: '12h',
