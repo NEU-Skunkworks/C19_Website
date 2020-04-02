@@ -1,5 +1,5 @@
 /**
- * @file mongooseQueries.js
+ * @file mongooseMiddleware.js
  * @author Rahul Handoo
  * @version 1.0
  * createdDate: 03/31/2020
@@ -53,7 +53,7 @@ const findALL = (schema, res, next, FILE_NAME) => {
         //Send the response
         CONSTANTS.createResponses(
           res,
-          CONSTANTS.ERROR_DESCRIPTION.FAILED,
+          CONSTANTS.ERROR_CODE.FAILED,
           err.errmsg,
           next
         )
@@ -183,34 +183,12 @@ const deleteData = (schema, res, next, FILE_NAME, param) => {
   } catch (Exception) {}
 }
 
-//Function to update one data entry in database
-const updateOne = (schema, res, next, FILE_NAME, searchCriteria, data) => {
-  try {
-    schema.updateOne(
-      searchCriteria,
-      data,
-      { new: true, useFindAndModify: false },
-      (err, data) => {
-        if (err) {
-          //Create the log message
-          CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
-          //Send the response
-          CONSTANTS.createResponses(
-            res,
-            CONSTANTS.ERROR_CODE.FAILED,
-            err.errmsg,
-            next
-          )
-        }
-      }
-    )
-  } catch (Exception) {}
-}
+
 
 //Function to find a specific data
 const findOne = (schema, res, next, FILE_NAME, searchCriteria) => {
   try {
-    schema.findOne(searchCriteria, (err, data) => {
+   schema.findOne(searchCriteria, (err, data) => {
       if (err) {
         //Create the log message
         CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
@@ -229,29 +207,54 @@ const findOne = (schema, res, next, FILE_NAME, searchCriteria) => {
     })
   } catch (Exception) {}
 }
-//Function to find a specific data
-const checkifUserExists = (schema, searchCriteria,FILE_NAME) => {
+
+//Function to find all the data from the database based on a criteria
+const findallbasedonCriteria = (schema, res, next, FILE_NAME,searchCriteria) => {
   try {
-    return schema.findOne(searchCriteria, (err, data) => {
+    return schema.find(searchCriteria, (err, data) => {
+      //error
       if (err) {
-        //Create the log message
-        //Create the log message
+        //Log the error
+        CONSTANTS.createLogMessage(FILE_NAME, err.errmsg, 'ERROR')
+      }
+      else{
         CONSTANTS.createLogMessage(
           FILE_NAME,
-          'ERROR in searching for user for adding new data',
-          'ERROR'
-        )
-      } else {
-        //Create the log message
-        CONSTANTS.createLogMessage(
-          FILE_NAME,
-          'Successfully searched for data when adding',
+          'Successfully searched all data',
           'SUCCESS'
         )
       }
+      
+      //Log success message
+      
     })
   } catch (Exception) {}
 }
+
+//Get count of the document
+const getCount = (schema, FILE_NAME) => {
+  try {
+    return schema.count({}, (err, data) => {
+      //error
+      if (err) {
+        //Log the error
+        CONSTANTS.createLogMessage(FILE_NAME, err.errmsg, 'ERROR')
+      }
+      else{
+        CONSTANTS.createLogMessage(
+          FILE_NAME,
+          'Get count',
+          'SUCCESS'
+        )
+      }
+      
+      //Log success message
+      
+    })
+  } catch (Exception) {}
+}
+
+
 //Export the modules
 module.exports = {
   addNewData,
@@ -259,7 +262,7 @@ module.exports = {
   findbyID,
   updateData,
   deleteData,
-  updateOne,
   findOne,
-  checkifUserExists
+  findallbasedonCriteria,
+  getCount
 }
