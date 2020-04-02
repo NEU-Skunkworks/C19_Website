@@ -35,7 +35,7 @@ const updateLoginAttempts = (schema, FILE_NAME, searchCriteria, data) => {
   }
 
   //Function to find a specific data
-const checkifUserExists = (schema, searchCriteria,FILE_NAME) => {
+const checkifDataExists = (schema, searchCriteria,FILE_NAME) => {
     try {
       return schema.findOne(searchCriteria, (err, data) => {
         if (err) {
@@ -61,6 +61,6 @@ const checkifUserExists = (schema, searchCriteria,FILE_NAME) => {
   //Export the modules
 module.exports = {
     updateLoginAttempts,
-    checkifUserExists
+    checkifDataExists
   }
   

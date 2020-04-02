@@ -35,9 +35,12 @@ const postAuthentication = require('./common_controllers/postAuthenticationContr
 //This functionality adds a new volunteer with all the required fields from the body.
 const addNewVolunteer = (req, res, next) => {
   var searchcriteria = { vemail: req.body.vemail }
-  var skills = req.body.vskills
-  var skillsArr = skills.split(',')
-
+  if (req.body.vskills.toString().includes(',')) {
+    var skills = req.body.vskills
+    var skillsArr = skills.split(',')
+  } else {
+    var skillsArr = req.body.vskills.toString()
+  }
   //Creating the variable to hold the data for fields
   let newVolunteer = new Volunteer({
     vfirstName: req.body.vfirstName,
@@ -206,11 +209,15 @@ const findVolunteer = (req, res, next) => {
       }
     } else if (req.params.search.toString().includes('@')) {
       var searchcriteria = { vemail: req.params.search.toString() }
-    } else {
+    } 
+    else if(req.params.search.toString().includes(',')){
+      var searchcriteria = {vskills: { $in: [req.params.search.toString().split(',')] }}
+    }else {
       var searchcriteria = {
         $or: [
           { vfirstName: req.params.search.toString() },
-          { vlastName: req.params.search.toString() }
+          { vlastName: req.params.search.toString() },
+          {vskills: { $in: [req.params.search.toString()] }}
         ]
       }
     }

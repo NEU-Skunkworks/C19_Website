@@ -92,21 +92,20 @@ Everyone working on this Repository please follow the below rules:
 
 | API's  | Functionality  | Example    | Method | Requires token authentication
 |----------------- |------------ | -------------- | -------------- |  -------------- |
-| /volunteer/ | Gets all the volunteers in the database (Can be used for analytical purposes) | http://localhost:3000/volunteer/ | GET | No |
-| /volunteer/registration | Adds the volunteer information to the database | http://localhost:3000/volunteer/registration/ | POST | No|
-| /volunteer/:volunteerID | Gets the volunteer information based on userID which will be returned in the json data after the user has successfully logged in | http://localhost:3000/volunteer/_id| GET | Yes |
-| /volunteer/delete/:volunteerID | Deletes a volunteer information based on user ID | http://localhost:3000/volunteer/delete/_id| DELETE | Yes |
-| /volunteer/update/:volunteerID | Updates a volunteer information based on user ID | http://localhost:3000/volunteer/update/_id | PUT | Yes |
-| /volunteer/login | Authenticates a volunteer and assigns token | http://localhost:3000/volunteer/login?vemail=your_email&vpassword=yourPassword | POST | Yes |
-| /volunteerinfo/:volunteerID | Can be used when a volunteer applies for an application that the researcher wants to view their profile | http://localhost:3000/volunteer/volunteerinfo/_id | GET | No |
-| /findvolunteer/:search | Can be used to search a volunter based on First Name,Last Name and email | http://localhost:3000/volunteer/findvolunteer/Rahul | GET | No |
+| /volunteer/ | Gets all the volunteers in the database (Can be used for analytical purposes) | http://localhost:3000/dev/volunteer/ | GET | No |
+| /volunteer/registration | Adds the volunteer information to the database | http://localhost:3000/volunteer/dev/registration/ | POST | No|
+| /volunteer/:volunteerID | Gets the volunteer information based on userID which will be returned in the json data after the user has successfully logged in | http://localhost:3000/dev/volunteer/_id| GET | Yes |
+| /volunteer/delete/:volunteerID | Deletes a volunteer information based on user ID | http://localhost:3000/dev/volunteer/delete/_id| DELETE | Yes |
+| /volunteer/update/:volunteerID | Updates a volunteer information based on user ID | http://localhost:3000/dev/volunteer/update/_id | PUT | Yes |
+| /volunteer/login | Authenticates a volunteer and assigns token | http://localhost:3000/dev/volunteer/login | POST | Yes |
+| /volunteerinfo/:volunteerID | Can be used when a volunteer applies for an application that the researcher wants to view their profile | http://localhost:3000/dev/volunteer/volunteerinfo/_id | GET | No |
+| /findvolunteer/:search | Can be used to search a volunter based on First Name,Last Name and email | http://localhost:3000/dev/volunteer/findvolunteer/Rahul | GET | No |
 
 ### <b>NOTE</b>: Data Format for Adding/Updating Volunteer:
 1. /volunteer/registration & /volunteer/update/:volunteerID -:<br> `{"vfirstName":"FirstName",
                                                                 "vlastName":"LastName",
                                                                 "vemail":"your_email@domain.com",
                                                                 "vage":26,
-                                                                "vphone":"0000000000",
                                                                 "vskills":"Web Development,Node JS,MongoDB",
                                                                 "vwork_experience":[{"company":"Company1","position":"Position1","description":"First Company","from":"3/28/2020","to":"3/28/2020"},{"company":"Company2","position":"Position2","description":"Second Company","from":"3/28/2020","to":"3/28/2020"}],
                                                                 "vpassword":"your_password",
@@ -118,25 +117,24 @@ Everyone working on this Repository please follow the below rules:
 
 | API's  | Functionality  | Example URL   | Method | Requires Token Authentication |
 |----------------- |------------ | -------------- | -------------- | -------------- |
-| /researcher/ | Gets all the researchers in the database (Can be used for analytical purposes) | http://localhost:3000/researcher/ | GET | No |
-| /researcher/registration | Adds the researcher information to the database | http://localhost:3000/researcher/registration/ | POST | No |
-| /researcher/:researcherID | Gets the researcher information based on userID which will be returned in the json data after the user has successfully logged in | http://localhost:3000/researcher/_id | GET | Yes |
-| /researcher/delete/:researcherID | Deletes a researcher information based on user ID | http://localhost:3000/researcher/delete/_id| DELETE | Yes |
-| /researcher/update/:researcherID | Updates a researcher information based on user ID | http://localhost:3000/researcher/update/_id | PUT | Yes |
-| /researcher/login | Authenticates a volunteer and assigns token | http://localhost:3000/researcher/login?vemail=your_email&vpassword=your_password | POST | Yes |
-| /researcherinfo/:researcherID | Can be used when a volunteer wants to see the researcher info | http://localhost:3000/researcher/researcherinfo/_id | GET | No |
-| /findresearcher/:search | Can be used to search a researcher based on First Name,Last Name and email | http://localhost:3000/researcher/findresearcher/Rahul | GET | No |
+| /researcher/ | Gets all the researchers in the database (Can be used for analytical purposes) | http://localhost:3000/dev/researcher/ | GET | No |
+| /researcher/registration | Adds the researcher information to the database | http://localhost:3000/researcher/dev/registration/ | POST | No |
+| /researcher/:researcherID | Gets the researcher information based on userID which will be returned in the json data after the user has successfully logged in | http://localhost:3000/dev/researcher/_id | GET | Yes |
+| /researcher/delete/:researcherID | Deletes a researcher information based on user ID | http://localhost:3000/dev/researcher/delete/_id| DELETE | Yes |
+| /researcher/update/:researcherID | Updates a researcher information based on user ID | http://localhost:3000/dev/researcher/update/_id | PUT | Yes |
+| /researcher/login | Authenticates a volunteer and assigns token | http://localhost:3000/dev/researcher/login | POST | Yes |
+| /researcherinfo/:researcherID | Can be used when a volunteer wants to see the researcher info | http://localhost:3000/dev/researcher/researcherinfo/_id | GET | No |
+| /findresearcher/:search | Can be used to search a researcher based on First Name,Last Name and email | http://localhost:3000/dev/researcher/findresearcher/Rahul | GET | No |
 
 ### 3. Job Posting API's
 <p>PS: The <i>researcherID</i> and <i>jobID</i> mentioned here means the auto generated id from mongoDB (_id)</p>
 
 | API's  | Functionality  | Example URL   | Method | Requires Token Authentication |
 |----------------- |------------ | -------------- | -------------- | -------------- |
-| /jobPosting/ | Gets all the job postings in the database (Can be used for analytical purposes) | http://localhost:3000/jobPosting/ | GET | No |
-| /jobPosting/addJob/:researcherID | Adds the jobs posting information to the database | http://localhost:3000/jobPosting/addJob/_id | POST | Yes |
-| /jobPosting/:jobID | Gets the job posting information | http://localhost:3000/jobPosting/_id | GET | No |
-| /jobPosting/delete/:jobID | Deletes a job posting based on jobID | http://localhost:3000/jobPosting/delete/_id| DELETE | Yes |
-| /jobPosting/update/:jobID/ | Updates a job Posting | http://localhost:3000/jobPosting/update/_id | PUT | Yes |
-| /jobPosting/searchjobsskills/:skills/ | Searchees for jobs based on skills | http://localhost:3000/researcherinfo/searchjobsskills/[skills array] | GET | No |
-| /jobPosting/searchjobsyear/:years| Searchees for jobs based on work experience required | http://localhost:3000/jobPosting/searchjobsyear/3 | GET | No |
-| /jobPosting/myjobpostings/:researcherID| Searchees for jobs based on skills | http://localhost:3000/myjobpostings/_id | GET | Yes |
+| /jobPosting/ | Gets all the job postings in the database (Can be used for analytical purposes) | http://localhost:3000/dev/jobPosting/ | GET | No |
+| /jobPosting/addJob/:researcherID | Adds the jobs posting information to the database | http://localhost:3000/dev/jobPosting/addJob/_id | POST | Yes |
+| /jobPosting/:jobID | Gets the job posting information | http://localhost:3000/dev/jobPosting/_id | GET | No |
+| /jobPosting/delete/:jobID | Deletes a job posting based on jobID | http://localhost:3000/dev/jobPosting/delete/_id| DELETE | Yes |
+| /jobPosting/update/:jobID/ | Updates a job Posting | http://localhost:3000/dev/jobPosting/update/_id | PUT | Yes |
+| /jobPosting/searchjobs/:search/ | Searches for jobs based on skills or years of work exeprience | http://localhost:3000/dev/researcherinfo/searchjobs/value_to_search | GET | No |
+| /jobPosting/myjobpostings/:researcherID| Searchees for jobs posted by a reasearcher | http://localhost:3000/dev/jobPosting/myjobpostings/_id | GET | Yes |

@@ -77,7 +77,6 @@ const getResearcherWithID = (req, res, next) => {
 
 //Updates the researchers information.
 const updateResearcher = (req, res, next) => {
-  
     let hash = bcrypt.hash(req.body.rpassword, 10)
     let newResearcher = new Researcher({
       rfirstName: req.body.rfirstName,

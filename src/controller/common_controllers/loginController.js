@@ -33,7 +33,7 @@ const loginAuthentication = (
     var searchCriteria = { remail: req.body.remail }
   }
   loginConstants
-    .checkifUserExists(schema, searchCriteria, FILE_NAME)
+    .checkifDataExists(schema, searchCriteria, FILE_NAME)
     .then(result => {
       if (result === null) {
         //Error

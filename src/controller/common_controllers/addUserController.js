@@ -25,7 +25,7 @@ const addnewUser = (
   type
 ) => {
   loginConstants
-    .checkifUserExists(schema, searchcriteria, FILE_NAME)
+    .checkifDataExists(schema, searchcriteria, FILE_NAME)
     .then(result => {
       if (result === null) {
         //Encrypt the password

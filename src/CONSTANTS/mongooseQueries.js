@@ -53,7 +53,7 @@ const findALL = (schema, res, next, FILE_NAME) => {
         //Send the response
         CONSTANTS.createResponses(
           res,
-          CONSTANTS.ERROR_DESCRIPTION.FAILED,
+          CONSTANTS.ERROR_CODE.FAILED,
           err.errmsg,
           next
         )
@@ -208,6 +208,30 @@ const findOne = (schema, res, next, FILE_NAME, searchCriteria) => {
   } catch (Exception) {}
 }
 
+//Function to find all the data from the database based on a criteria
+const findallbasedonCriteria = (schema, res, next, FILE_NAME,searchCriteria) => {
+  try {
+    return schema.find(searchCriteria, (err, data) => {
+      //error
+      if (err) {
+        //Log the error
+        CONSTANTS.createLogMessage(FILE_NAME, err.errmsg, 'ERROR')
+      }
+      else{
+        CONSTANTS.createLogMessage(
+          FILE_NAME,
+          'Successfully searched all data',
+          'SUCCESS'
+        )
+      }
+      
+      //Log success message
+      
+    })
+  } catch (Exception) {}
+}
+
+
 //Export the modules
 module.exports = {
   addNewData,
@@ -215,5 +239,6 @@ module.exports = {
   findbyID,
   updateData,
   deleteData,
-  findOne
+  findOne,
+  findallbasedonCriteria
 }

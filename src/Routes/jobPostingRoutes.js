@@ -25,7 +25,7 @@ router.get('/:jobID', function (req, res,next) {
 })
 
 //Update a job posting
-router.put('/update/:jobID/', function (req, res,next) {
+router.put('/update/:jobID', function (req, res,next) {
   jobPostingController.updateJobPosting(req, res,next)
 })
 
@@ -34,14 +34,9 @@ router.delete('/delete/:jobID', function (req, res,next) {
   jobPostingController.deleteJobPosting(req, res,next)
 })
 
-//Get Job Posting based on skills
-router.get('/searchjobsskills/:skills', function (req, res,next) {
-  jobPostingController.getJobPostingonSkills(req, res,next)
-})
-
-//Get Job Posting based on years of work experience
-router.get('/searchjobsyear/:years', function (req, res,next) {
-  jobPostingController.getjobPostingbasedonWEYears(req, res,next)
+//Get Job Posting based on search criteria like work experience and skills
+router.get('/searchjobs/:search', function (req, res,next) {
+  jobPostingController.getJobPostingbySearch(req, res,next)
 })
 
 //Get Job Posting based on researcher id

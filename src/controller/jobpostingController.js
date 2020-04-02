@@ -11,307 +11,204 @@ const mongoose = require('mongoose')
 const JobPostingSchema = require('../model/jobPostingModel')
 //Importing constants
 const CONSTANTS = require('../CONSTANTS/constants')
-//Create a variable of type mongoose schema for Job Posting 
+//Create a variable of type mongoose schema for Job Posting
 const JobPosting = mongoose.model('JobPostingSchema', JobPostingSchema)
 //import file systems
 const fs = require('fs')
 //public key path
 var publicKEY = fs.readFileSync('./.env/researcher_keys/public.key', 'utf8')
+//import post authentication controller
+const postAuthentication = require('./common_controllers/postAuthenticationController')
+//import mongoose queries
+const mongooseQueries = require('../CONSTANTS/mongooseQueries')
 //Declaring the file name
 const FILE_NAME = 'jobPostingController.js'
-
+//import login constants
+const loginConstants = require('../CONSTANTS/loginConstants')
 
 //This functionality adds a new job posting with all the required fields from the body.
 const addNewJobPosting = (req, res, next) => {
-  CONSTANTS.authenticateUser(
-    req,
-    res,
-    next,
-    publicKEY,
-    FILE_NAME,
-    req.params.researcherID
-  )
   //Creating the variable to hold the data for fields
+  if (req.body.skills.toString().includes(',')) {
+    var skills = req.body.skills
+    var skillsArr = skills.split(',')
+  } else {
+    var skillsArr = req.body.vskills.toString()
+  }
   let newJobPosting = new JobPosting({
     researcherID: req.params.researcherID,
     jobTitle: req.body.jobTitle,
     description: req.body.description,
-    requirements: requirements,
-    skills: req.body.skills,
+    requirements: req.body.requirements,
+    skills: skillsArr,
     work_experience_required: req.body.work_experience_required
   })
-  //Saving the data into the database.
-  newJobPosting.save((err, jobposting) => {
-    //Error
-    if (err) {
-      CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.NOT_FOUND,
-        err.errmsg,
-        next
-      )
-    }
-    CONSTANTS.createLogMessage(FILE_NAME, 'Successfully added job posting', 'SUCCESS')
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.SUCCESS,
-        CONSTANTS.SUCCESS_DESCRIPTION.SUCCESS,
-        next
-      )
-  })
+  postAuthentication.postAuthentication(
+    req,
+    res,
+    next,
+    publicKEY,
+    FILE_NAME,
+    req.params.researcherID,
+    mongooseQueries.addNewData,
+    newJobPosting,
+    null
+  )
 }
 
 //This function gets all the job postings currently in the database.
 const getJobPostings = (req, res, next) => {
-  JobPosting.find({}, (err, jobposting) => {
-    if (err) {
-     //Log the error
-     CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
-     //Send the response
-     CONSTANTS.createResponses(
-       res,
-       CONSTANTS.ERROR_DESCRIPTION.FAILED,
-       err.errmsg,
-       next
-     )
-    }
-    //Log success message
-    CONSTANTS.createLogMessage(
-      FILE_NAME,
-      'Successfully searched for all job postings',
-      'SUCCESS'
-    )
-    //Send back the response
-    CONSTANTS.createResponses(
-      res,
-      CONSTANTS.ERROR_CODE.SUCCESS,
-      jobposting,
-      next
-    )
-  })
+  mongooseQueries.findALL(JobPosting, res, next, FILE_NAME)
 }
 
 //This function will retrieve a job posting info based on it's ID which is auto generated in mongoDB.
 const getjobpostingwithID = (req, res, next) => {
-  JobPosting.findById(req.params.jobID, (err, jobposting) => {
-    if (err) {
-      CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
-      //Send the response
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_DESCRIPTION.FAILED,
-        err.errmsg,
-        next
-      )
-    }
-   //Log success message
-   CONSTANTS.createLogMessage(
-    FILE_NAME,
-    'Successfully searched for job posting',
-    'SUCCESS'
-  )
-  //Send back the response
-  CONSTANTS.createResponses(
-    res,
-    CONSTANTS.ERROR_CODE.SUCCESS,
-    jobposting,
-    next
-  )
-  })
+  if (req.params === undefined) {
+    CONSTANTS.createLogMessage(FILE_NAME, 'Parameter not found', 'ERROR')
+    CONSTANTS.createResponses(
+      res,
+      CONSTANTS.ERROR_CODE.NOT_FOUND,
+      'Parameter not found',
+      next
+    )
+  } else {
+    mongooseQueries.findbyID(JobPosting, res, next, FILE_NAME, req.params.jobID)
+  }
 }
 
 //Updates the researchers information.
 const updateJobPosting = (req, res, next) => {
-  let newJobPosting = new JobPosting({
-    researcherID: req.body.researcherID,
-    jobTitle: req.body.jobTitle,
-    description: req.body.description,
-    requirements: requirements,
-    skills: req.body.skills,
-    work_experience_required: req.body.work_experience_required
-  })
-  var upsertData = newJobPosting.toObject()
-  delete upsertData._id
-  CONSTANTS.authenticateUser(
-    req,
-    res,
-    next,
-    publicKEY,
-    FILE_NAME,
-    req.body.researcherID
-  )
-  JobPosting.findOneAndUpdate(
-    { _id: req.params.jobID },
-    { $set: upsertData },
-    { new: true, useFindAndModify: false },
-    (err, jobposting) => {
-      if (err) {
-        CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
+  var searchcriteria = { _id: req.params.jobID }
+  loginConstants
+    .checkifDataExists(JobPosting, searchcriteria, FILE_NAME)
+    .then(result => {
+      if (result === null) {
+        //Error
+        CONSTANTS.createLogMessage(FILE_NAME, 'Data not Found', 'ERROR')
         CONSTANTS.createResponses(
           res,
-          CONSTANTS.ERROR_CODE.FAILED,
-          err.errmsg,
+          CONSTANTS.ERROR_CODE.NO_DATA_FOUND,
+          CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
           next
         )
+      } else if (result != null) {
+        let newJobPosting = new JobPosting({
+          jobTitle: req.body.jobTitle,
+          description: req.body.description,
+          requirements: req.body.requirements,
+          skills: req.body.skills,
+          work_experience_required: req.body.work_experience_required
+        })
+        var upsertData = newJobPosting.toObject()
+        delete upsertData._id
+        var parameterToPass =
+          result.researcherID.toString() + ',' + req.params.jobID
+        postAuthentication.postAuthentication(
+          req,
+          res,
+          next,
+          publicKEY,
+          FILE_NAME,
+          parameterToPass,
+          mongooseQueries.updateData,
+          JobPosting,
+          upsertData
+        )
       }
-      CONSTANTS.createLogMessage(
-        FILE_NAME,
-        'Successfully updated job posting',
-        'SUCCESS'
-      )
-      //Send back the volunteer data along with the success update message
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.SUCCESS,
-        jobposting,
-        next
-      )
-    }
-  )
+    })
 }
 
 //Delete the job posting
 const deleteJobPosting = (req, res, next) => {
-  JobPosting.findById(req.params.jobID, (err, job) => {
-    if (err) {
-      CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.FAILED,
-        err.errmsg,
-        next
-      )
-    }
-    CONSTANTS.authenticateUser(
-      req,
-      res,
-      next,
-      publicKEY,
-      FILE_NAME,
-      job.researcherID
-    )
-    JobPosting.deleteOne({ _id: req.params.jobID }, (err, jobPosting) => {
-      if (err) {
-        CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
+  var searchcriteria = { _id: req.params.jobID }
+  loginConstants
+    .checkifDataExists(JobPosting, searchcriteria, FILE_NAME)
+    .then(result => {
+      if (result === null) {
+        //Error
+        CONSTANTS.createLogMessage(FILE_NAME, 'Data not Found', 'ERROR')
         CONSTANTS.createResponses(
           res,
-          CONSTANTS.ERROR_CODE.FAILED,
-          err.errmsg,
+          CONSTANTS.ERROR_CODE.NO_DATA_FOUND,
+          CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
           next
         )
+      } else if (result != null) {
+        var parameterToPass = result.researcherID + ',' + req.params.jobID
+        postAuthentication.postAuthentication(
+          req,
+          res,
+          next,
+          publicKEY,
+          FILE_NAME,
+          parameterToPass,
+          mongooseQueries.deleteData,
+          JobPosting,
+          null
+        )
       }
-      CONSTANTS.createLogMessage(
-        FILE_NAME,
-        'Successfully deleted job Posting',
-        'SUCCESS'
-      )
-      //Send back the volunteer data along with the success update message
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.SUCCESS,
-        CONSTANTS.SUCCESS_DESCRIPTION.SUCCESS_DELETE,
-        next
-      )
     })
-  })
 }
 
 //Search a job posting based on skills
-const getJobPostingonSkills = (req, res, next) => {
-  let skills = req.params.skills
-  let skillsarr = skills.split(', ')
-  JobPosting.find({ skills: { $in: skillsarr } }, (err, jobposting) => {
-    if (err) {
-      CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
+const getJobPostingbySearch = (req, res, next) => {
+  if (req.params.search.toString().includes(',')) {
+    var search = req.params.search
+    var searchArr = search.split(',')
+    var searchcriteria = { skills: { $in: searchArr } }
+  } else if (!isNaN(req.params.search)) {
+    var searchcriteria = {
+      work_experience_required: { $lte: req.params.search }
+    }
+  } else {
+    var searchArr = [req.params.skills.toString()]
+    var searchcriteria = { skills: { $in: searchArr } }
+  }
+  mongooseQueries
+    .findallbasedonCriteria(JobPosting, res, next, FILE_NAME, searchcriteria)
+    .then(result => {
+      if (result != null || result != []) {
+        CONSTANTS.createLogMessage(
+          FILE_NAME,
+          'Data Found Successfully',
+          'SUCCESS'
+        )
+        //Send the response
         CONSTANTS.createResponses(
           res,
-          CONSTANTS.ERROR_CODE.FAILED,
-          err.errmsg,
+          CONSTANTS.ERROR_CODE.SUCCESS,
+          result,
           next
         )
-    }
-    CONSTANTS.createLogMessage(
-      FILE_NAME,
-      'Successfully searched for job posting',
-      'SUCCESS'
-    )
-    //Send back the volunteer data along with the success update message
-    CONSTANTS.createResponses(
-      res,
-      CONSTANTS.ERROR_CODE.SUCCESS,
-      jobposting,
-      next
-    )
-  })
-}
-
-//Search a job posting based on years of Work Experience
-const getjobPostingbasedonWEYears = (req, res, next) => {
-  JobPosting.find(
-    { work_experience_required: { $in: req.params.years } },
-    (err, jobposting) => {
-      if (err) {
-        CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
+      } else {
+        CONSTANTS.createLogMessage(
+          FILE_NAME,
+          CONSTANTS.ERROR_CODE.NOT_FOUND,
+          'NODATA'
+        )
+        //Send the response
         CONSTANTS.createResponses(
           res,
-          CONSTANTS.ERROR_CODE.FAILED,
-          err.errmsg,
+          CONSTANTS.ERROR_CODE.NOT_FOUND,
+          'No Data',
           next
         )
       }
-      CONSTANTS.createLogMessage(
-        FILE_NAME,
-        'Successfully searched for job posting',
-        'SUCCESS'
-      )
-      //Send back the volunteer data along with the success update message
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.SUCCESS,
-        jobposting,
-        next
-      )
-    }
-  )
+    })
 }
 
 //Search Job Postings based on Researcher ID
 const getMyJobPostings = (req, res, next) => {
-  CONSTANTS.authenticateUser(
+  postAuthentication.postAuthentication(
     req,
     res,
     next,
     publicKEY,
     FILE_NAME,
-    req.params.researcherID
-  )
-
-  JobPosting.find(
-    { researcherID: { $in: req.params.researcherID } },
-    (err, jobposting) => {
-      if (err) {
-        CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
-        CONSTANTS.createResponses(
-          res,
-          CONSTANTS.ERROR_CODE.FAILED,
-          err.errmsg,
-          next
-        )
-      }
-      CONSTANTS.createLogMessage(
-        FILE_NAME,
-        'Successfully searched for job posting',
-        'SUCCESS'
-      )
-      //Send back the volunteer data along with the success update message
-      CONSTANTS.createResponses(
-        res,
-        CONSTANTS.ERROR_CODE.SUCCESS,
-        jobposting,
-        next
-      )
-    }
+    req.params.researcherID.toString(),
+    mongooseQueries.findALL,
+    JobPosting,
+    null
   )
 }
 module.exports = {
@@ -320,7 +217,6 @@ module.exports = {
   getjobpostingwithID,
   updateJobPosting,
   deleteJobPosting,
-  getJobPostingonSkills,
-  getjobPostingbasedonWEYears,
+  getJobPostingbySearch,
   getMyJobPostings
 }
