@@ -183,3 +183,14 @@ Everyone working on this Repository please follow the below rules:
 | /jobPosting/update/:jobID/ | Updates a job Posting | http://localhost:3000/dev/jobPosting/update/_id | PUT | Yes |
 | /jobPosting/searchjobs/:search/ | Searches for jobs based on skills or years of work exeprience | http://localhost:3000/dev/researcherinfo/searchjobs/value_to_search | GET | No |
 | /jobPosting/myjobpostings/:researcherID| Searchees for jobs posted by a reasearcher | http://localhost:3000/dev/jobPosting/myjobpostings/_id | GET | Yes |
+
+### 4. `Job Application API's`
+<p>PS: The <i>volunteerID</i> and <i>applicationID</i> mentioned here means the auto generated id from mongoDB (_id)</p>
+
+| API's  | Functionality  | Example URL   | Method | Requires Token Authentication |
+|----------------- |------------ | -------------- | -------------- | -------------- |
+| /jobApplication/submitapplication/:volunteerID | Adds the job application information to the database | http://localhost:3000/dev/jobApplication/submitapplication/_id | POST | Yes |
+| /jobApplication/:applicationID | Gets the job application | http://localhost:3000/dev/jobApplication/_id | GET | Yes |
+| /jobApplication/delete/:applicationID | Deletes a job application | http://localhost:3000/dev/jobApplication/delete/_id| DELETE | Yes |
+| /jobApplication/update/:applicationID | Updates a job application | http://localhost:3000/dev/jobApplication/update/_id | PUT | Yes |
+| /jobApplication/myapplications/:volunteerID| Searchees for jobs posted by a reasearcher | http://localhost:3000/dev/jobApplication/myapplications/_id | GET | Yes |

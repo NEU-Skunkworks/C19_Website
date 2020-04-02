@@ -55,7 +55,7 @@ app.use('/dev/researcher', researcherRoutes)
 //Routes for job Postings
 app.use('/dev/jobPosting', jobPostingRoutes)
 //Routes for job Applications
-app.use('/dev/jobApplications', jobApplicationsRoutes)
+app.use('/dev/jobApplication', jobApplicationsRoutes)
 
 app.listen(port, function () {
   LOGGER.debug('Express server listening on port %s.', port)

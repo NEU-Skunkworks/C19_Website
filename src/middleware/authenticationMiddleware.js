@@ -30,7 +30,7 @@ const authenticateUser = (req, publicKEY, FILE_NAME) => {
     // Remove Bearer from string
     token = token.slice(7, token.length)
     return jwt.verify(token, publicKEY, CONSTANTS.verifyOptions, (err, decode) => {
-      if(err!=null){
+      if(err!==null){
         return err
       }
       else{

@@ -46,7 +46,7 @@ const postAuthentication = (
       next
     )
   }
-  if (result.message != null) {
+  if (result.message !== null) {
     if (result.message === 'invalid token') {
       //Create the log message
       CONSTANTS.createLogMessage(FILE_NAME, 'Token invalid', 'UNAUTHORIZED')
@@ -98,7 +98,7 @@ const postAuthentication = (
         CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED,
         next
       )
-    } else if (result.id.toString() != parameterToCompareToken) {
+    } else if (result.id.toString() !== parameterToCompareToken) {
       /*Check if the user sending the request and the user the request id made for are equal or not. 
                   That was we maintain authentication that only the user who has logged in is viewing their data*/
       //Create the log message
@@ -115,7 +115,7 @@ const postAuthentication = (
         next
       )
     } else {
-      if (data != null || data != undefined) {
+      if (data !== null || data !== undefined) {
         methodtoCall(schema, res, next, FILE_NAME, parameterToPassToMethod, data)
       } else {
         methodtoCall(schema, res, next, FILE_NAME, parameterToPassToMethod)

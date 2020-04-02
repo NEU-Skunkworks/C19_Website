@@ -91,7 +91,7 @@ const updateJobPosting = (req, res, next) => {
           CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
           next
         )
-      } else if (result != null) {
+      } else if (result !== null) {
         let newJobPosting = new JobPosting({
           jobTitle: req.body.jobTitle,
           description: req.body.description,
@@ -133,7 +133,7 @@ const deleteJobPosting = (req, res, next) => {
           CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
           next
         )
-      } else if (result != null) {
+      } else if (result !== null) {
         var parameterToPass = result.researcherID + ',' + req.params.jobID
         postAuthentication.postAuthentication(
           req,
@@ -167,7 +167,7 @@ const getJobPostingbySearch = (req, res, next) => {
   mongooseMiddleware
     .findallbasedonCriteria(JobPosting, res, next, FILE_NAME, searchcriteria)
     .then(result => {
-      if (result != null || result != []) {
+      if (result !== null || result !== []) {
         CONSTANTS.createLogMessage(
           FILE_NAME,
           'Data Found Successfully',

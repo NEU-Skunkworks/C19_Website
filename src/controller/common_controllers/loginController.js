@@ -44,7 +44,7 @@ const loginAuthentication = (
           CONSTANTS.ERROR_DESCRIPTION.LOGINERROR,
           next
         )
-      } else if (result != null) {
+      } else if (result !== null) {
         if (parseInt(result.loginAttempts) > 2) {
           CONSTANTS.createLogMessage(
             FILE_NAME,
