@@ -79,15 +79,14 @@ Everyone working on this Repository please follow the below rules:
 | 2. | vlastName | Last Name | Yes | String |
 | 3. | vemail | Email ID | Yes | String |
 | 4. | vpassword | Password(hashable password) | Yes | String |
-| 5. | vphone | Phone Number | Yes | Number |
-| 6. | vgender | Gender | Yes | String |
-| 7. | vcreated_date | Created Date (Default value of today's date. Do not need to pass it from the UI) | No | Date |
-| 8. | vage | Between 18 and 65 (Can be changed. Open for discussion) | Yes | Number |
-| 9. | vskills | Holds an array of skills. Value to be given , seperated | Yes | Mixed |
-| 10. | vwork_experience | Holds arrays of different values [company, position, description, from, to] | No | Mixed |
-| 11. | vworks_experience_years | Years of Experience | Yes (Can be 0) | Number |
-| 12. | veducation | Holds Array of different values regarding the education of a volunteer [school, major, state, city, country, from, to] | Yes | Mixed |
-| 13. | type | Holds default value of Volunteer. No need to pass from the frontend | No | String | 
+| 5. | vgender | Gender | Yes | String |
+| 6. | vcreated_date | Created Date (Default value of today's date. Do not need to pass it from the UI) | No | Date |
+| 7. | vage | Between 18 and 65 (Can be changed. Open for discussion) | Yes | Number |
+| 8. | vskills | Holds an array of skills. Value to be given , seperated | Yes | Mixed |
+| 9. | vwork_experience | Holds arrays of different values [company, position, description, from, to] | No | Mixed |
+| 10. | vworks_experience_years | Years of Experience | Yes (Can be 0) | Number |
+| 11. | veducation | Holds Array of different values regarding the education of a volunteer [school, major, state, city, country, from, to] | Yes | Mixed |
+| 12. | type | Holds default value of Volunteer. No need to pass from the frontend | No | String | 
 
 ### 2. `Researcher Schema`
 
@@ -97,12 +96,11 @@ Everyone working on this Repository please follow the below rules:
 | 2. | rlastName | Last Name | Yes | String |
 | 3. | remail | Email ID | Yes | String |
 | 4. | rpassword | Password(hashable password) | Yes | String |
-| 5. | rphone | Phone Number | Yes | Number |
-| 6. | rgender | Gender | Yes | String |
-| 7. | rcreated_date | Created Date (Default value of today's date. Do not need to pass it from the UI) | No | Date |
-| 8. | rage | Between 18 and 65 (Can be changed. Open for discussion) | Yes | Number |
-| 9. | rinstitute | Holds the value for Institutes | Yes | String |
-| 10. | type | Holds default value of Researcher. No need to pass from the frontend | No | String |
+| 5. | rgender | Gender | Yes | String |
+| 6. | rcreated_date | Created Date (Default value of today's date. Do not need to pass it from the UI) | No | Date |
+| 7. | rage | Between 18 and 65 (Can be changed. Open for discussion) | Yes | Number |
+| 8. | rinstitute | Holds the value for Institutes | Yes | String |
+| 9. | type | Holds default value of Researcher. No need to pass from the frontend | No | String |
 
 ### 3. `Job Posting Schema`
 
