@@ -7,7 +7,8 @@ Everyone working on this Repository please follow the below rules:
 <li>Once you are dev complete, you can raise a pull request to organization repo</li>
 <li>You need 2 reviewers to review your pull request before it can me merged to master branch of the Organization Repo</li>
 <li>I have added gitignore for VS code. If you are using any other code editor add appropriate git ignore</li>
-<li> Basic Folder Structure has been added to the project. Please follow the same for your development</li></ol>
+<li> Basic Folder Structure has been added to the project. Please follow the same for your development</li>
+</ol>
 <br>
 
 ## Folder Structure
@@ -22,9 +23,10 @@ Everyone working on this Repository please follow the below rules:
     │       constants.js                        # File having all the constant values such as status code, responses etc.
     │       
     ├───controller                              # Folder with all the controllers that run the required functions for api
-    │   │   jobApplicationController.js         # Controller to handle all the job application api's function
-    │   │   jobpostingController.js             # Controller to handle all the job posting api's function
-    │   │   userController.js                   # Controller to handle all the user related api's function
+    │   │   emailController.js                  # Controller to handle all the email api's
+    │   │   jobApplicationController.js         # Controller to handle all the job application api's
+    │   │   jobpostingController.js             # Controller to handle all the job posting api's
+    │   │   userController.js                   # Controller to handle all the user related api's
     │   │   
     │   └───common_controllers                  # All the controllers that are used across other controllers
     │           addUserController.js            # Controller to handle the add api call for users
@@ -36,6 +38,7 @@ Everyone working on this Repository please follow the below rules:
     │       
     ├───middleware                              # Middleware folder for handling common requests between the api's
     │       authenticationMiddleware.js         # Authentication Middleware used for postAuthenticationController.js
+    │       emailMiddleware.js                  # Middleware to handle all the email requests.
     │       loginMiddleware.js                  # Middleware to check if user exists and to update the login attempts count
     │       mongooseMiddleware.js               # Middleware to handle all the mongoose queries
     │       
@@ -46,18 +49,55 @@ Everyone working on this Repository please follow the below rules:
     │       
     └───Routes                                  # Folder with all the routes. Used in server.js file
             basicroutes.js                      # Basic routes showing hello page and the count of data for each model
+            emailRoutes.js                      # Routes to handle email
             jobApplicationsRoutes.js            # Routes for Job Applications
             jobPostingRoutes.js                 # Routes for Posting jobs
             userRoutes.js                       # Routes for Users
 ```
 
 
-## Installing
+## Steps to run the application
  1. Clone the repository on your local machine
  2. Once cloned cd into the folder and open the files in your favourite editor.
  3. Open a terminal in your folder and run npm i to install all the packages.
- 4. Once all the packages are installed run npm start to start the api
- 5. To test if your application running go to http://localhost:3000/. It should give you the count of users etc.
+ 4. Create a .env folder in your root directory of the project and create the following folders and files in it
+    ```bash
+        ├───emailConstants            # Contains all the email constants required to set up the smtp server
+        │       emailConstants.js
+        │
+        ├───researcher_keys           # The private and public key used to authenticate the researcher
+        │       private.key
+        │       public.key
+        │
+        └───volunteer_keys            # The private and public key used to authenticate the volunteer
+                private.key
+                public.key
+    ```
+
+    To create the public and private keys go to the below website and create them and place them in the private.key and public.key files shown in the above directory. Remember to select PKCS #8 (base64) from the dropdown.
+    https://csfieldguide.org.nz/en/interactives/rsa-key-generator/
+
+    `Note:` The private and public keys should be different for volunteer and researcher. Do not copy the same public and private keys in the files or else it will give you errors
+
+    In the email constants file create a variable as shown below: (This is temporary just to test the application)
+    ```js
+    const emailconstants={
+        HOST:'smtp.googlemail.com',
+        PORT:465,
+        SECURE:true,
+        USER:'YOUR_GMAIL_EMAIL_ID',
+        PASSWORD:'YOUR_GMAIL_PASSWORD'
+    }
+    
+    module.exports={emailconstants}
+    ```
+
+    Follow the steps in the below given link to setup your Gmail SMTP:
+
+    https://artisansweb.net/sending-email-via-gmail-smtp-server-in-nodejs/
+
+ 5. Once all the packages are installed and folders created run npm start to start the api.
+ 6. To test if your application running go to http://localhost:3000/. It should give you the count of users, job applications and job postings currently in the database.
 
 ## MongoDB Schema
 
@@ -98,6 +138,8 @@ Everyone working on this Repository please follow the below rules:
 | 2. | userID | The id of the user who has applied for the job | Yes | String |
 | 3. | currentStatus | The status of the application. Default value is "Application submitted" | Yes | String |
 | 4. | appliedDate | Default to the applied date | Yes | Date |
+| 5. | postedbyID | The id of the user who has posted the job application | No | String |
+| 6. | jobTitle | The job title | No | String |
 
 
 ## API Paths
@@ -139,7 +181,7 @@ Everyone working on this Repository please follow the below rules:
 | API's  | Functionality  | Example URL   | Method | Requires Token Authentication |
 |----------------- |------------ | -------------- | -------------- | -------------- |
 | /jobPosting/ | Gets all the job postings in the database (Can be used for analytical purposes) | http://localhost:3000/dev/jobPosting/ | GET | No |
-| /jobPosting/addJob/:userID | Adds the jobs posting information to the database | http://localhost:3000/dev/jobPosting/addJob/_id | POST | Yes |
+| /jobPosting/addJob/:userID | Adds the jobs posting information to the database and sends out an email to the user for confirmation | http://localhost:3000/dev/jobPosting/addJob/_id | POST | Yes |
 | /jobPosting/:jobID | Gets the job posting information | http://localhost:3000/dev/jobPosting/_id | GET | No |
 | /jobPosting/delete/:jobID | Deletes a job posting based on jobID | http://localhost:3000/dev/jobPosting/delete/_id| DELETE | Yes |
 | /jobPosting/update/:jobID/ | Updates a job Posting | http://localhost:3000/dev/jobPosting/update/_id | PUT | Yes |
@@ -156,3 +198,11 @@ Everyone working on this Repository please follow the below rules:
 | /jobApplication/delete/:applicationID | Deletes a job application | http://localhost:3000/dev/jobApplication/delete/_id| DELETE | Yes |
 | /jobApplication/updatestatus/:applicationID | Updates a job application's status | http://localhost:3000/dev/jobApplication/update/_id | PUT | Yes |
 | /jobApplication/myapplications/:userID| Searchees for jobs posted by a reasearcher | http://localhost:3000/dev/jobApplication/myapplications/_id | GET | Yes |
+
+### 4. `Email API's`
+
+<p>PS: The <i>userID</i> and <i>applicationID</i> mentioned here means the auto generated id from mongoDB (_id)</p>
+
+| API's  | Functionality  | Example URL   | Method | Requires Token Authentication |
+|----------------- |------------ | -------------- | -------------- | -------------- |
+| /email/confirmEmail/:userID | Confirms the email id of the user. Without this the user cannot login to the application | http://localhost:3000/dev/email/confirmEmail/_id | POST | Yes |

@@ -246,19 +246,34 @@ const findallbasedonCriteria = (
 }
 
 //Get count of the document
-const getCount = (schema, FILE_NAME) => {
+const getCount = (schema, FILE_NAME,criteria) => {
   try {
-    return schema.count({}, (err, data) => {
-      //error
-      if (err) {
-        //Log the error
-        CONSTANTS.createLogMessage(FILE_NAME, err.errmsg, 'ERROR')
-      } else {
-        CONSTANTS.createLogMessage(FILE_NAME, 'Get count', 'SUCCESS')
-      }
-
-      //Log success message
-    })
+    if(criteria===null){
+      return schema.count({}, (err, data) => {
+        //error
+        if (err) {
+          //Log the error
+          CONSTANTS.createLogMessage(FILE_NAME, err.errmsg, 'ERROR')
+        } else {
+          CONSTANTS.createLogMessage(FILE_NAME, 'Get count', 'SUCCESS')
+        }
+  
+        //Log success message
+      })
+    }else{
+      return schema.count(criteria, (err, data) => {
+        //error
+        if (err) {
+          //Log the error
+          CONSTANTS.createLogMessage(FILE_NAME, err.errmsg, 'ERROR')
+        } else {
+          CONSTANTS.createLogMessage(FILE_NAME, 'Get count', 'SUCCESS')
+        }
+  
+        //Log success message
+      })
+    }
+    
   } catch (Exception) {}
 }
 //Function add new user

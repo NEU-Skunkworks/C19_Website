@@ -23,6 +23,12 @@ const JobPosting = mongoose.model('JobPostingSchema', JobPostingSchema)
 const UserSchema = require('../model/userModel')
 //Create a variable of type mongoose schema for Job Posting
 const User = mongoose.model('UserSchema', UserSchema)
+const JobApplicationSchema = require('../model/jobApplicationModel')
+const JobApplication = mongoose.model(
+  'JobApplicationSchema',
+  JobApplicationSchema
+)
+
 /*
  * Hello world Route
  * @memberof basicRoute.js
@@ -32,20 +38,34 @@ const User = mongoose.model('UserSchema', UserSchema)
  * @returns {object} responseObject
  */
 router.get('/', function (req, res) {
-  mongooseMiddleware.getCount(Volunteer, FILE_NAME).then(countofusers => {
-    mongooseMiddleware
-      .getCount(JobPosting, FILE_NAME)
-      .then(countofJobPostings => {
-        res.status(CONSTANTS.ERROR_CODE.SUCCESS)
-        res.json({
-          message: {
-            countofusers: countofusers,
-            countofJobPostings: countofJobPostings
-          }
+  var volunteercriteria = { type: 'Volunteer' }
+  mongooseMiddleware
+    .getCount(User, FILE_NAME, volunteercriteria)
+    .then(countofVolunteers => {
+      var researcherCriteria = { type: 'Researcher' }
+      mongooseMiddleware
+        .getCount(User, FILE_NAME, researcherCriteria)
+        .then(countofResearchers => {
+          mongooseMiddleware
+            .getCount(JobPosting, FILE_NAME, null)
+            .then(countofJobPostings => {
+              mongooseMiddleware
+                .getCount(JobApplication, FILE_NAME, null)
+                .then(countofjobApplications => {
+                  res.status(CONSTANTS.ERROR_CODE.SUCCESS)
+                  res.json({
+                    message: {
+                      countofVolunteers: countofVolunteers,
+                      countofResearchers: countofResearchers,
+                      countofJobPostings: countofJobPostings,
+                      countofjobApplications: countofjobApplications
+                    }
+                  })
+                  res.end()
+                })
+            })
         })
-        res.end()
-      })
-  })
+    })
 })
 router.get('/hello', function (req, res) {
   let responseObj = {}

@@ -70,7 +70,8 @@ const addNewJobApplication = (req, res, next) => {
                 let newjobApplication = new JobApplication({
                   jobID: req.body.jobID,
                   userID: req.params.userID,
-                  postedbyID: anotherResult.userID
+                  postedbyID: anotherResult.userID,
+                  jobTitle:anotherResult.jobTitle
                 })
                 postAuthentication.postAuthentication(
                   req,

@@ -19,6 +19,9 @@ module.exports= JobApplicationSchema = new Schema({
   userID: {
     type: String,
   },
+  jobTitle:{
+    type:String
+  },
   appliedDate: {
     type: String,
     default: CONSTANTS.createTime()
