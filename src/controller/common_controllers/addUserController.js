@@ -11,8 +11,10 @@ const bcrypt = require('bcrypt')
 const CONSTANTS = require('../../CONSTANTS/constants')
 //import mongoose queries
 const mongooseMiddleware = require('../../middleware/mongooseMiddleware')
-//import login constants
-const loginMiddleware=require('../../middleware/loginMiddleware')
+//import login middleware
+const loginMiddleware = require('../../middleware/loginMiddleware')
+//import email middleware
+const emailMiddleware = require('../../middleware/emailMiddleware')
 
 const addnewUser = (
   res,
@@ -43,7 +45,25 @@ const addnewUser = (
           }
           data.password = hash
           //Save the data
-          mongooseMiddleware.addNewData(data, res, next, FILE_NAME)
+          mongooseMiddleware.addNewUser(data, FILE_NAME).then(result => {
+            if (result != undefined && result != null) {
+              var body =
+                'You have successfully registered to our website as a ' +
+                result.type +
+                '. Please click the link below to confirm your email<br><br>' +
+                '<a href="http://localhost:3000/confirmEmail/"' +
+                result._id +
+                '>' +
+                'Confirm your Email</a>'
+              emailMiddleware.sendEmail(
+                'admin@skunkworks.com',
+                result.email,
+                'Welcome to NEU SKUNKWORKS',
+                body,
+                res,FILE_NAME
+              )
+            }
+          })
         })
       } else {
         //Create the log message

@@ -96,7 +96,7 @@ const findbyID = (schema, res, next, FILE_NAME, params) => {
           next
         )
       }
-      if (data === null || data===undefined) {
+      if (data === null || data === undefined) {
         CONSTANTS.createLogMessage(FILE_NAME, 'User not Found', 'NODATA')
         CONSTANTS.createResponses(
           res,
@@ -261,6 +261,11 @@ const getCount = (schema, FILE_NAME) => {
     })
   } catch (Exception) {}
 }
+//Function add new user
+const addNewUser = (schema, FILE_NAME) => {
+  //Saving the data into the database.
+   return schema.save()
+}
 
 //Export the modules
 module.exports = {
@@ -271,5 +276,6 @@ module.exports = {
   deleteData,
   findOne,
   findallbasedonCriteria,
-  getCount
+  getCount,
+  addNewUser
 }
