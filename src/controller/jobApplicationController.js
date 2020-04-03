@@ -28,26 +28,61 @@ const loginMiddleware = require('../middleware/loginMiddleware')
 const postAuthentication = require('./common_controllers/postAuthenticationController')
 //import mongoose queries
 const mongooseMiddleware = require('../middleware/mongooseMiddleware')
-
+//import Schema
+const UserSchema = require('../model/userModel')
+//Create a variable of type mongoose schema for Researcher
+const User = mongoose.model('UserSchema', UserSchema)
 
 //This functionality adds a new job application with all the required fields from the body.
 const addNewJobApplication = (req, res, next) => {
-  //Creating the variable to hold the data for fields
-  let newjobApplication = new JobApplication({
-    jobID: req.body.jobID,
-    volunteerID: req.param.volunteerID
-  })
-  postAuthentication.postAuthentication(
-    req,
-    res,
-    next,
-    publicKEY,
-    FILE_NAME,
-    req.params.volunteerID,
-    mongooseMiddleware.addNewData,
-    newjobApplication,
-    null
-  )
+  var searchcriteria = { _id: req.params.userID }
+  loginMiddleware
+    .checkifDataExists(User, searchcriteria, FILE_NAME)
+    .then(result => {
+      if (result != undefined && result != null) {
+        if (result.type.toString() === 'Researcher') {
+          CONSTANTS.createLogMessage(
+            FILE_NAME,
+            CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED,
+            'ERROR'
+          )
+          CONSTANTS.createResponses(
+            res,
+            CONSTANTS.ERROR_CODE.UNAUTHORIZED,
+            CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED,
+            next
+          )
+        } else {
+          let newjobApplication = new JobApplication({
+            jobID: req.body.jobID,
+            volunteerID: req.param.volunteerID
+          })
+          postAuthentication.postAuthentication(
+            req,
+            res,
+            next,
+            publicKEY,
+            FILE_NAME,
+            req.params.volunteerID,
+            mongooseMiddleware.addNewData,
+            newjobApplication,
+            null
+          )
+        }
+      } else {
+        CONSTANTS.createLogMessage(
+          FILE_NAME,
+          CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+          'ERROR'
+        )
+        CONSTANTS.createResponses(
+          res,
+          CONSTANTS.ERROR_CODE.NOT_FOUND,
+          CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+          next
+        )
+      }
+    })  
 }
 
 //This function will retrieve a job application info based on it's ID which is auto generated in mongoDB.
@@ -71,66 +106,15 @@ const getjobApplicationbyID = (req, res, next) => {
   }
 }
 
-//Updates the job application
-const updateJobApplication = (req, res, next) => {
-  var searchcriteria = { _id: req.params.applicationID }
-  loginMiddleware
-    .checkifDataExists(JobApplication, searchcriteria, FILE_NAME)
-    .then(result => {
-      if (result === null) {
-        //Error
-        CONSTANTS.createLogMessage(FILE_NAME, 'Data not Found', 'ERROR')
-        CONSTANTS.createResponses(
-          res,
-          CONSTANTS.ERROR_CODE.NO_DATA_FOUND,
-          CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
-          next
-        )
-      } else if (result !== null) {
-        let newJobPosting = new JobPosting({
-          jobTitle: req.body.jobTitle,
-          description: req.body.description,
-          requirements: req.body.requirements,
-          skills: req.body.skills,
-          work_experience_required: req.body.work_experience_required
-        })
-        var upsertData = newJobPosting.toObject()
-        delete upsertData._id
-        var parameterToPass =
-          result.volunteerID.toString() + ',' + req.params.jobID
-        postAuthentication.postAuthentication(
-          req,
-          res,
-          next,
-          publicKEY,
-          FILE_NAME,
-          parameterToPass,
-          mongooseMiddleware.updateData,
-          JobApplication,
-          upsertData
-        )
-      }
-    })
-}
-
 //Delete the application
 const deleteJobApplication = (req, res, next) => {
   var searchcriteria = { _id: req.params.applicationID }
   loginMiddleware
     .checkifDataExists(JobApplication, searchcriteria, FILE_NAME)
     .then(result => {
-      if (result === null) {
-        //Error
-        CONSTANTS.createLogMessage(FILE_NAME, 'Data not Found', 'ERROR')
-        CONSTANTS.createResponses(
-          res,
-          CONSTANTS.ERROR_CODE.NO_DATA_FOUND,
-          CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
-          next
-        )
-      } else if (result !== null) {
+      if (result != undefined && result != null) {
         var parameterToPass =
-          result.volunteerID.toString() + ',' + req.params.jobID.toString()
+          result.userID.toString() + ',' + req.params.jobID.toString()
         postAuthentication.postAuthentication(
           req,
           res,
@@ -142,28 +126,70 @@ const deleteJobApplication = (req, res, next) => {
           JobApplication,
           null
         )
+        
+      } else {
+        //Error
+        CONSTANTS.createLogMessage(FILE_NAME, 'Data not Found', 'ERROR')
+        CONSTANTS.createResponses(
+          res,
+          CONSTANTS.ERROR_CODE.NO_DATA_FOUND,
+          CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+          next
+        )
       }
     })
 }
 
 //Search Job Postings based on Volunteer ID
 const getmyJobApplications = (req, res, next) => {
-  postAuthentication.postAuthentication(
-    req,
-    res,
-    next,
-    publicKEY,
-    FILE_NAME,
-    req.params.volunteerID.toString(),
-    mongooseMiddleware.findALL,
-    JobPosting,
-    null
-  )
+  var searchcriteria = { _id: req.params.userID }
+  loginMiddleware
+    .checkifDataExists(User, searchcriteria, FILE_NAME)
+    .then(result => {
+      if (result != undefined && result != null) {
+        if (result.type.toString() === 'Researcher') {
+          CONSTANTS.createLogMessage(
+            FILE_NAME,
+            CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED,
+            'ERROR'
+          )
+          CONSTANTS.createResponses(
+            res,
+            CONSTANTS.ERROR_CODE.UNAUTHORIZED,
+            CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED,
+            next
+          )
+        } else {
+          postAuthentication.postAuthentication(
+            req,
+            res,
+            next,
+            publicKEY,
+            FILE_NAME,
+            req.params.volunteerID.toString(),
+            mongooseMiddleware.findALL,
+            JobPosting,
+            null
+          )
+        }
+      } else {
+        CONSTANTS.createLogMessage(
+          FILE_NAME,
+          CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+          'ERROR'
+        )
+        CONSTANTS.createResponses(
+          res,
+          CONSTANTS.ERROR_CODE.NOT_FOUND,
+          CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+          next
+        )
+      }
+    }) 
 }
 module.exports = {
   getmyJobApplications,
   addNewJobApplication,
   deleteJobApplication,
-  updateJobApplication,
   getjobApplicationbyID
 }

@@ -20,11 +20,6 @@ router.get('/:applicationID', function (req, res,next) {
   jobApplicationController.getjobApplicationbyID(req, res,next)
 })
 
-//Update a job application
-router.put('/update/:applicationID', function (req, res,next) {
-  jobApplicationController.updateJobApplication(req, res,next)
-})
-
 //Delete a job application
 router.delete('/delete/:applicationID', function (req, res,next) {
   jobApplicationController.deleteJobApplication(req, res,next)
