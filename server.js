@@ -22,13 +22,15 @@ require('dotenv').config()
 //import the basic routes folder
 const basicRoutes = require(path.resolve('.') + '/src/Routes/basicroutes.js')
 //import the user routes
-const userRoutes = require(path.resolve('.') +
-  '/src/Routes/userRoutes.js')
+const userRoutes = require(path.resolve('.') + '/src/Routes/userRoutes.js')
 const jobPostingRoutes = require(path.resolve('.') +
   '/src/Routes/jobPostingRoutes.js')
 //import the job applications route
 const jobApplicationsRoutes = require(path.resolve('.') +
   '/src/Routes/jobApplicationsRoutes.js')
+//import the email routes
+const emailRoutes = require(path.resolve('.') +
+  '/src/Routes/emailRoutes.js')
 
 //mongoose connection
 mongoose.Promise = global.Promise
@@ -50,6 +52,8 @@ app.use('/dev/user', userRoutes)
 app.use('/dev/jobPosting', jobPostingRoutes)
 //Routes for job Applications
 app.use('/dev/jobApplication', jobApplicationsRoutes)
+//Routes for email
+app.use('/dev/email', emailRoutes)
 
 app.listen(port, function () {
   LOGGER.debug('Express server listening on port %s.', port)

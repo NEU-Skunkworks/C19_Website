@@ -47,20 +47,22 @@ const addnewUser = (
           //Save the data
           mongooseMiddleware.addNewUser(data, FILE_NAME).then(result => {
             if (result != undefined && result != null) {
-              var body =
-                'You have successfully registered to our website as a ' +
-                result.type +
-                '. Please click the link below to confirm your email<br><br>' +
-                '<a href="http://localhost:3000/confirmEmail/"' +
+              var link =
+                '"http://localhost:3000/dev/email/confirmEmail/' +
                 result._id +
-                '>' +
-                'Confirm your Email</a>'
+                '"'
+              var message =
+                '<p>You have successfully registered to our website as a ' +
+                result.type +
+                '. Please click the link below to confirm your email<p><br><br>' +
+                emailMiddleware.createEmailAuthenticationMail(link)
               emailMiddleware.sendEmail(
                 'admin@skunkworks.com',
                 result.email,
                 'Welcome to NEU SKUNKWORKS',
-                body,
-                res,FILE_NAME
+                message,
+                res,
+                FILE_NAME
               )
             }
           })

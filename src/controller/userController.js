@@ -235,20 +235,36 @@ const getUserLogin = (req, res, next) => {
       .checkifDataExists(User, searchCriteria, FILE_NAME)
       .then(result => {
         if (result != undefined && result != null) {
-          if (result.type === 'Volunteer') {
-            var privateKEY = volunteerprivateKEY
+          if (result.emailAuthenticated === 'No') {
+            //Create the log message
+            CONSTANTS.createLogMessage(
+              FILE_NAME,
+              'Email not authenticated',
+              'EMAILAUTHENTICATIONERROR'
+            )
+            //Send the response
+            CONSTANTS.createResponses(
+              res,
+              CONSTANTS.ERROR_CODE.UNAUTHORIZED,
+              'Email not authenticated',
+              next
+            )
           } else {
-            var privateKEY = researcherprivateKEY
+            if (result.type === 'Volunteer') {
+              var privateKEY = volunteerprivateKEY
+            } else {
+              var privateKEY = researcherprivateKEY
+            }
+            loginController.loginAuthentication(
+              User,
+              req,
+              res,
+              next,
+              req.body.password,
+              FILE_NAME,
+              privateKEY
+            )
           }
-          loginController.loginAuthentication(
-            User,
-            req,
-            res,
-            next,
-            req.body.password,
-            FILE_NAME,
-            privateKEY
-          )
         } else {
           //Create the log message
           CONSTANTS.createLogMessage(FILE_NAME, 'No data Found', 'NODATA')
@@ -291,15 +307,22 @@ const findUser = (req, res, next) => {
   } else {
     if (req.params.search.toString().includes(' ')) {
       var name = req.params.search.toString().split(' ')
-      var searchcriteria = { firstName: name[0], lastName: name[1] ,type:"Volunteer"}
+      var searchcriteria = {
+        firstName: name[0],
+        lastName: name[1],
+        type: 'Volunteer'
+      }
     } else if (req.params.search.toString().includes('@')) {
-      var searchcriteria = { email: req.params.search.toString(),type:"Volunteer" }
+      var searchcriteria = {
+        email: req.params.search.toString(),
+        type: 'Volunteer'
+      }
     } else {
       var searchcriteria = {
         $or: [
-          { firstName: req.params.search.toString() ,type:"Volunteer"},
-          { lastName: req.params.search.toString(),type:"Volunteer" },
-          { skills: { $in: [req.params.search.toString()] },type:"Volunteer" }
+          { firstName: req.params.search.toString(), type: 'Volunteer' },
+          { lastName: req.params.search.toString(), type: 'Volunteer' },
+          { skills: { $in: [req.params.search.toString()] }, type: 'Volunteer' }
         ]
       }
     }

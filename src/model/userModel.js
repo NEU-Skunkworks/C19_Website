@@ -55,7 +55,7 @@ module.exports= UserSchema = new Schema({
     default:0
   },
   emailAuthenticated:{
-      type:Number,
-      default:0
+      type:String,
+      default:'No'
   }
 })
