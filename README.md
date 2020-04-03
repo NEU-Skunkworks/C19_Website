@@ -75,7 +75,7 @@ Everyone working on this Repository please follow the below rules:
 | 8. | skills | Holds an array of skills. Value to be given , seperated | Yes | Mixed |
 | 9. | portfolioLink | Link to either a portfolio page or LinkedIN | Yes | String |
 | 11. | education | Highest Degree being pursued by the user  | Yes | String |
-| 12. | type | Holds the value of either user or Researcher | Yes | String | 
+| 12. | type | Holds the value of either Volunteer or Researcher | Yes | String | 
 | 13. | loginAttempts | Counts the number of times the user has attempted a wrong login | No | Number | 
 | 14. | emailAuthenticated | Checks if the user has verified their login or not | No | Number |
 
