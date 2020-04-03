@@ -18,7 +18,25 @@ var signOptions = {
   expiresIn: '12h',
   algorithm: 'RS256'
 }
+var createTime=()=>{
+//Declare a date variable
+let today = new Date()
+//Extract all the information needed from the above variable
+let date =
+  today.getFullYear() +
+  '-' +
+  (today.getMonth() + 1) +
+  '-' +
+  today.getDate() +
+  '-' +
+  today.getHours() +
+  ':' +
+  today.getMinutes() +
+  ':' +
+  today.getSeconds()
 
+  return date
+}
 //Specifying the error codes
 const ERROR_CODE = {
   NOT_FOUND: 409,
@@ -56,23 +74,9 @@ Function to create the log message and insert it in the log file. Takes the foll
 3. type = What type of message
 */
 const createLogMessage = (FILE_NAME, message, type) => {
-  //Declare a date variable
-  let today = new Date()
-  //Extract all the information needed from the above variable
-  let date =
-    today.getFullYear() +
-    '-' +
-    (today.getMonth() + 1) +
-    '-' +
-    today.getDate() +
-    '-' +
-    today.getHours() +
-    ':' +
-    today.getMinutes() +
-    ':' +
-    today.getSeconds()
+  
   //Log the data in the log into
-  LOGGER.info(date + ' ' + type + ' ' + FILE_NAME + ' message: ' + message)
+  LOGGER.info(createTime() + ' ' + type + ' ' + FILE_NAME + ' message: ' + message)
 }
 /*
 Function to create a response. Takes the following input
@@ -114,5 +118,6 @@ module.exports = {
   signOptions,
   verifyOptions,
   createResponses,
-  createResponseWithoutNext
+  createResponseWithoutNext,
+  createTime
 }

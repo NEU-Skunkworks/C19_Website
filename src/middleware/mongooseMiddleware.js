@@ -58,14 +58,26 @@ const findALL = (schema, res, next, FILE_NAME) => {
           next
         )
       }
-      //Log success message
-      CONSTANTS.createLogMessage(
-        FILE_NAME,
-        'Successfully searched all data',
-        'SUCCESS'
-      )
-      //Send back the response
-      CONSTANTS.createResponses(res, CONSTANTS.ERROR_CODE.SUCCESS, data, next)
+      if (data !== null) {
+        //Log success message
+        CONSTANTS.createLogMessage(
+          FILE_NAME,
+          'Successfully searched all data',
+          'SUCCESS'
+        )
+        //Send back the response
+        CONSTANTS.createResponses(res, CONSTANTS.ERROR_CODE.SUCCESS, data, next)
+      } else {
+        //Log success message
+        CONSTANTS.createLogMessage(FILE_NAME, 'No data Found', 'NODATA')
+        //Send back the response
+        CONSTANTS.createResponses(
+          res,
+          CONSTANTS.ERROR_CODE.NOT_FOUND,
+          'No Data Found',
+          next
+        )
+      }
     })
   } catch (Exception) {}
 }
@@ -84,7 +96,7 @@ const findbyID = (schema, res, next, FILE_NAME, params) => {
           next
         )
       }
-      if (data === null) {
+      if (data === null || data === undefined) {
         CONSTANTS.createLogMessage(FILE_NAME, 'User not Found', 'NODATA')
         CONSTANTS.createResponses(
           res,
@@ -183,12 +195,10 @@ const deleteData = (schema, res, next, FILE_NAME, param) => {
   } catch (Exception) {}
 }
 
-
-
 //Function to find a specific data
 const findOne = (schema, res, next, FILE_NAME, searchCriteria) => {
   try {
-   schema.findOne(searchCriteria, (err, data) => {
+    schema.findOne(searchCriteria, (err, data) => {
       if (err) {
         //Create the log message
         CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
@@ -209,51 +219,68 @@ const findOne = (schema, res, next, FILE_NAME, searchCriteria) => {
 }
 
 //Function to find all the data from the database based on a criteria
-const findallbasedonCriteria = (schema, res, next, FILE_NAME,searchCriteria) => {
+const findallbasedonCriteria = (
+  schema,
+  res,
+  next,
+  FILE_NAME,
+  searchCriteria
+) => {
   try {
     return schema.find(searchCriteria, (err, data) => {
       //error
       if (err) {
         //Log the error
         CONSTANTS.createLogMessage(FILE_NAME, err.errmsg, 'ERROR')
-      }
-      else{
+      } else {
         CONSTANTS.createLogMessage(
           FILE_NAME,
           'Successfully searched all data',
           'SUCCESS'
         )
       }
-      
+
       //Log success message
-      
     })
   } catch (Exception) {}
 }
 
 //Get count of the document
-const getCount = (schema, FILE_NAME) => {
+const getCount = (schema, FILE_NAME,criteria) => {
   try {
-    return schema.count({}, (err, data) => {
-      //error
-      if (err) {
-        //Log the error
-        CONSTANTS.createLogMessage(FILE_NAME, err.errmsg, 'ERROR')
-      }
-      else{
-        CONSTANTS.createLogMessage(
-          FILE_NAME,
-          'Get count',
-          'SUCCESS'
-        )
-      }
-      
-      //Log success message
-      
-    })
+    if(criteria===null){
+      return schema.count({}, (err, data) => {
+        //error
+        if (err) {
+          //Log the error
+          CONSTANTS.createLogMessage(FILE_NAME, err.errmsg, 'ERROR')
+        } else {
+          CONSTANTS.createLogMessage(FILE_NAME, 'Get count', 'SUCCESS')
+        }
+  
+        //Log success message
+      })
+    }else{
+      return schema.count(criteria, (err, data) => {
+        //error
+        if (err) {
+          //Log the error
+          CONSTANTS.createLogMessage(FILE_NAME, err.errmsg, 'ERROR')
+        } else {
+          CONSTANTS.createLogMessage(FILE_NAME, 'Get count', 'SUCCESS')
+        }
+  
+        //Log success message
+      })
+    }
+    
   } catch (Exception) {}
 }
-
+//Function add new user
+const addNewUser = (schema, FILE_NAME) => {
+  //Saving the data into the database.
+   return schema.save()
+}
 
 //Export the modules
 module.exports = {
@@ -264,5 +291,6 @@ module.exports = {
   deleteData,
   findOne,
   findallbasedonCriteria,
-  getCount
+  getCount,
+  addNewUser
 }

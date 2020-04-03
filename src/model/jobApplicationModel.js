@@ -7,18 +7,24 @@
 
 const mongoose=require('mongoose');
 const Schema = mongoose.Schema
-
+const CONSTANTS=require('../CONSTANTS/constants')
 //This model defines the data fields we will be storing in the database.
 module.exports= JobApplicationSchema = new Schema({
   jobID: {
     type: String
   },
-  volunteerID: {
+  postedbyID:{
+    type:String
+  },
+  userID: {
     type: String,
   },
+  jobTitle:{
+    type:String
+  },
   appliedDate: {
-    type: Date,
-    default: Date.now()
+    type: String,
+    default: CONSTANTS.createTime()
   },
   currentStatus:{
       type:String,

@@ -12,8 +12,7 @@ const CONSTANTS = require('../../CONSTANTS/constants')
 //importing bcrypt to hash the user entered password for security.
 const bcrypt = require('bcrypt')
 //import login constants
-const loginMiddleware=require('../../middleware/loginMiddleware')
-
+const loginMiddleware = require('../../middleware/loginMiddleware')
 
 //Authentication Function
 const loginAuthentication = (
@@ -27,11 +26,7 @@ const loginAuthentication = (
   type
 ) => {
   //Check the type of user to be authenticated
-  if (type === 'Volunteer') {
-    var searchCriteria = { vemail: req.body.vemail }
-  } else if (type === 'Researcher') {
-    var searchCriteria = { remail: req.body.remail }
-  }
+  var searchCriteria = { email: req.body.email }
   loginMiddleware
     .checkifDataExists(schema, searchCriteria, FILE_NAME)
     .then(result => {
@@ -44,8 +39,8 @@ const loginAuthentication = (
           CONSTANTS.ERROR_DESCRIPTION.LOGINERROR,
           next
         )
-      } else if (result != null) {
-        if (parseInt(result.loginAttempts) > 2) {
+      } else if (result !== null) {
+        if (parseInt(result.loginAttempts) ===6) {
           CONSTANTS.createLogMessage(
             FILE_NAME,
             'Too many login attempts',
@@ -58,11 +53,7 @@ const loginAuthentication = (
             next
           )
         } else {
-          if (type === 'Volunteer') {
-            var pwd = result.vpassword.toString()
-          } else if (type === 'Researcher') {
-            var pwd = result.rpassword.toString()
-          }
+          var pwd=result.password.toString()
           bcrypt.compare(password, pwd.toString(), (err, match) => {
             if (err) {
               CONSTANTS.createLogMessage(FILE_NAME, 'Server Error', 'ERROR')
@@ -119,7 +110,7 @@ const loginAuthentication = (
                   }
                 })
             } else {
-              var data = { $inc: { 'loginAttempts': 1 } }
+              var data = { $inc: { loginAttempts: 1 } }
               loginMiddleware
                 .updateLoginAttempts(schema, FILE_NAME, searchCriteria, data)
                 .then(d => {

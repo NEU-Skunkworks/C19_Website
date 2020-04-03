@@ -21,14 +21,13 @@ const postAuthentication = (
   schema,
   data
 ) => {
-  if(paramterID.toString().includes(',')){
-    var parameterSplit=paramterID.toString().split(',')
-    var parameterToCompareToken=parameterSplit[0].toString()
-    var parameterToPassToMethod=parameterSplit[1].toString()
-  }
-  else{
-    var parameterToCompareToken=paramterID.toString()
-    var parameterToPassToMethod=paramterID.toString()
+  if (paramterID.toString().includes(',')) {
+    var parameterSplit = paramterID.toString().split(',')
+    var parameterToCompareToken = parameterSplit[0].toString()
+    var parameterToPassToMethod = parameterSplit[1].toString()
+  } else {
+    var parameterToCompareToken = paramterID.toString()
+    var parameterToPassToMethod = paramterID.toString()
   }
   var result = authenticationMiddleware.authenticateUser(
     req,
@@ -46,8 +45,19 @@ const postAuthentication = (
       next
     )
   }
-  if (result.message != null) {
-    if (result.message === 'invalid token') {
+  if (result.message !== undefined && result.message !== null) {
+    if (result.message === 'invalid signature') {
+      //Create the log message
+      CONSTANTS.createLogMessage(FILE_NAME, 'Token invalid', 'UNAUTHORIZED')
+      //Send the response
+      CONSTANTS.createResponses(
+        res,
+        CONSTANTS.ERROR_CODE.BAD_REQUEST,
+        CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED,
+        next
+      )
+    }
+    else if (result.message === 'invalid token') {
       //Create the log message
       CONSTANTS.createLogMessage(FILE_NAME, 'Token invalid', 'UNAUTHORIZED')
       //Send the response
@@ -114,9 +124,16 @@ const postAuthentication = (
         CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED,
         next
       )
-    } else {
-      if (data != null || data != undefined) {
-        methodtoCall(schema, res, next, FILE_NAME, parameterToPassToMethod, data)
+    } else if (result !== null) {
+      if (data !== null || data !== undefined) {
+        methodtoCall(
+          schema,
+          res,
+          next,
+          FILE_NAME,
+          parameterToPassToMethod,
+          data
+        )
       } else {
         methodtoCall(schema, res, next, FILE_NAME, parameterToPassToMethod)
       }

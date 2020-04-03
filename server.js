@@ -21,18 +21,16 @@ require('dotenv').config()
 
 //import the basic routes folder
 const basicRoutes = require(path.resolve('.') + '/src/Routes/basicroutes.js')
-//import the volunteers route
-const volunteerRoutes = require(path.resolve('.') +
-  '/src/Routes/volunteerRoutes.js')
-//import the researchers route
-const researcherRoutes = require(path.resolve('.') +
-  '/src/Routes/researcherRoutes.js')
-//import the job postings route
+//import the user routes
+const userRoutes = require(path.resolve('.') + '/src/Routes/userRoutes.js')
 const jobPostingRoutes = require(path.resolve('.') +
   '/src/Routes/jobPostingRoutes.js')
 //import the job applications route
 const jobApplicationsRoutes = require(path.resolve('.') +
   '/src/Routes/jobApplicationsRoutes.js')
+//import the email routes
+const emailRoutes = require(path.resolve('.') +
+  '/src/Routes/emailRoutes.js')
 
 //mongoose connection
 mongoose.Promise = global.Promise
@@ -48,14 +46,14 @@ app.use(cors())
 
 //basic route
 app.use('/', basicRoutes)
-//Routes for volunteers
-app.use('/dev/volunteer', volunteerRoutes)
-//Routes for Researchers
-app.use('/dev/researcher', researcherRoutes)
+//Routes for users
+app.use('/dev/user', userRoutes)
 //Routes for job Postings
 app.use('/dev/jobPosting', jobPostingRoutes)
 //Routes for job Applications
-app.use('/dev/jobApplications', jobApplicationsRoutes)
+app.use('/dev/jobApplication', jobApplicationsRoutes)
+//Routes for email
+app.use('/dev/email', emailRoutes)
 
 app.listen(port, function () {
   LOGGER.debug('Express server listening on port %s.', port)

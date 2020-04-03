@@ -16,274 +16,286 @@ const JobApplication = mongoose.model(
 )
 
 const FILE_NAME = 'jobApplicationController.js'
-const LOGGER = require('../Logger/logger')
-//Specifying the verifying options for json web token
-var verifyOptions = {
-  expiresIn: '12h',
-  algorithm: ['RS256']
-}
 //import constants file
 const CONSTANTS = require('../CONSTANTS/constants')
-//importing jwt token to assign to the user once authenticated
-const jwt = require('jsonwebtoken')
 //importing file system to get the public and private key for creating public and private keys.
 const fs = require('fs')
 //public key path
-var publicKEY = fs.readFileSync('./.env/researcher_keys/public.key', 'utf8')
-var publicKEYR = fs.readFileSync('./.env/researcher_keys/public.key', 'utf8')
+var publicKEY = fs.readFileSync('./.env/volunteer_keys/public.key', 'utf8')
+//import login constants
+const loginMiddleware = require('../middleware/loginMiddleware')
+//import post authentication controller
+const postAuthentication = require('./common_controllers/postAuthenticationController')
+//import mongoose queries
+const mongooseMiddleware = require('../middleware/mongooseMiddleware')
+//import Schema
+const UserSchema = require('../model/userModel')
+//Create a variable of type mongoose schema for Researcher
+const User = mongoose.model('UserSchema', UserSchema)
+//public key path
+var researcherpublicKEY = fs.readFileSync(
+  './.env/researcher_keys/public.key',
+  'utf8'
+)
+//import Job Posting Schema
+const JobPostingSchema = require('../model/jobPostingModel')
+//Create a variable of type mongoose schema for Job Posting
+const JobPosting = mongoose.model('JobPostingSchema', JobPostingSchema)
 
 //This functionality adds a new job application with all the required fields from the body.
-const addNewJobApplication = (req, res,next) => {
-  let today = new Date()
-  let date =
-    today.getFullYear() +
-    '-' +
-    (today.getMonth() + 1) +
-    '-' +
-    today.getDate() +
-    '-' +
-    today.getHours() +
-    ':' +
-    today.getMinutes() +
-    ':' +
-    today.getSeconds()
-    //Get the token value from the header
-  let token = req.headers['x-access-token'] || req.headers['authorization']
-  //If token is undefined send back the unauthorized error.
-  if (token === undefined) {
-    LOGGER.info(date + ' User not authorized  ' + FILE_NAME)
-    res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-    res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-    next();
-  }
-  //If token starts with Bearer then slice the token
-  if (token.startsWith('Bearer ')) {
-    // Remove Bearer from string
-    token = token.slice(7, token.length)
-  }
-  //Decode the token value based on the public key value.
-  var checkForAuthentication = jwt.verify(token, publicKEY, verifyOptions)
-  if (checkForAuthentication === null) {
-    LOGGER.info(date + ' User not authorized  ' + FILE_NAME)
-    res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-    res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-    next()
-  }
-  //If the checkauthentication variable does not have an id property then give unauthorized error.
-  else if (checkForAuthentication.hasOwnProperty('id') === false) {
-    LOGGER.info(date + ' User not authorized  ' + FILE_NAME)
-    res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-    res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-    next();
-  } 
-  else if (checkForAuthentication.id != req.params.volunteerID) {
-    LOGGER.info(date + ' User not authorized  ' + FILE_NAME)
-    res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-    res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-    next()
-  } 
-  //Creating the variable to hold the data for fields
-  let newjobApplication = new JobApplication({
-    jobID: req.body.jobID,
-    volunteerID: req.param.volunteerID
-  })
-  //Saving the data into the database.
-  newjobApplication.save((err, jobApplication) => {
-    //Error
-    if (err) {
-    res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-    res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-    next();
-    }
-    //Return the success mesage if successfully added.
-    LOGGER.info(date + ' Successfully submitted job application ' + FILE_NAME)
-    res.status(CONSTANTS.ERROR_CODE.SUCCESS)
-    res.json({ data: CONSTANTS.SUCCESS_DESCRIPTION.SUCCESS })
-    next();
-  })
+const addNewJobApplication = (req, res, next) => {
+  var searchcriteria = { _id: req.params.userID }
+  loginMiddleware
+    .checkifDataExists(User, searchcriteria, FILE_NAME)
+    .then(result => {
+      if (result != undefined && result != null) {
+        if (result.type.toString() === 'Researcher') {
+          CONSTANTS.createLogMessage(
+            FILE_NAME,
+            CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED,
+            'ERROR'
+          )
+          CONSTANTS.createResponses(
+            res,
+            CONSTANTS.ERROR_CODE.UNAUTHORIZED,
+            CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED,
+            next
+          )
+        } else {
+          var searchcriteria = { _id: req.body.jobID }
+          loginMiddleware
+            .checkifDataExists(JobPosting, searchcriteria, FILE_NAME)
+            .then(anotherResult => {
+              if (anotherResult != undefined && anotherResult != null) {
+                let newjobApplication = new JobApplication({
+                  jobID: req.body.jobID,
+                  userID: req.params.userID,
+                  postedbyID: anotherResult.userID,
+                  jobTitle:anotherResult.jobTitle
+                })
+                postAuthentication.postAuthentication(
+                  req,
+                  res,
+                  next,
+                  publicKEY,
+                  FILE_NAME,
+                  result._id,
+                  mongooseMiddleware.addNewData,
+                  newjobApplication,
+                  null
+                )
+              } else {
+                CONSTANTS.createLogMessage(
+                  FILE_NAME,
+                  CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+                  'ERROR'
+                )
+                CONSTANTS.createResponses(
+                  res,
+                  CONSTANTS.ERROR_CODE.NOT_FOUND,
+                  CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+                  next
+                )
+              }
+            })
+        }
+      } else {
+        CONSTANTS.createLogMessage(
+          FILE_NAME,
+          CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+          'ERROR'
+        )
+        CONSTANTS.createResponses(
+          res,
+          CONSTANTS.ERROR_CODE.NOT_FOUND,
+          CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+          next
+        )
+      }
+    })
 }
 
 //This function will retrieve a job application info based on it's ID which is auto generated in mongoDB.
-const getjobApplicationbyID = (req, res,next) => {
-  let today = new Date()
-  let date =
-    today.getFullYear() +
-    '-' +
-    (today.getMonth() + 1) +
-    '-' +
-    today.getDate() +
-    '-' +
-    today.getHours() +
-    ':' +
-    today.getMinutes() +
-    ':' +
-    today.getSeconds()
-    let token = req.headers['x-access-token'] || req.headers['authorization']
-  if (token === undefined) {
-    LOGGER.info(date + ' User not authorized  ' + FILE_NAME)
-    res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-    res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-    next()
+const getjobApplicationbyID = (req, res, next) => {
+  if (req.params === undefined) {
+    CONSTANTS.createLogMessage(FILE_NAME, 'Parameter not found', 'ERROR')
+    CONSTANTS.createResponses(
+      res,
+      CONSTANTS.ERROR_CODE.NOT_FOUND,
+      'Parameter not found',
+      next
+    )
+  } else {
+    mongooseMiddleware.findbyID(
+      JobApplication,
+      res,
+      next,
+      FILE_NAME,
+      req.params.applicationID
+    )
   }
-  if (token.startsWith('Bearer ')) {
-    token = token.slice(7, token.length)
-  }
-  var checkForAuthentication = jwt.verify(token, publicKEY, verifyOptions)
-  if (checkForAuthentication.hasOwnProperty('id') === false) {
-    LOGGER.info(date + ' User not authorized  ' + FILE_NAME)
-    res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-    res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-    next()
-  } else if (checkForAuthentication.id != req.params.researcherID) {
-    LOGGER.info(date + ' User not authorized  ' + FILE_NAME)
-    res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-    res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-    next()
-  }
-  var checkForAuthentication = jwt.verify(token, publicKEYR, verifyOptions)
-  if (checkForAuthentication === null) {
-    LOGGER.info(date + ' User not authorized  ' + FILE_NAME)
-    res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-    res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-    next()
-  }
-  JobApplication.findById(req.params.jobID, (err, jobApplication) => {
-    if (err) {
-      LOGGER.info(date + ' Error occured in' + FILE_NAME + 'message: ' + err)
-      res.json({ error: CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND })
-    }
-    LOGGER.info(date + ' Successfully searched for job posting ' + FILE_NAME)
-    res.json({ data: jobApplication })
-  })
-}
-
-//Updates the job application
-const updateJobApplication = (req, res,next) => {
-  let today = new Date()
-  let date =
-    today.getFullYear() +
-    '-' +
-    (today.getMonth() + 1) +
-    '-' +
-    today.getDate() +
-    '-' +
-    today.getHours() +
-    ':' +
-    today.getMinutes() +
-    ':' +
-    today.getSeconds()
-  let newjobApplication = new JobApplication({
-    jobID: req.body.jobID,
-    volunteerID: req.body.volunteerID
-  })
-  var upsertData = newjobApplication.toObject()
-  delete upsertData._id
-  JobApplication.findOneAndUpdate(
-    { _id: req.params.applicationID },
-    {$set:upsertData},
-    { new: true, useFindAndModify: false },
-    (err, jobApplication) => {
-      if (err) {
-        LOGGER.info(
-          date + ' Error occured in ' + FILE_NAME + ' message: ' + err
-        )
-        res.json({ error: CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND })
-      }
-      LOGGER.info(date + ' Successfully updated job application ' + FILE_NAME)
-      res.json({ data: jobApplication })
-    }
-  )
 }
 
 //Delete the application
-const deleteJobApplication = (req, res,next) => {
-  let today = new Date()
-  let date =
-    today.getFullYear() +
-    '-' +
-    (today.getMonth() + 1) +
-    '-' +
-    today.getDate() +
-    '-' +
-    today.getHours() +
-    ':' +
-    today.getMinutes() +
-    ':' +
-    today.getSeconds()
-  JobApplication.deleteOne(
-    { _id: req.params.applicationID },
-    (err, jobApplication) => {
-      if (err) {
-        LOGGER.info(date + ' Error occured in' + FILE_NAME + 'message: ' + err)
-        res.json({ error: CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND })
+const deleteJobApplication = (req, res, next) => {
+  var searchcriteria = { _id: req.params.applicationID }
+  loginMiddleware
+    .checkifDataExists(JobApplication, searchcriteria, FILE_NAME)
+    .then(result => {
+      if (result != undefined && result != null) {
+        var parameterToPass =
+          result.userID.toString() + ',' + req.params.applicationID.toString()
+        postAuthentication.postAuthentication(
+          req,
+          res,
+          next,
+          publicKEY,
+          FILE_NAME,
+          parameterToPass,
+          mongooseMiddleware.deleteData,
+          JobApplication,
+          null
+        )
+      } else {
+        //Error
+        CONSTANTS.createLogMessage(FILE_NAME, 'Data not Found', 'ERROR')
+        CONSTANTS.createResponses(
+          res,
+          CONSTANTS.ERROR_CODE.NO_DATA_FOUND,
+          CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+          next
+        )
       }
-      LOGGER.info(date + ' Successfully deleted job application ' + FILE_NAME)
-      res.json({ data: CONSTANTS.SUCCESS_DESCRIPTION.SUCCESS })
-    }
-  )
+    })
 }
 
 //Search Job Postings based on Volunteer ID
-const getmyJobApplications = (req, res,next) => {
-  let today = new Date()
-  let date =
-    today.getFullYear() +
-    '-' +
-    (today.getMonth() + 1) +
-    '-' +
-    today.getDate() +
-    '-' +
-    today.getHours() +
-    ':' +
-    today.getMinutes() +
-    ':' +
-    today.getSeconds()
-    let token = req.headers['x-access-token'] || req.headers['authorization']
-  //If token is undefined send back the unauthorized error.
-  if (token === undefined) {
-    LOGGER.info(date + ' User not authorized  ' + FILE_NAME)
-    res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-    res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-    next();
-  }
-  //If token starts with Bearer then slice the token
-  if (token.startsWith('Bearer ')) {
-    // Remove Bearer from string
-    token = token.slice(7, token.length)
-  }
-  //Decode the token value based on the public key value.
-  var checkForAuthentication = jwt.verify(token, publicKEY, verifyOptions)
-  if (checkForAuthentication === null) {
-    LOGGER.info(date + ' User not authorized  ' + FILE_NAME)
-    res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-    res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-    next()
-  }
-  //If the checkauthentication variable does not have an id property then give unauthorized error.
-  else if (checkForAuthentication.hasOwnProperty('id') === false) {
-    LOGGER.info(date + ' User not authorized  ' + FILE_NAME)
-    res.status(CONSTANTS.ERROR_CODE.UNAUTHORIZED)
-    res.json({ error: CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED })
-    next();
-  } 
-  JobApplication.find(
-    { volunteerID: { $in: req.params.volunteerID } },
-    (err, jobApplication) => {
-      if (err) {
-        LOGGER.info(date + ' Error occured in' + FILE_NAME + 'message: ' + err)
-        res.json({ error: CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND })
+const getmyJobApplications = (req, res, next) => {
+  var searchcriteria = { _id: req.params.userID }
+  loginMiddleware
+    .checkifDataExists(User, searchcriteria, FILE_NAME)
+    .then(result => {
+      if (result != undefined && result != null) {
+        if (result.type.toString() === 'Researcher') {
+          CONSTANTS.createLogMessage(
+            FILE_NAME,
+            CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED,
+            'ERROR'
+          )
+          CONSTANTS.createResponses(
+            res,
+            CONSTANTS.ERROR_CODE.UNAUTHORIZED,
+            CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED,
+            next
+          )
+        } else {
+          console.log(req.params.userID.toString())
+          postAuthentication.postAuthentication(
+            req,
+            res,
+            next,
+            publicKEY,
+            FILE_NAME,
+            req.params.userID.toString(),
+            mongooseMiddleware.findOne,
+            JobApplication,
+            null
+          )
+        }
+      } else {
+        CONSTANTS.createLogMessage(
+          FILE_NAME,
+          CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+          'ERROR'
+        )
+        CONSTANTS.createResponses(
+          res,
+          CONSTANTS.ERROR_CODE.NOT_FOUND,
+          CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+          next
+        )
       }
-      LOGGER.info(
-        date + ' Successfully searched for job applications ' + FILE_NAME
-      )
-      res.json({ data: jobApplication })
-    }
-  )
+    })
+}
+
+const updateApplicationStatus = (req, res, next) => {
+  var searchcriteria = { _id: req.params.applicationID }
+  loginMiddleware
+    .checkifDataExists(JobApplication, searchcriteria, FILE_NAME)
+    .then(result => {
+      console.log(result)
+      if (result != undefined && result != null) {
+        var search = { _id: result.postedbyID.toString() }
+        loginMiddleware
+          .checkifDataExists(User, search, FILE_NAME)
+          .then(anotherResult => {
+            if (anotherResult != undefined && anotherResult != null) {
+              if (anotherResult.type === 'Researcher') {
+                let newjobApplication = new JobApplication({
+                  currentStatus: req.body.status
+                })
+                var upsertData = newjobApplication.toObject()
+                delete upsertData._id
+                var parameterToPass =
+                  anotherResult._id.toString() +
+                  ',' +
+                  req.params.applicationID.toString()
+                postAuthentication.postAuthentication(
+                  req,
+                  res,
+                  next,
+                  researcherpublicKEY,
+                  FILE_NAME,
+                  parameterToPass,
+                  mongooseMiddleware.updateData,
+                  JobApplication,
+                  upsertData
+                )
+              } else {
+                //Error
+                CONSTANTS.createLogMessage(
+                  FILE_NAME,
+                  CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED,
+                  'UNAUTHORIZED'
+                )
+                CONSTANTS.createResponses(
+                  res,
+                  CONSTANTS.ERROR_CODE.UNAUTHORIZED,
+                  CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED,
+                  next
+                )
+              }
+            } else {
+              //Error
+              CONSTANTS.createLogMessage(
+                FILE_NAME,
+                CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+                'NOTFOUND'
+              )
+              CONSTANTS.createResponses(
+                res,
+                CONSTANTS.ERROR_CODE.NOT_FOUND,
+                CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+                next
+              )
+            }
+          })
+      } else {
+        //Error
+        CONSTANTS.createLogMessage(FILE_NAME, 'Data not Found', 'ERROR')
+        CONSTANTS.createResponses(
+          res,
+          CONSTANTS.ERROR_CODE.NO_DATA_FOUND,
+          CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+          next
+        )
+      }
+    })
 }
 module.exports = {
   getmyJobApplications,
   addNewJobApplication,
   deleteJobApplication,
-  updateJobApplication,
-  getjobApplicationbyID
+  getjobApplicationbyID,
+  updateApplicationStatus
 }

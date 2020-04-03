@@ -24,9 +24,11 @@
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "install": "^0.13.0",
     "jsonwebtoken": "^8.5.1",
     "log4js": "^6.1.2",
     "mongoose": "^5.9.6",
+    "nodemailer": "^6.4.6",
     "nodemon": "^2.0.2"
   }
 }

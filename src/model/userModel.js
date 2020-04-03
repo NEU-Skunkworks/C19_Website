@@ -1,55 +1,61 @@
 /**
- * @file researcherModel.js
+ * @file volunteerModel.js
  * @author Rahul Handoo
  * @version 1.0
- * createdDate: 03/28/2020
+ * createdDate: 03/27/2020
  */
 
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
-
+const CONSTANTS=require('../CONSTANTS/constants')
 //This model defines the data fields we will be storing in the database.
-module.exports = ResearcherSchema = new Schema({
-  rfirstName: {
+module.exports= UserSchema = new Schema({
+  firstName: {
     type: String,
     required: 'First name is required'
   },
-  rlastName: {
+  lastName: {
     type: String,
     required: 'Last name is required'
   },
-  remail: {
+  email: {
     type: String,
     required: 'Email ID is required'
   },
-
-  rpassword: {
+  password: {
     type: String,
     required: 'Password is required'
   },
-  rgender: {
-    type: String,
+  gender:{
+    type:String,
     required: 'Gender is required'
   },
-  rcreated_date: {
-    type: Date,
-    default: Date.now()
-  },
-  rage: {
-    type: Number,
-    min: 18,
-    max: 65
-  },
-  rinstitute: {
+  created_date: {
     type: String,
-    required: 'Institute is required'
+    default: CONSTANTS.createTime()
+  },
+  dateofBirth: {
+    type: String,
+  },
+  skills: {
+    type: Schema.Types.Mixed,
+    required: 'Skills are required'
+  },
+  education: {
+    type:String
+  },
+  portfolioLink:{
+      type:String
   },
   type: {
     type: String,
-    default: 'Researcher'
   },
   loginAttempts:{
     type:Number,
     default:0
+  },
+  emailAuthenticated:{
+      type:String,
+      default:'No'
   }
 })

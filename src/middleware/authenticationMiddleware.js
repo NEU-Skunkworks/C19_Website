@@ -17,6 +17,7 @@ Function to authenticate the user. Takes the following input
 4. FILE_NAME = The file name for which the log entry has to be made
 */
 const authenticateUser = (req, publicKEY, FILE_NAME) => {
+  
   //Get the token value from the header
   let token = req.headers['x-access-token'] || req.headers['authorization']
   //If token is undefined send back the unauthorized error.
@@ -29,8 +30,8 @@ const authenticateUser = (req, publicKEY, FILE_NAME) => {
   else if (token.startsWith('Bearer ')) {
     // Remove Bearer from string
     token = token.slice(7, token.length)
-    return jwt.verify(token, publicKEY, CONSTANTS.verifyOptions, (err, decode) => {
-      if(err!=null){
+    return jwt.decode(token, publicKEY, CONSTANTS.verifyOptions, (err, decode) => {
+      if(err!==null){
         return err
       }
       else{
