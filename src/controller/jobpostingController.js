@@ -25,35 +25,71 @@ const mongooseMiddleware = require('../middleware/mongooseMiddleware')
 const FILE_NAME = 'jobPostingController.js'
 //import login constants
 const loginMiddleware = require('../middleware/loginMiddleware')
+//import Schema
+const UserSchema = require('../model/userModel')
+//Create a variable of type mongoose schema for Researcher
+const User = mongoose.model('UserSchema', UserSchema)
 
 //This functionality adds a new job posting with all the required fields from the body.
 const addNewJobPosting = (req, res, next) => {
   //Creating the variable to hold the data for fields
-  if (req.body.skills.toString().includes(',')) {
-    var skills = req.body.skills
-    var skillsArr = skills.split(',')
-  } else {
-    var skillsArr = req.body.vskills.toString()
-  }
-  let newJobPosting = new JobPosting({
-    researcherID: req.params.researcherID,
-    jobTitle: req.body.jobTitle,
-    description: req.body.description,
-    requirements: req.body.requirements,
-    skills: skillsArr,
-    work_experience_required: req.body.work_experience_required
-  })
-  postAuthentication.postAuthentication(
-    req,
-    res,
-    next,
-    publicKEY,
-    FILE_NAME,
-    req.params.researcherID,
-    mongooseMiddleware.addNewData,
-    newJobPosting,
-    null
-  )
+  var searchcriteria = { _id: req.params.userID }
+  loginMiddleware
+    .checkifDataExists(User, searchcriteria, FILE_NAME)
+    .then(result => {
+      if (result != undefined && result != null) {
+        if (result.type.toString() === 'Volunteer') {
+          CONSTANTS.createLogMessage(
+            FILE_NAME,
+            CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED,
+            'ERROR'
+          )
+          CONSTANTS.createResponses(
+            res,
+            CONSTANTS.ERROR_CODE.UNAUTHORIZED,
+            CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED,
+            next
+          )
+        } else {
+          if (req.body.skills.toString().includes(',')) {
+            var skills = req.body.skills
+            var skillsArr = skills.split(',')
+          } else {
+            var skillsArr = req.body.vskills.toString()
+          }
+          let newJobPosting = new JobPosting({
+            userID: req.params.userID,
+            jobTitle: req.body.jobTitle,
+            description: req.body.description,
+            weeklycommitment: req.body.weeklycommitment,
+            skills: skillsArr
+          })
+          postAuthentication.postAuthentication(
+            req,
+            res,
+            next,
+            publicKEY,
+            FILE_NAME,
+            req.params.userID,
+            mongooseMiddleware.addNewData,
+            newJobPosting,
+            null
+          )
+        }
+      } else {
+        CONSTANTS.createLogMessage(
+          FILE_NAME,
+          CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+          'ERROR'
+        )
+        CONSTANTS.createResponses(
+          res,
+          CONSTANTS.ERROR_CODE.NOT_FOUND,
+          CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+          next
+        )
+      }
+    })
 }
 
 //This function gets all the job postings currently in the database.
@@ -72,7 +108,13 @@ const getjobpostingwithID = (req, res, next) => {
       next
     )
   } else {
-    mongooseMiddleware.findbyID(JobPosting, res, next, FILE_NAME, req.params.jobID)
+    mongooseMiddleware.findbyID(
+      JobPosting,
+      res,
+      next,
+      FILE_NAME,
+      req.params.jobID
+    )
   }
 }
 
@@ -82,27 +124,22 @@ const updateJobPosting = (req, res, next) => {
   loginMiddleware
     .checkifDataExists(JobPosting, searchcriteria, FILE_NAME)
     .then(result => {
-      if (result === null) {
-        //Error
-        CONSTANTS.createLogMessage(FILE_NAME, 'Data not Found', 'ERROR')
-        CONSTANTS.createResponses(
-          res,
-          CONSTANTS.ERROR_CODE.NO_DATA_FOUND,
-          CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
-          next
-        )
-      } else if (result !== null) {
+      if (result != undefined && result != null) {
+        if (req.body.skills.toString().includes(',')) {
+          var skills = req.body.skills
+          var skillsArr = skills.split(',')
+        } else {
+          var skillsArr = req.body.vskills.toString()
+        }
         let newJobPosting = new JobPosting({
           jobTitle: req.body.jobTitle,
           description: req.body.description,
-          requirements: req.body.requirements,
-          skills: req.body.skills,
-          work_experience_required: req.body.work_experience_required
+          weeklycommitment: req.body.weeklycommitment,
+          skills: skillsArr
         })
         var upsertData = newJobPosting.toObject()
         delete upsertData._id
-        var parameterToPass =
-          result.researcherID.toString() + ',' + req.params.jobID
+        var parameterToPass = result.userID.toString() + ',' + req.params.jobID
         postAuthentication.postAuthentication(
           req,
           res,
@@ -114,6 +151,18 @@ const updateJobPosting = (req, res, next) => {
           JobPosting,
           upsertData
         )
+      } else {
+        CONSTANTS.createLogMessage(
+          FILE_NAME,
+          CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+          'ERROR'
+        )
+        CONSTANTS.createResponses(
+          res,
+          CONSTANTS.ERROR_CODE.NOT_FOUND,
+          CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+          next
+        )
       }
     })
 }
@@ -124,17 +173,8 @@ const deleteJobPosting = (req, res, next) => {
   loginMiddleware
     .checkifDataExists(JobPosting, searchcriteria, FILE_NAME)
     .then(result => {
-      if (result === null) {
-        //Error
-        CONSTANTS.createLogMessage(FILE_NAME, 'Data not Found', 'ERROR')
-        CONSTANTS.createResponses(
-          res,
-          CONSTANTS.ERROR_CODE.NO_DATA_FOUND,
-          CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
-          next
-        )
-      } else if (result !== null) {
-        var parameterToPass = result.researcherID + ',' + req.params.jobID
+      if (result != undefined && result != null) {
+        var parameterToPass = result.userID.toString() + ',' + req.params.jobID
         postAuthentication.postAuthentication(
           req,
           res,
@@ -145,6 +185,18 @@ const deleteJobPosting = (req, res, next) => {
           mongooseMiddleware.deleteData,
           JobPosting,
           null
+        )
+      } else {
+        CONSTANTS.createLogMessage(
+          FILE_NAME,
+          CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+          'ERROR'
+        )
+        CONSTANTS.createResponses(
+          res,
+          CONSTANTS.ERROR_CODE.NOT_FOUND,
+          CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+          next
         )
       }
     })
@@ -161,7 +213,7 @@ const getJobPostingbySearch = (req, res, next) => {
       work_experience_required: { $lte: req.params.search }
     }
   } else {
-    var searchArr = [req.params.skills.toString()]
+    var searchArr = [req.params.search.toString()]
     var searchcriteria = { skills: { $in: searchArr } }
   }
   mongooseMiddleware
@@ -199,17 +251,50 @@ const getJobPostingbySearch = (req, res, next) => {
 
 //Search Job Postings based on Researcher ID
 const getMyJobPostings = (req, res, next) => {
-  postAuthentication.postAuthentication(
-    req,
-    res,
-    next,
-    publicKEY,
-    FILE_NAME,
-    req.params.researcherID.toString(),
-    mongooseMiddleware.findALL,
-    JobPosting,
-    null
-  )
+  var searchcriteria = { _id: req.params.userID }
+  loginMiddleware
+    .checkifDataExists(User, searchcriteria, FILE_NAME)
+    .then(result => {
+      if (result != undefined && result != null) {
+        if (result.type.toString() === 'Volunteer') {
+          CONSTANTS.createLogMessage(
+            FILE_NAME,
+            CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED,
+            'ERROR'
+          )
+          CONSTANTS.createResponses(
+            res,
+            CONSTANTS.ERROR_CODE.UNAUTHORIZED,
+            CONSTANTS.ERROR_DESCRIPTION.UNAUTHORIZED,
+            next
+          )
+        } else {
+          postAuthentication.postAuthentication(
+            req,
+            res,
+            next,
+            publicKEY,
+            FILE_NAME,
+            req.params.userID.toString(),
+            mongooseMiddleware.findALL,
+            JobPosting,
+            null
+          )
+        }
+      } else {
+        CONSTANTS.createLogMessage(
+          FILE_NAME,
+          CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+          'ERROR'
+        )
+        CONSTANTS.createResponses(
+          res,
+          CONSTANTS.ERROR_CODE.NOT_FOUND,
+          CONSTANTS.ERROR_DESCRIPTION.NOT_FOUND,
+          next
+        )
+      }
+    })
 }
 module.exports = {
   addNewJobPosting,

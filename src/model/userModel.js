@@ -7,7 +7,7 @@
 
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
-
+const CONSTANTS=require('../CONSTANTS/constants')
 //This model defines the data fields we will be storing in the database.
 module.exports= UserSchema = new Schema({
   firstName: {
@@ -32,8 +32,8 @@ module.exports= UserSchema = new Schema({
     required: 'Gender is required'
   },
   created_date: {
-    type: Date,
-    default: Date.now()
+    type: String,
+    default: CONSTANTS.createTime()
   },
   dateofBirth: {
     type: String,

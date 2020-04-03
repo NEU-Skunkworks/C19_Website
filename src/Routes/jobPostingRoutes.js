@@ -15,7 +15,7 @@ router.get('/', function (req, res,next) {
   jobPostingController.getJobPostings(req, res,next)
 })
 //Add a new Job Posting
-router.post('/addJob/:researcherID', function (req, res,next) {
+router.post('/addJob/:userID', function (req, res,next) {
   jobPostingController.addNewJobPosting(req, res)
 })
 
@@ -40,7 +40,7 @@ router.get('/searchjobs/:search', function (req, res,next) {
 })
 
 //Get Job Posting based on researcher id
-router.get('/myjobpostings/:researcherID', function (req, res,next) {
+router.get('/myjobpostings/:userID', function (req, res,next) {
   jobPostingController.getMyJobPostings(req, res,next)
 })
 

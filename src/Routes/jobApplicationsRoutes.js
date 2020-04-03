@@ -11,7 +11,7 @@ const express = require('express')
 const router = express.Router()
 
 //Add a new Job application
-router.post('/submitapplication/:volunteerID', function (req, res,next) {
+router.post('/submitapplication/:userID', function (req, res,next) {
   jobApplicationController.addNewJobApplication(req, res,next)
 })
 
@@ -31,7 +31,7 @@ router.delete('/delete/:applicationID', function (req, res,next) {
 })
 
 //Get Job Applications based on volunteer id
-router.get('/myapplications/:volunteerID', function (req, res,next) {
+router.get('/myapplications/:userID', function (req, res,next) {
   jobApplicationController.getmyJobApplications(req, res,next)
 })
 
