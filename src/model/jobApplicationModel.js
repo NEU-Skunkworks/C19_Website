@@ -13,7 +13,7 @@ module.exports= JobApplicationSchema = new Schema({
   jobID: {
     type: String
   },
-  volunteerID: {
+  userID: {
     type: String,
   },
   appliedDate: {
