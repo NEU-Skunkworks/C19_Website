@@ -196,7 +196,7 @@ const getmyJobApplications = (req, res, next) => {
             publicKEY,
             FILE_NAME,
             req.params.userID.toString(),
-            mongooseMiddleware.findALL,
+            mongooseMiddleware.findOne,
             JobApplication,
             null
           )
