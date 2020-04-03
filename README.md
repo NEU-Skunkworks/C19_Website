@@ -114,7 +114,7 @@ Everyone working on this Repository please follow the below rules:
 | /user/update/:userID | Updates a user information based on user ID | http://localhost:3000/dev/user/update/_id | PUT | Yes |
 | /user/login | Authenticates a user and assigns token | http://localhost:3000/dev/user/login | POST | Yes |
 | /userinfo/:userID | Can be used when a user applies for an application that the researcher wants to view their profile | http://localhost:3000/dev/user/userinfo/_id | GET | No |
-| /finduser/:search | Can be used to search a volunter based on First Name,Last Name and email | http://localhost:3000/dev/user/finduser/Rahul | GET | No |
+| /finduser/:search | Can be used to search a volunter based on First Name,Last Name and email and skills | http://localhost:3000/dev/user/finduser/Rahul | GET | No |
 
 ### <b>NOTE</b>: Data Format for Adding/Updating user:
 ```js
@@ -154,5 +154,5 @@ Everyone working on this Repository please follow the below rules:
 | /jobApplication/submitapplication/:userID | Adds the job application information to the database | http://localhost:3000/dev/jobApplication/submitapplication/_id | POST | Yes |
 | /jobApplication/:applicationID | Gets the job application | http://localhost:3000/dev/jobApplication/_id | GET | Yes |
 | /jobApplication/delete/:applicationID | Deletes a job application | http://localhost:3000/dev/jobApplication/delete/_id| DELETE | Yes |
-| /jobApplication/update/:applicationID | Updates a job application | http://localhost:3000/dev/jobApplication/update/_id | PUT | Yes |
+| /jobApplication/updatestatus/:applicationID | Updates a job application's status | http://localhost:3000/dev/jobApplication/update/_id | PUT | Yes |
 | /jobApplication/myapplications/:userID| Searchees for jobs posted by a reasearcher | http://localhost:3000/dev/jobApplication/myapplications/_id | GET | Yes |

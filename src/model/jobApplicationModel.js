@@ -13,6 +13,9 @@ module.exports= JobApplicationSchema = new Schema({
   jobID: {
     type: String
   },
+  postedbyID:{
+    type:String
+  },
   userID: {
     type: String,
   },

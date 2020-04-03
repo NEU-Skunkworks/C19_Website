@@ -210,7 +210,7 @@ const getJobPostingbySearch = (req, res, next) => {
     var searchcriteria = { skills: { $in: searchArr } }
   } else if (!isNaN(req.params.search)) {
     var searchcriteria = {
-      work_experience_required: { $lte: req.params.search }
+      weeklycommitment: { $lte: req.params.search }
     }
   } else {
     var searchArr = [req.params.search.toString()]

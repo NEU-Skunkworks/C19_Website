@@ -30,4 +30,9 @@ router.get('/myapplications/:userID', function (req, res,next) {
   jobApplicationController.getmyJobApplications(req, res,next)
 })
 
+//Update Job Applications 
+router.get('/updatestatus/:applicationID', function (req, res,next) {
+  jobApplicationController.updateApplicationStatus(req, res,next)
+})
+
 module.exports = router

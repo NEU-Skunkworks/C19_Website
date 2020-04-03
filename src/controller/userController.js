@@ -233,12 +233,12 @@ const getUserLogin = (req, res, next) => {
     var searchCriteria = { email: req.body.email }
     loginMiddleware
       .checkifDataExists(User, searchCriteria, FILE_NAME)
-      .then(result => {       
+      .then(result => {
         if (result != undefined && result != null) {
           if (result.type === 'Volunteer') {
-            privateKEY = volunteerprivateKEY
+            var privateKEY = volunteerprivateKEY
           } else {
-            privateKEY = researcherprivateKEY
+            var privateKEY = researcherprivateKEY
           }
           loginController.loginAuthentication(
             User,
@@ -291,19 +291,49 @@ const findUser = (req, res, next) => {
   } else {
     if (req.params.search.toString().includes(' ')) {
       var name = req.params.search.toString().split(' ')
-      var searchcriteria = { firstName: name[0], lastName: name[1] }
+      var searchcriteria = { firstName: name[0], lastName: name[1] ,type:"Volunteer"}
     } else if (req.params.search.toString().includes('@')) {
-      var searchcriteria = { email: req.params.search.toString() }
+      var searchcriteria = { email: req.params.search.toString(),type:"Volunteer" }
     } else {
       var searchcriteria = {
         $or: [
-          { firstName: req.params.search.toString() },
-          { lastName: req.params.search.toString() },
-          { skills: { $in: [req.params.search.toString()] } }
+          { firstName: req.params.search.toString() ,type:"Volunteer"},
+          { lastName: req.params.search.toString(),type:"Volunteer" },
+          { skills: { $in: [req.params.search.toString()] },type:"Volunteer" }
         ]
       }
     }
-    mongooseMiddleware.findOne(User, res, next, FILE_NAME, searchcriteria)
+    mongooseMiddleware
+      .findallbasedonCriteria(User, res, next, FILE_NAME, searchcriteria)
+      .then(result => {
+        if (result !== null || result !== []) {
+          CONSTANTS.createLogMessage(
+            FILE_NAME,
+            'Data Found Successfully',
+            'SUCCESS'
+          )
+          //Send the response
+          CONSTANTS.createResponses(
+            res,
+            CONSTANTS.ERROR_CODE.SUCCESS,
+            result,
+            next
+          )
+        } else {
+          CONSTANTS.createLogMessage(
+            FILE_NAME,
+            CONSTANTS.ERROR_CODE.NOT_FOUND,
+            'NODATA'
+          )
+          //Send the response
+          CONSTANTS.createResponses(
+            res,
+            CONSTANTS.ERROR_CODE.NOT_FOUND,
+            'No Data',
+            next
+          )
+        }
+      })
   }
 }
 module.exports = {
