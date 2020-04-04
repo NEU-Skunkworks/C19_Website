@@ -28,7 +28,7 @@ const loginAuthentication = (
   //Check the type of user to be authenticated
   var searchCriteria = { email: req.body.email }
   loginMiddleware
-    .checkifDataExists(schema, searchCriteria, FILE_NAME)
+    .checkifDataExists(schema,req,res,next, searchCriteria, FILE_NAME)
     .then(result => {
       if (result === null) {
         //Error
@@ -68,7 +68,7 @@ const loginAuthentication = (
             if (match === true) {
               var data = { $set: { loginAttempts: 0 } }
               loginMiddleware
-                .updateLoginAttempts(schema, FILE_NAME, searchCriteria, data)
+                .updateDatainUser(schema, FILE_NAME, searchCriteria, data)
                 .then(d => {
                   if (parseInt(d.n) === 1) {
                     var payload = {
@@ -112,7 +112,7 @@ const loginAuthentication = (
             } else {
               var data = { $inc: { loginAttempts: 1 } }
               loginMiddleware
-                .updateLoginAttempts(schema, FILE_NAME, searchCriteria, data)
+                .updateDatainUser(schema, FILE_NAME, searchCriteria, data)
                 .then(d => {
                   if (parseInt(d.n) === 1) {
                     CONSTANTS.createLogMessage(

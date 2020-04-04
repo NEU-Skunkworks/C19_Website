@@ -71,6 +71,7 @@ const addNewUser = (req, res, next) => {
     portfolioLink: req.body.portfolioLink
   })
   adduser.addnewUser(
+    req,
     res,
     next,
     User,
@@ -90,7 +91,7 @@ const getAllUsers = (res, next) => {
 const getUserWithID = (req, res, next) => {
   var searchCriteria = { _id: req.params.userID }
   loginMiddleware
-    .checkifDataExists(User, searchCriteria, FILE_NAME)
+    .checkifDataExists(User, req, res, next, searchCriteria, FILE_NAME)
     .then(result => {
       if (result != undefined && result != null) {
         if (result.type.toString() === 'Volunteer') {
@@ -148,7 +149,7 @@ const updateUser = (req, res, next) => {
   delete upsertData._id
   var searchCriteria = { _id: req.params.userID }
   loginMiddleware
-    .checkifDataExists(User, searchCriteria, FILE_NAME)
+    .checkifDataExists(User, req, res, next, searchCriteria, FILE_NAME)
     .then(result => {
       if (result != undefined && result != null) {
         if (result.type.toString() === 'Volunteer') {
@@ -185,7 +186,7 @@ const updateUser = (req, res, next) => {
 const deleteUser = (req, res, next) => {
   var searchCriteria = { _id: req.params.userID }
   loginMiddleware
-    .checkifDataExists(User, searchCriteria, FILE_NAME)
+    .checkifDataExists(User, req, res, next, searchCriteria, FILE_NAME)
     .then(result => {
       if (result != undefined && result != null) {
         if (result.type.toString() === 'Volunteer') {
@@ -232,7 +233,7 @@ const getUserLogin = (req, res, next) => {
   } else {
     var searchCriteria = { email: req.body.email }
     loginMiddleware
-      .checkifDataExists(User, searchCriteria, FILE_NAME)
+      .checkifDataExists(User, req, res, next, searchCriteria, FILE_NAME)
       .then(result => {
         if (result != undefined && result != null) {
           if (result.emailAuthenticated === 'No') {
@@ -247,6 +248,20 @@ const getUserLogin = (req, res, next) => {
               res,
               CONSTANTS.ERROR_CODE.UNAUTHORIZED,
               'Email not authenticated',
+              next
+            )
+          } else if (result.temporaryPassword != null) {
+            //Create the log message
+            CONSTANTS.createLogMessage(
+              FILE_NAME,
+              'Password Not Reset',
+              'PASSWORDNOTRESET'
+            )
+            //Send the response
+            CONSTANTS.createResponses(
+              res,
+              CONSTANTS.ERROR_CODE.UNAUTHORIZED,
+              'You have not reset your password. Please check your email or request a new temporary password',
               next
             )
           } else {

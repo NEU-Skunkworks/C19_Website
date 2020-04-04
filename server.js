@@ -32,9 +32,13 @@ const jobApplicationsRoutes = require(path.resolve('.') +
 const emailRoutes = require(path.resolve('.') +
   '/src/Routes/emailRoutes.js')
 
+//import the email routes
+const passwordRoutes = require(path.resolve('.') +
+  '/src/Routes/passwordRoutes.js')
+
 //mongoose connection
 mongoose.Promise = global.Promise
-mongoose.connect('mongodb://localhost/CVD19', {
+mongoose.connect('mongodb://localhost/CVD19DEV', {
   useNewUrlParser: 'true',
   useUnifiedTopology: 'true',
   useCreateIndex: true
@@ -54,6 +58,8 @@ app.use('/dev/jobPosting', jobPostingRoutes)
 app.use('/dev/jobApplication', jobApplicationsRoutes)
 //Routes for email
 app.use('/dev/email', emailRoutes)
+//Routes for password reset
+app.use('/dev/password',passwordRoutes)
 
 app.listen(port, function () {
   LOGGER.debug('Express server listening on port %s.', port)

@@ -18,6 +18,7 @@ var signOptions = {
   expiresIn: '12h',
   algorithm: 'RS256'
 }
+var generator = require('generate-password')
 var createTime=()=>{
 //Declare a date variable
 let today = new Date()
@@ -109,6 +110,10 @@ const createResponseWithoutNext = (res, statuscode, data) => {
   return
 }
 
+var temppassword = generator.generateMultiple(3, {
+  length: 10,
+  uppercase: false
+})
 //Export the modules
 module.exports = {
   ERROR_CODE,
@@ -119,5 +124,6 @@ module.exports = {
   verifyOptions,
   createResponses,
   createResponseWithoutNext,
-  createTime
+  createTime,
+  temppassword
 }

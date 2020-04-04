@@ -35,7 +35,7 @@ const addNewJobPosting = (req, res, next) => {
   //Creating the variable to hold the data for fields
   var searchcriteria = { _id: req.params.userID }
   loginMiddleware
-    .checkifDataExists(User, searchcriteria, FILE_NAME)
+    .checkifDataExists(User,req,res,next,searchcriteria, FILE_NAME)
     .then(result => {
       if (result != undefined && result != null) {
         if (result.type.toString() === 'Volunteer') {
@@ -122,7 +122,7 @@ const getjobpostingwithID = (req, res, next) => {
 const updateJobPosting = (req, res, next) => {
   var searchcriteria = { _id: req.params.jobID }
   loginMiddleware
-    .checkifDataExists(JobPosting, searchcriteria, FILE_NAME)
+    .checkifDataExists(JobPosting,req,res,next, searchcriteria, FILE_NAME)
     .then(result => {
       if (result != undefined && result != null) {
         if (req.body.skills.toString().includes(',')) {
@@ -171,7 +171,7 @@ const updateJobPosting = (req, res, next) => {
 const deleteJobPosting = (req, res, next) => {
   var searchcriteria = { _id: req.params.jobID }
   loginMiddleware
-    .checkifDataExists(JobPosting, searchcriteria, FILE_NAME)
+    .checkifDataExists(JobPosting,req,res,next, searchcriteria, FILE_NAME)
     .then(result => {
       if (result != undefined && result != null) {
         var parameterToPass = result.userID.toString() + ',' + req.params.jobID
@@ -253,7 +253,7 @@ const getJobPostingbySearch = (req, res, next) => {
 const getMyJobPostings = (req, res, next) => {
   var searchcriteria = { _id: req.params.userID }
   loginMiddleware
-    .checkifDataExists(User, searchcriteria, FILE_NAME)
+    .checkifDataExists(User,req,res,next, searchcriteria, FILE_NAME)
     .then(result => {
       if (result != undefined && result != null) {
         if (result.type.toString() === 'Volunteer') {
