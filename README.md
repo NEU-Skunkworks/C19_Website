@@ -10,8 +10,9 @@ Everyone working on this Repository please follow the below rules:
 <li> Basic Folder Structure has been added to the project. Please follow the same for your development</li>
 </ol>
 <br>
+<hr>
 
-## Folder Structure
+## <b>Folder Structure</b>
 
 ```bash
 │   package.json                                # Has all the dependencies needed to run the application
@@ -56,9 +57,9 @@ Everyone working on this Repository please follow the below rules:
             passwordRoutes.js                   # Routes for password reset and confirmation
             userRoutes.js                       # Routes for Users
 ```
+<hr>
 
-
-## Steps to run the application
+## <b>Steps to run the application</b>
  1. Clone the repository on your local machine
  2. Once cloned cd into the folder and open the files in your favourite editor.
  3. Open a terminal in your folder and run npm i to install all the packages.
@@ -99,9 +100,11 @@ Everyone working on this Repository please follow the below rules:
     https://artisansweb.net/sending-email-via-gmail-smtp-server-in-nodejs/
 
  5. Once all the packages are installed and folders created run npm start to start the api.
- 6. To test if your application running go to http://localhost:3000/. It should give you the count of users, job applications and job postings currently in the database.
+ 6. To test if your application running go to http://localhost:3000/. It should give you the count of users, job applications and job postings in the database.
 
-## MongoDB Schema
+<hr>
+
+## <b>MongoDB Schema</b>
 
 `Note`: Mandatory here means value that need to be passed from the Front end. There are certain values that are mandatory but need not be passed from the front end and is handled by the api itself.
 
@@ -146,8 +149,9 @@ Everyone working on this Repository please follow the below rules:
 | 5. | postedbyID | The id of the user who has posted the job application | No | String |
 | 6. | jobTitle | The job title | No | String |
 
+<hr>
 
-## API Paths
+## <b>API Paths</b>
 
 ### 1. `User API's`
 <p>PS: The <i>userID</i> mentioned here means the auto generated id from mongoDB (_id)</p>
@@ -163,7 +167,7 @@ Everyone working on this Repository please follow the below rules:
 | /userinfo/:userID | Can be used when a user applies for an application that the researcher wants to view their profile | http://localhost:3000/dev/user/userinfo/_id | GET | No |
 | /finduser/:search | Can be used to search a volunter based on First Name,Last Name and email and skills | http://localhost:3000/dev/user/finduser/Rahul | GET | No |
 
-### <b>NOTE</b>: Data Format for Adding/Updating user:
+### `NOTE:` Data Format for Adding/Updating user:
 ```js
 {
 "firstName":"FirstName",
