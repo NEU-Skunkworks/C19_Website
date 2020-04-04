@@ -26,6 +26,7 @@ Everyone working on this Repository please follow the below rules:
     │   │   emailController.js                  # Controller to handle all the email api's
     │   │   jobApplicationController.js         # Controller to handle all the job application api's
     │   │   jobpostingController.js             # Controller to handle all the job posting api's
+    │   │   passwordController.js               # Controller to handle all the password reset related api's
     │   │   userController.js                   # Controller to handle all the user related api's
     │   │   
     │   └───common_controllers                  # All the controllers that are used across other controllers
@@ -52,6 +53,7 @@ Everyone working on this Repository please follow the below rules:
             emailRoutes.js                      # Routes to handle email
             jobApplicationsRoutes.js            # Routes for Job Applications
             jobPostingRoutes.js                 # Routes for Posting jobs
+            passwordRoutes.js                   # Routes for password reset and confirmation
             userRoutes.js                       # Routes for Users
 ```
 
@@ -101,6 +103,8 @@ Everyone working on this Repository please follow the below rules:
 
 ## MongoDB Schema
 
+`Note`: Mandatory here means value that need to be passed from the Front end. There are certain values that are mandatory but need not be passed from the front end and is handled by the api itself.
+
 ### 1. `User Schema`
 
 |SNo. | Field | Description | Mandatory | Field Type |
@@ -117,7 +121,8 @@ Everyone working on this Repository please follow the below rules:
 | 11. | education | Highest Degree being pursued by the user  | Yes | String |
 | 12. | type | Holds the value of either Volunteer or Researcher | Yes | String | 
 | 13. | loginAttempts | Counts the number of times the user has attempted a wrong login | No | Number | 
-| 14. | emailAuthenticated | Checks if the user has verified their login or not | No | Number |
+| 14. | emailAuthenticated | Checks if the user has verified their login or not | No | String |
+| 15. | temporaryPassword | A temporary password in case the user wants to reset their password | No | String |
 
 ### 2. `Job Posting Schema`
 
@@ -206,3 +211,10 @@ Everyone working on this Repository please follow the below rules:
 | API's  | Functionality  | Example URL   | Method | Requires Token Authentication |
 |----------------- |------------ | -------------- | -------------- | -------------- |
 | /email/confirmEmail/:userID | Confirms the email id of the user. Without this the user cannot login to the application | http://localhost:3000/dev/email/confirmEmail/_id | POST | Yes |
+
+### 5. `Password Management API's`
+
+| API's  | Functionality  | Example URL   | Method | Requires Token Authentication |
+|----------------- |------------ | -------------- | -------------- | -------------- |
+| /password/passwordreset | Used to provide the user with a temporary password in their email to then reset their password | http://localhost:3000/dev/password/passwordreset | POST | Yes |
+| /password/confirmresetpassword | This will compare the temporary password with the password provided by the user and then allow them to reset their password. | http://localhost:3000/dev/password/confirmresetpassword | POST | Yes |

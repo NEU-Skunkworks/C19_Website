@@ -11,11 +11,11 @@ const express = require('express')
 const router = express.Router()
 
 //Confirm Email
-router.post('/passwordreset/', function (req, res, next) {
+router.post('/passwordreset', function (req, res, next) {
   passwordController.requestresetPassword(req, res, next)
 })
 //Confirm Email
-router.post('/confirmresetpassword/', function (req, res, next) {
+router.post('/confirmresetpassword', function (req, res, next) {
     passwordController.resetPassword(req, res, next)
   })
 
