@@ -249,7 +249,7 @@ const findallbasedonCriteria = (
 const getCount = (schema, FILE_NAME, criteria) => {
   try {
     if (criteria === null) {
-      return schema.count({}, (err, data) => {
+      return schema.countDocuments({}, (err, data) => {
         //error
         if (err) {
           //Log the error
@@ -261,7 +261,7 @@ const getCount = (schema, FILE_NAME, criteria) => {
         //Log success message
       })
     } else {
-      return schema.count(criteria, (err, data) => {
+      return schema.countDocuments(criteria, (err, data) => {
         //error
         if (err) {
           //Log the error
