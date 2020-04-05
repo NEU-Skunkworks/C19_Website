@@ -18,9 +18,9 @@ const CONSTANTS = require('../CONSTANTS/constants')
 const sendEmail = (from, to, subject, message, res, FILE_NAME) => {
   nodemailer.createTestAccount((err, account) => {
     let transporter = nodemailer.createTransport({
-      host: emailConstants.emailconstants.HOST,
-      port: emailConstants.emailconstants.PORT,
-      secure: emailConstants.emailconstants.SECURE,
+      host:emailConstants.emailconstants.HOST,
+      port:emailConstants.emailconstants.PORT,
+      secure:emailConstants.emailconstants.SECURE,
       auth: {
         user: emailConstants.emailconstants.USER,
         pass: emailConstants.emailconstants.PASSWORD

@@ -25,7 +25,7 @@ const confirmEmail = (req, res, next) => {
   var searchCriteria = { _id: req.params.userID }
   console.log(searchCriteria)
   loginMiddleware
-    .checkifDataExists(User, searchCriteria, FILE_NAME)
+    .checkifDataExists(User,req,res,next, searchCriteria, FILE_NAME)
     .then(result => {
       if (result != undefined && result != null) {
         let emailConfirmed = new User({

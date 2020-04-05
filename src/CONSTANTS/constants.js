@@ -6,6 +6,8 @@
  * @description constants
  */
 
+//const mongoDBUrl='mongodb://skunk:skunkcovid19@54.226.1.143:27017/CVD19DEV'
+const mongoDBUrl='mongodb://localhost:27017/CVD19DEV'
 //importing logger file
 const LOGGER = require('../Logger/logger')
 //Specifying the verifying options for json web token
@@ -18,6 +20,7 @@ var signOptions = {
   expiresIn: '12h',
   algorithm: 'RS256'
 }
+var generator = require('generate-password')
 var createTime=()=>{
 //Declare a date variable
 let today = new Date()
@@ -109,6 +112,10 @@ const createResponseWithoutNext = (res, statuscode, data) => {
   return
 }
 
+var temppassword = generator.generateMultiple(1, {
+  length: 15,
+  uppercase: false
+})
 //Export the modules
 module.exports = {
   ERROR_CODE,
@@ -119,5 +126,7 @@ module.exports = {
   verifyOptions,
   createResponses,
   createResponseWithoutNext,
-  createTime
+  createTime,
+  temppassword,
+  mongoDBUrl
 }

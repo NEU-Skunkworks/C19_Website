@@ -10,8 +10,9 @@ Everyone working on this Repository please follow the below rules:
 <li> Basic Folder Structure has been added to the project. Please follow the same for your development</li>
 </ol>
 <br>
+<hr>
 
-## Folder Structure
+## <b>Folder Structure</b>
 
 ```bash
 │   package.json                                # Has all the dependencies needed to run the application
@@ -26,6 +27,7 @@ Everyone working on this Repository please follow the below rules:
     │   │   emailController.js                  # Controller to handle all the email api's
     │   │   jobApplicationController.js         # Controller to handle all the job application api's
     │   │   jobpostingController.js             # Controller to handle all the job posting api's
+    │   │   passwordController.js               # Controller to handle all the password reset related api's
     │   │   userController.js                   # Controller to handle all the user related api's
     │   │   
     │   └───common_controllers                  # All the controllers that are used across other controllers
@@ -52,16 +54,26 @@ Everyone working on this Repository please follow the below rules:
             emailRoutes.js                      # Routes to handle email
             jobApplicationsRoutes.js            # Routes for Job Applications
             jobPostingRoutes.js                 # Routes for Posting jobs
+            passwordRoutes.js                   # Routes for password reset and confirmation
             userRoutes.js                       # Routes for Users
 ```
+<hr>
 
-
-## Steps to run the application
- 1. Clone the repository on your local machine
- 2. Once cloned cd into the folder and open the files in your favourite editor.
- 3. Open a terminal in your folder and run npm i to install all the packages.
- 4. Create a .env folder in your root directory of the project and create the following folders and files in it
+## <b>Steps to run the application</b>
+ 1. Clone your forked repository on your local machine using the following command:
     ```bash
+    git clone https://github.com/your_github_name/C19_Website.git
+    ```
+ 2. Once cloned cd into the folder and open the files in your favourite editor.
+ 3. Open a terminal in your folder and run the following command to install all the packages.  
+    ```bash
+    npm i
+    ```
+ 4. Create a .env folder in your root directory of the project and create the following folders and files in it<br>
+    
+    `PS: These steps are temporary just to test the application`
+    ```bash
+
         ├───emailConstants            # Contains all the email constants required to set up the smtp server
         │       emailConstants.js
         │
@@ -77,9 +89,9 @@ Everyone working on this Repository please follow the below rules:
     To create the public and private keys go to the below website and create them and place them in the private.key and public.key files shown in the above directory. Remember to select PKCS #8 (base64) from the dropdown.
     https://csfieldguide.org.nz/en/interactives/rsa-key-generator/
 
-    `Note:` The private and public keys should be different for volunteer and researcher. Do not copy the same public and private keys in the files or else it will give you errors
+    `Note: The private and public keys should be different for volunteer and researcher. Do not copy the same public and private keys in the files or else it will give you errors.`
 
-    In the email constants file create a variable as shown below: (This is temporary just to test the application)
+    In the email constants file create a variable as shown below:
     ```js
     const emailconstants={
         HOST:'smtp.googlemail.com',
@@ -96,10 +108,26 @@ Everyone working on this Repository please follow the below rules:
 
     https://artisansweb.net/sending-email-via-gmail-smtp-server-in-nodejs/
 
- 5. Once all the packages are installed and folders created run npm start to start the api.
- 6. To test if your application running go to http://localhost:3000/. It should give you the count of users, job applications and job postings currently in the database.
+ 5. Once all the packages are installed and folders created run the command below to start the api.
+    
+    ```bash
+    npm start
+    ```
+ 6. Make sure you have your mongoDB instance running in the local machine. Run the following command in your local machine<br>
 
-## MongoDB Schema
+    `PS: This is temporary as well `
+    ```bash
+    mongod
+    ``` 
+    Follow the steps in the following link to setup mongo db on your machine:
+    https://treehouse.github.io/installation-guides/windows/mongo-windows.html   
+ 7. To test if your application running go to http://localhost:3000/. It should give you the count of users, job applications and job postings in the database.
+
+<hr>
+
+## <b>MongoDB Schema</b>
+
+`Note`: Mandatory here means value that need to be passed from the Front end. There are certain values that are mandatory but need not be passed from the front end and is handled by the api itself.
 
 ### 1. `User Schema`
 
@@ -109,7 +137,7 @@ Everyone working on this Repository please follow the below rules:
 | 2. | lastName | Last Name | Yes | String |
 | 3. | email | Email ID | Yes | String |
 | 4. | password | Password(hashable password) | Yes | String |
-| 5. | gender | Gender | Yes | String |
+| 5. | gender | Gender | No | String |
 | 6. | created_date | Created Date (Default value of today's date. Do not need to pass it from the UI) | No | Date |
 | 7. | dateofBirth | Date of birth of the user | Yes | String |
 | 8. | skills | Holds an array of skills. Value to be given , seperated | Yes | Mixed |
@@ -117,7 +145,8 @@ Everyone working on this Repository please follow the below rules:
 | 11. | education | Highest Degree being pursued by the user  | Yes | String |
 | 12. | type | Holds the value of either Volunteer or Researcher | Yes | String | 
 | 13. | loginAttempts | Counts the number of times the user has attempted a wrong login | No | Number | 
-| 14. | emailAuthenticated | Checks if the user has verified their login or not | No | Number |
+| 14. | emailAuthenticated | Checks if the user has verified their login or not | No | String |
+| 15. | temporaryPassword | A temporary password in case the user wants to reset their password | No | String |
 
 ### 2. `Job Posting Schema`
 
@@ -141,8 +170,9 @@ Everyone working on this Repository please follow the below rules:
 | 5. | postedbyID | The id of the user who has posted the job application | No | String |
 | 6. | jobTitle | The job title | No | String |
 
+<hr>
 
-## API Paths
+## <b>API Paths</b>
 
 ### 1. `User API's`
 <p>PS: The <i>userID</i> mentioned here means the auto generated id from mongoDB (_id)</p>
@@ -158,7 +188,7 @@ Everyone working on this Repository please follow the below rules:
 | /userinfo/:userID | Can be used when a user applies for an application that the researcher wants to view their profile | http://localhost:3000/dev/user/userinfo/_id | GET | No |
 | /finduser/:search | Can be used to search a volunter based on First Name,Last Name and email and skills | http://localhost:3000/dev/user/finduser/Rahul | GET | No |
 
-### <b>NOTE</b>: Data Format for Adding/Updating user:
+### `NOTE:` Data Format for Adding/Updating user:
 ```js
 {
 "firstName":"FirstName",
@@ -206,3 +236,10 @@ Everyone working on this Repository please follow the below rules:
 | API's  | Functionality  | Example URL   | Method | Requires Token Authentication |
 |----------------- |------------ | -------------- | -------------- | -------------- |
 | /email/confirmEmail/:userID | Confirms the email id of the user. Without this the user cannot login to the application | http://localhost:3000/dev/email/confirmEmail/_id | POST | Yes |
+
+### 5. `Password Management API's`
+
+| API's  | Functionality  | Example URL   | Method | Requires Token Authentication |
+|----------------- |------------ | -------------- | -------------- | -------------- |
+| /password/passwordreset | Used to provide the user with a temporary password in their email to then reset their password | http://localhost:3000/dev/password/passwordreset | POST | Yes |
+| /password/confirmresetpassword | This will compare the temporary password with the password provided by the user and then allow them to reset their password. | http://localhost:3000/dev/password/confirmresetpassword | POST | Yes |

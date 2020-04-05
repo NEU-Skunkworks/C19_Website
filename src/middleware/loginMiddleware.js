@@ -9,7 +9,7 @@
 const CONSTANTS = require('../CONSTANTS/constants')
 
 //Function to update one data entry in database
-const updateLoginAttempts = (schema, FILE_NAME, searchCriteria, data) => {
+const updateDatainUser = (schema, FILE_NAME, searchCriteria, data) => {
   try {
     return schema.updateOne(
       searchCriteria,
@@ -33,7 +33,7 @@ const updateLoginAttempts = (schema, FILE_NAME, searchCriteria, data) => {
 }
 
 //Function to find a specific data
-const checkifDataExists = (schema, searchCriteria, FILE_NAME) => {
+const checkifDataExists = (schema,req,res,next, searchCriteria, FILE_NAME) => {
   try {
     return schema.findOne(searchCriteria, (err, data) => {
       if (err) {
@@ -61,6 +61,6 @@ const checkifDataExists = (schema, searchCriteria, FILE_NAME) => {
 
 //Export the modules
 module.exports = {
-  updateLoginAttempts,
+  updateDatainUser,
   checkifDataExists
 }

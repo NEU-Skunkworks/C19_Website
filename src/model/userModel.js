@@ -7,9 +7,9 @@
 
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
-const CONSTANTS=require('../CONSTANTS/constants')
+const CONSTANTS = require('../CONSTANTS/constants')
 //This model defines the data fields we will be storing in the database.
-module.exports= UserSchema = new Schema({
+module.exports = UserSchema = new Schema({
   firstName: {
     type: String,
     required: 'First name is required'
@@ -26,36 +26,36 @@ module.exports= UserSchema = new Schema({
     type: String,
     required: 'Password is required'
   },
-  gender:{
-    type:String,
-    required: 'Gender is required'
+  gender: {
+    type: String
   },
   created_date: {
     type: String,
     default: CONSTANTS.createTime()
   },
   dateofBirth: {
-    type: String,
+    type: String
   },
   skills: {
-    type: Schema.Types.Mixed,
-    required: 'Skills are required'
+    type: Schema.Types.Mixed
   },
   education: {
-    type:String
+    type: String
   },
-  portfolioLink:{
-      type:String
+  portfolioLink: {
+    type: String
   },
   type: {
-    type: String,
+    type: String
   },
-  loginAttempts:{
-    type:Number,
-    default:0
+  loginAttempts: {
+    type: Number,
+    default: 0
   },
-  emailAuthenticated:{
-      type:String,
-      default:'No'
+  emailAuthenticated: {
+    type: String
+  },
+  temporaryPassword: {
+    type: String
   }
 })

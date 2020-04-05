@@ -17,6 +17,7 @@ const loginMiddleware = require('../../middleware/loginMiddleware')
 const emailMiddleware = require('../../middleware/emailMiddleware')
 
 const addnewUser = (
+  req,
   res,
   next,
   schema,
@@ -26,7 +27,7 @@ const addnewUser = (
   data
 ) => {
   loginMiddleware
-    .checkifDataExists(schema, searchcriteria, FILE_NAME)
+    .checkifDataExists(schema,req,res,next, searchcriteria, FILE_NAME)
     .then(result => {
       if (result === null) {
         //Encrypt the password
@@ -48,7 +49,7 @@ const addnewUser = (
           mongooseMiddleware.addNewUser(data, FILE_NAME).then(result => {
             if (result != undefined && result != null) {
               var link =
-                '"http://localhost:3000/dev/email/confirmEmail/' +
+                '"http://'+req.hostname+':3000/dev/email/confirmEmail/' +
                 result._id +
                 '"'
               var message =

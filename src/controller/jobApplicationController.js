@@ -46,7 +46,7 @@ const JobPosting = mongoose.model('JobPostingSchema', JobPostingSchema)
 const addNewJobApplication = (req, res, next) => {
   var searchcriteria = { _id: req.params.userID }
   loginMiddleware
-    .checkifDataExists(User, searchcriteria, FILE_NAME)
+    .checkifDataExists(User,req,res,next, searchcriteria, FILE_NAME)
     .then(result => {
       if (result != undefined && result != null) {
         if (result.type.toString() === 'Researcher') {
@@ -64,7 +64,7 @@ const addNewJobApplication = (req, res, next) => {
         } else {
           var searchcriteria = { _id: req.body.jobID }
           loginMiddleware
-            .checkifDataExists(JobPosting, searchcriteria, FILE_NAME)
+            .checkifDataExists(JobPosting,req,res,next, searchcriteria, FILE_NAME)
             .then(anotherResult => {
               if (anotherResult != undefined && anotherResult != null) {
                 let newjobApplication = new JobApplication({
@@ -173,7 +173,7 @@ const deleteJobApplication = (req, res, next) => {
 const getmyJobApplications = (req, res, next) => {
   var searchcriteria = { _id: req.params.userID }
   loginMiddleware
-    .checkifDataExists(User, searchcriteria, FILE_NAME)
+    .checkifDataExists(User,req,res,next, searchcriteria, FILE_NAME)
     .then(result => {
       if (result != undefined && result != null) {
         if (result.type.toString() === 'Researcher') {
@@ -189,7 +189,6 @@ const getmyJobApplications = (req, res, next) => {
             next
           )
         } else {
-          console.log(req.params.userID.toString())
           postAuthentication.postAuthentication(
             req,
             res,
@@ -197,7 +196,7 @@ const getmyJobApplications = (req, res, next) => {
             publicKEY,
             FILE_NAME,
             req.params.userID.toString(),
-            mongooseMiddleware.findOne,
+            mongooseMiddleware.searchMultipleDatawithuserID,
             JobApplication,
             null
           )
@@ -221,13 +220,13 @@ const getmyJobApplications = (req, res, next) => {
 const updateApplicationStatus = (req, res, next) => {
   var searchcriteria = { _id: req.params.applicationID }
   loginMiddleware
-    .checkifDataExists(JobApplication, searchcriteria, FILE_NAME)
+    .checkifDataExists(JobApplication,req,res,next, searchcriteria, FILE_NAME)
     .then(result => {
       console.log(result)
       if (result != undefined && result != null) {
         var search = { _id: result.postedbyID.toString() }
         loginMiddleware
-          .checkifDataExists(User, search, FILE_NAME)
+          .checkifDataExists(User,req,res,next, search, FILE_NAME)
           .then(anotherResult => {
             if (anotherResult != undefined && anotherResult != null) {
               if (anotherResult.type === 'Researcher') {
