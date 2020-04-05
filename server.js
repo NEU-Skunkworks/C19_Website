@@ -4,7 +4,7 @@
  * @version 1.0
  * createdDate: 03/27/2020
  */
-require("dotenv").config();
+
 const express = require('express')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
