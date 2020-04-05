@@ -6,6 +6,7 @@
  * @description constants
  */
 
+const mongoDBUrl='mongodb://localhost:27017/CVD19DEV'
 //importing logger file
 const LOGGER = require('../Logger/logger')
 //Specifying the verifying options for json web token
@@ -125,5 +126,6 @@ module.exports = {
   createResponses,
   createResponseWithoutNext,
   createTime,
-  temppassword
+  temppassword,
+  mongoDBUrl
 }
