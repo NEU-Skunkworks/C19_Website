@@ -6,7 +6,7 @@
  */
 
 //importing file system to get the public and private key for creating public and private keys.
-//const fs = require('fs')
+const fs = require('fs')
 //importing the email constants
 const emailConstants = require('../../.env/emailConstants/emailConstants')
 //importing nodemailer
