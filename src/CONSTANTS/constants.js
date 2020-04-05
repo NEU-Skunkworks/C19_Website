@@ -6,6 +6,7 @@
  * @description constants
  */
 
+//const mongoDBUrl='mongodb://skunk:skunkcovid19@54.226.1.143:27017/CVD19DEV'
 const mongoDBUrl='mongodb://localhost:27017/CVD19DEV'
 //importing logger file
 const LOGGER = require('../Logger/logger')

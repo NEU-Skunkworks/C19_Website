@@ -38,6 +38,7 @@ const JobApplication = mongoose.model(
  * @returns {object} responseObject
  */
 router.get('/', function (req, res) {
+  console.log(process.env.EMAIL_USERNAME)
   var volunteercriteria = { type: 'Volunteer' }
   mongooseMiddleware
     .getCount(User, FILE_NAME, volunteercriteria)

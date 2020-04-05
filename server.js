@@ -4,7 +4,7 @@
  * @version 1.0
  * createdDate: 03/27/2020
  */
-
+require("dotenv").config();
 const express = require('express')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
@@ -17,7 +17,6 @@ const LOGGER = require(path.resolve('.') + '/src/Logger/logger.js')
 const FILE_NAME='server.js'
 //Port to expose
 const port = 3000
-require('dotenv').config()
 
 //import the basic routes folder
 const basicRoutes = require(path.resolve('.') + '/src/Routes/basicroutes.js')
@@ -35,6 +34,7 @@ const emailRoutes = require(path.resolve('.') + '/src/Routes/emailRoutes.js')
 const passwordRoutes = require(path.resolve('.') +
   '/src/Routes/passwordRoutes.js')
 
+
 //mongoose connection
 mongoose.Promise = global.Promise
 mongoose.connect(
@@ -45,10 +45,11 @@ mongoose.connect(
     useCreateIndex: true
   },
   (err, db) => {
+    //
     if (err) {
       CONSTANTS.createLogMessage(
         FILE_NAME,
-        CONSTANTS.ERROR_DESCRIPTION.SERVERERROR,
+        err,
         'MONGODBCONNECTIONERROR'
       )
       
