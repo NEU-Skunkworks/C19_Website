@@ -110,8 +110,8 @@ const createResponseWithoutNext = (res, statuscode, data) => {
   return
 }
 
-var temppassword = generator.generateMultiple(3, {
-  length: 10,
+var temppassword = generator.generateMultiple(1, {
+  length: 15,
   uppercase: false
 })
 //Export the modules

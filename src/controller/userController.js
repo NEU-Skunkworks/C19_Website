@@ -69,7 +69,7 @@ const addNewUser = (req, res, next) => {
     skills: skillsArr,
     type: req.body.type,
     portfolioLink: req.body.portfolioLink,
-    emailAuthenticated:'No'
+    emailAuthenticated: 'No'
   })
   adduser.addnewUser(
     req,
@@ -127,60 +127,69 @@ const getUserWithID = (req, res, next) => {
 
 //Updates the researchers information.
 const updateUser = (req, res, next) => {
-  let hash = bcrypt.hash(req.body.password, 10)
-  if (req.body.skills.toString().includes(',')) {
-    var skills = req.body.skills
-    var skillsArr = skills.split(',')
-  } else {
-    var skillsArr = req.body.skills.toString()
-  }
-  let newUser = new User({
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    email: req.body.email,
-    age: req.body.age,
-    gender: req.body.gender,
-    institute: req.body.institute,
-    skills: skillsArr,
-    type: req.body.type,
-    portfolioLink: req.body.portfolioLink,
-    password: hash
-  })
-  var upsertData = newUser.toObject()
-  delete upsertData._id
   var searchCriteria = { _id: req.params.userID }
   loginMiddleware
     .checkifDataExists(User, req, res, next, searchCriteria, FILE_NAME)
     .then(result => {
       if (result != undefined && result != null) {
-        if(result.email.toString()!=req.body.email.toString()){
+        if (result.email.toString() != req.body.email.toString()) {
           //Create the log message
-        CONSTANTS.createLogMessage(FILE_NAME, 'Email not the same', 'EMAILERROR')
-        //Send the response
-        CONSTANTS.createResponses(
-          res,
-          CONSTANTS.ERROR_CODE.UNAUTHORIZED,
-          'Email not the same',
-          next
-        )
-        }else{
+          CONSTANTS.createLogMessage(
+            FILE_NAME,
+            'Email not the same',
+            'EMAILERROR'
+          )
+          //Send the response
+          CONSTANTS.createResponses(
+            res,
+            CONSTANTS.ERROR_CODE.UNAUTHORIZED,
+            'Email not the same',
+            next
+          )
+        } else {
           if (result.type.toString() === 'Volunteer') {
             var publicKEY = volunteerpublicKEY
           } else {
             var publicKEY = researcherpublicKEY
           }
-          postAuthentication.postAuthentication(
-            req,
-            res,
-            next,
-            publicKEY,
-            FILE_NAME,
-            req.params.userID,
-            mongooseMiddleware.updateData,
-            User,
-            upsertData
-          )
-        }        
+          bcrypt.hash(req.body.password, 10, (err, hash) => {
+            if (err) {
+              CONSTANTS.createLogMessage(FILE_NAME, 'Server Error', 'ERROR')
+            } else {
+              if (req.body.skills.toString().includes(',')) {
+                var skills = req.body.skills
+                var skillsArr = skills.split(',')
+              } else {
+                var skillsArr = req.body.skills.toString()
+              }
+              let newUser = new User({
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
+                email: req.body.email,
+                age: req.body.age,
+                gender: req.body.gender,
+                institute: req.body.institute,
+                skills: skillsArr,
+                type: req.body.type,
+                portfolioLink: req.body.portfolioLink,
+                password: hash
+              })
+              var upsertData = newUser.toObject()
+              delete upsertData._id
+              postAuthentication.postAuthentication(
+                req,
+                res,
+                next,
+                publicKEY,
+                FILE_NAME,
+                req.params.userID,
+                mongooseMiddleware.updateData,
+                User,
+                upsertData
+              )
+            }
+          })
+        }
       } else {
         //Create the log message
         CONSTANTS.createLogMessage(FILE_NAME, 'No data Found', 'NODATA')
