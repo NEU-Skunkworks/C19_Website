@@ -189,7 +189,6 @@ const getmyJobApplications = (req, res, next) => {
             next
           )
         } else {
-          console.log(req.params.userID.toString())
           postAuthentication.postAuthentication(
             req,
             res,
@@ -197,7 +196,7 @@ const getmyJobApplications = (req, res, next) => {
             publicKEY,
             FILE_NAME,
             req.params.userID.toString(),
-            mongooseMiddleware.findOne,
+            mongooseMiddleware.searchMultipleDatawithuserID,
             JobApplication,
             null
           )

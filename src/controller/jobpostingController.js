@@ -276,7 +276,7 @@ const getMyJobPostings = (req, res, next) => {
             publicKEY,
             FILE_NAME,
             req.params.userID.toString(),
-            mongooseMiddleware.findOne,
+            mongooseMiddleware.searchMultipleDatawithuserID,
             JobPosting,
             null
           )

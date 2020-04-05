@@ -246,9 +246,9 @@ const findallbasedonCriteria = (
 }
 
 //Get count of the document
-const getCount = (schema, FILE_NAME,criteria) => {
+const getCount = (schema, FILE_NAME, criteria) => {
   try {
-    if(criteria===null){
+    if (criteria === null) {
       return schema.count({}, (err, data) => {
         //error
         if (err) {
@@ -257,10 +257,10 @@ const getCount = (schema, FILE_NAME,criteria) => {
         } else {
           CONSTANTS.createLogMessage(FILE_NAME, 'Get count', 'SUCCESS')
         }
-  
+
         //Log success message
       })
-    }else{
+    } else {
       return schema.count(criteria, (err, data) => {
         //error
         if (err) {
@@ -269,19 +269,46 @@ const getCount = (schema, FILE_NAME,criteria) => {
         } else {
           CONSTANTS.createLogMessage(FILE_NAME, 'Get count', 'SUCCESS')
         }
-  
+
         //Log success message
       })
     }
-    
   } catch (Exception) {}
 }
 //Function add new user
 const addNewUser = (schema, FILE_NAME) => {
   //Saving the data into the database.
-   return schema.save()
+  return schema.save()
 }
+const searchMultipleDatawithuserID = (schema, res, next, FILE_NAME, param) => {
+  try {
+    var searchCriteria = { userID: param }
+    schema.find(searchCriteria, (err, data) => {
+      //error
+      if (err) {
+        //Log the error
+        CONSTANTS.createLogMessage(FILE_NAME, err.errmsg, 'ERROR')
+        //Send the response
+        CONSTANTS.createResponses(
+          res,
+          CONSTANTS.ERROR_CODE.FAILED,
+          err.errmsg,
+          next
+        )
+      } else {
+        CONSTANTS.createLogMessage(
+          FILE_NAME,
+          'Successfully searched all data',
+          'SUCCESS'
+        )
+        //Send the response
+        CONSTANTS.createResponses(res, CONSTANTS.ERROR_CODE.SUCCESS, data, next)
+      }
 
+      //Log success message
+    })
+  } catch (Exception) {}
+}
 //Export the modules
 module.exports = {
   addNewData,
@@ -292,5 +319,6 @@ module.exports = {
   findOne,
   findallbasedonCriteria,
   getCount,
-  addNewUser
+  addNewUser,
+  searchMultipleDatawithuserID
 }

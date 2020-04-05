@@ -68,7 +68,8 @@ const addNewUser = (req, res, next) => {
     institute: req.body.institute,
     skills: skillsArr,
     type: req.body.type,
-    portfolioLink: req.body.portfolioLink
+    portfolioLink: req.body.portfolioLink,
+    emailAuthenticated:'No'
   })
   adduser.addnewUser(
     req,
@@ -152,22 +153,34 @@ const updateUser = (req, res, next) => {
     .checkifDataExists(User, req, res, next, searchCriteria, FILE_NAME)
     .then(result => {
       if (result != undefined && result != null) {
-        if (result.type.toString() === 'Volunteer') {
-          var publicKEY = volunteerpublicKEY
-        } else {
-          var publicKEY = researcherpublicKEY
-        }
-        postAuthentication.postAuthentication(
-          req,
+        if(result.email.toString()!=req.body.email.toString()){
+          //Create the log message
+        CONSTANTS.createLogMessage(FILE_NAME, 'Email not the same', 'EMAILERROR')
+        //Send the response
+        CONSTANTS.createResponses(
           res,
-          next,
-          publicKEY,
-          FILE_NAME,
-          req.params.userID,
-          mongooseMiddleware.updateData,
-          User,
-          upsertData
+          CONSTANTS.ERROR_CODE.UNAUTHORIZED,
+          'Email not the same',
+          next
         )
+        }else{
+          if (result.type.toString() === 'Volunteer') {
+            var publicKEY = volunteerpublicKEY
+          } else {
+            var publicKEY = researcherpublicKEY
+          }
+          postAuthentication.postAuthentication(
+            req,
+            res,
+            next,
+            publicKEY,
+            FILE_NAME,
+            req.params.userID,
+            mongooseMiddleware.updateData,
+            User,
+            upsertData
+          )
+        }        
       } else {
         //Create the log message
         CONSTANTS.createLogMessage(FILE_NAME, 'No data Found', 'NODATA')

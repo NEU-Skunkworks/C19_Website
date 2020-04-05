@@ -60,11 +60,20 @@ Everyone working on this Repository please follow the below rules:
 <hr>
 
 ## <b>Steps to run the application</b>
- 1. Clone the repository on your local machine
- 2. Once cloned cd into the folder and open the files in your favourite editor.
- 3. Open a terminal in your folder and run npm i to install all the packages.
- 4. Create a .env folder in your root directory of the project and create the following folders and files in it
+ 1. Clone your forked repository on your local machine using the following command:
     ```bash
+    git clone https://github.com/your_github_name/C19_Website.git
+    ```
+ 2. Once cloned cd into the folder and open the files in your favourite editor.
+ 3. Open a terminal in your folder and run the following command to install all the packages.  
+    ```bash
+    npm i
+    ```
+ 4. Create a .env folder in your root directory of the project and create the following folders and files in it<br>
+    
+    `PS: These steps are temporary just to test the application`
+    ```bash
+
         ├───emailConstants            # Contains all the email constants required to set up the smtp server
         │       emailConstants.js
         │
@@ -80,9 +89,9 @@ Everyone working on this Repository please follow the below rules:
     To create the public and private keys go to the below website and create them and place them in the private.key and public.key files shown in the above directory. Remember to select PKCS #8 (base64) from the dropdown.
     https://csfieldguide.org.nz/en/interactives/rsa-key-generator/
 
-    `Note:` The private and public keys should be different for volunteer and researcher. Do not copy the same public and private keys in the files or else it will give you errors
+    `Note: The private and public keys should be different for volunteer and researcher. Do not copy the same public and private keys in the files or else it will give you errors.`
 
-    In the email constants file create a variable as shown below: (This is temporary just to test the application)
+    In the email constants file create a variable as shown below:
     ```js
     const emailconstants={
         HOST:'smtp.googlemail.com',
@@ -99,8 +108,20 @@ Everyone working on this Repository please follow the below rules:
 
     https://artisansweb.net/sending-email-via-gmail-smtp-server-in-nodejs/
 
- 5. Once all the packages are installed and folders created run npm start to start the api.
- 6. To test if your application running go to http://localhost:3000/. It should give you the count of users, job applications and job postings in the database.
+ 5. Once all the packages are installed and folders created run the command below to start the api.
+    
+    ```bash
+    npm start
+    ```
+ 6. Make sure you have your mongoDB instance running in the local machine. Run the following command in your local machine<br>
+
+    `PS: This is temporary as well `
+    ```bash
+    mongod
+    ``` 
+    Follow the steps in the following link to setup mongo db on your machine:
+    https://treehouse.github.io/installation-guides/windows/mongo-windows.html   
+ 7. To test if your application running go to http://localhost:3000/. It should give you the count of users, job applications and job postings in the database.
 
 <hr>
 
@@ -116,7 +137,7 @@ Everyone working on this Repository please follow the below rules:
 | 2. | lastName | Last Name | Yes | String |
 | 3. | email | Email ID | Yes | String |
 | 4. | password | Password(hashable password) | Yes | String |
-| 5. | gender | Gender | Yes | String |
+| 5. | gender | Gender | No | String |
 | 6. | created_date | Created Date (Default value of today's date. Do not need to pass it from the UI) | No | Date |
 | 7. | dateofBirth | Date of birth of the user | Yes | String |
 | 8. | skills | Holds an array of skills. Value to be given , seperated | Yes | Mixed |

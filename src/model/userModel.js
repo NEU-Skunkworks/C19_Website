@@ -27,8 +27,7 @@ module.exports = UserSchema = new Schema({
     required: 'Password is required'
   },
   gender: {
-    type: String,
-    required: 'Gender is required'
+    type: String
   },
   created_date: {
     type: String,
@@ -38,8 +37,7 @@ module.exports = UserSchema = new Schema({
     type: String
   },
   skills: {
-    type: Schema.Types.Mixed,
-    required: 'Skills are required'
+    type: Schema.Types.Mixed
   },
   education: {
     type: String
@@ -55,8 +53,7 @@ module.exports = UserSchema = new Schema({
     default: 0
   },
   emailAuthenticated: {
-    type: String,
-    default: 'No'
+    type: String
   },
   temporaryPassword: {
     type: String
