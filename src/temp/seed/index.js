@@ -41,12 +41,19 @@ const seedJobs = (db) => {
       // divvy up jobs between mock researchers
       let currentResearcher = i % 2 ? researcherID1 : researcherID2;
 
-      const { jobTitle, description, weeklyCommitment, skills } = testJobs[i];
+      const {
+        jobTitle,
+        description,
+        weeklyCommitment,
+        postedDate,
+        skills,
+      } = testJobs[i];
       let newPosting = new JobPosting({
         userID: currentResearcher['$oid'],
         jobTitle,
         description,
         weeklycommitment: weeklyCommitment,
+        postedDate: postedDate['$date'],
         skills,
       });
       newPosting.save();
