@@ -1,0 +1,35 @@
+[
+  {
+    "_id": { "$oid": "5e8d7462fc13ae2641000002" },
+    "firstName": "Charis",
+    "lastName": "Files",
+    "email": "cfiles0@discuz.net",
+    "password": "5f5f4bac08a8958fa7a581dfe9fc1e27294ea053",
+    "type": "Researcher",
+    "education": "PhD",
+    "skills": ["Node", "Video Production", "Numerical Analysis"],
+    "dateOfBirth": "6/10/1986",
+    "gender": "Female",
+    "portfolio": "linkedOut.com/example-profile"
+  },
+  {
+    "_id": { "$oid": "5e8d7462fc13ae2641000003" },
+    "firstName": "Quillan",
+    "lastName": "Meachen",
+    "email": "qmeachen1@pbs.org",
+    "password": "5f5f4bac08a8958fa7a581dfe9fc1e27294ea053",
+    "type": "Researcher",
+    "education": "GED",
+    "skills": [
+      "Haskell",
+      "Python",
+      "Video Production",
+      "Numerical Analysis",
+      "Web Development",
+      "Node"
+    ],
+    "dateOfBirth": "9/6/1994",
+    "gender": "Non-Binary",
+    "portfolio": "linkedOut.com/example-profile"
+  }
+]
