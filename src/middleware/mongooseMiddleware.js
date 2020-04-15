@@ -242,14 +242,8 @@ const findallbasedonCriteria = (
       if (err) {
         //Log the error
         CONSTANTS.createLogMessage(FILE_NAME, err.errmsg, 'ERROR');
-      } else {
-        CONSTANTS.createLogMessage(
-          FILE_NAME,
-          'Successfully searched all data',
-          'SUCCESS'
-        );
       }
-      if (data !== null) {
+      if (data !== null && data.length > 0) {
         //Log success message
         CONSTANTS.createLogMessage(
           FILE_NAME,

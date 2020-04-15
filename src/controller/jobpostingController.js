@@ -204,7 +204,6 @@ const deleteJobPosting = (req, res, next) => {
 
 //Search a job posting based on skills
 const getJobPostingbySearch = (req, res, next) => {
-  console.log('search ', req.params.search);
   if (req.params.search.toString().includes(',')) {
     var search = req.params.search;
     var searchArr = search.split(',');
@@ -217,37 +216,13 @@ const getJobPostingbySearch = (req, res, next) => {
     var searchArr = [req.params.search.toString()];
     var searchcriteria = { skills: { $in: searchArr } };
   }
-  mongooseMiddleware
-    .findallbasedonCriteria(JobPosting, res, next, FILE_NAME, searchcriteria)
-    .then((result) => {
-      if (result !== null || result !== []) {
-        CONSTANTS.createLogMessage(
-          FILE_NAME,
-          'Data Found Successfully',
-          'SUCCESS'
-        );
-        //Send the response
-        CONSTANTS.createResponses(
-          res,
-          CONSTANTS.ERROR_CODE.SUCCESS,
-          result,
-          next
-        );
-      } else {
-        CONSTANTS.createLogMessage(
-          FILE_NAME,
-          CONSTANTS.ERROR_CODE.NOT_FOUND,
-          'NODATA'
-        );
-        //Send the response
-        CONSTANTS.createResponses(
-          res,
-          CONSTANTS.ERROR_CODE.NOT_FOUND,
-          'No Data',
-          next
-        );
-      }
-    });
+  mongooseMiddleware.findallbasedonCriteria(
+    JobPosting,
+    res,
+    next,
+    FILE_NAME,
+    searchcriteria
+  );
 };
 
 //Search Job Postings based on Researcher ID
