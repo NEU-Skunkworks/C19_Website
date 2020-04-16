@@ -41,8 +41,7 @@ mongoose.connect(
   CONSTANTS.mongoDBUrl,
   {
     useNewUrlParser: 'true',
-    useUnifiedTopology: 'true',
-    useCreateIndex: true
+    useUnifiedTopology: 'true'
   },
   (err, db) => {
     //

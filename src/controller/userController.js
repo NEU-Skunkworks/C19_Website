@@ -363,37 +363,13 @@ const findUser = (req, res, next) => {
         ]
       }
     }
-    mongooseMiddleware
-      .findallbasedonCriteria(User, res, next, FILE_NAME, searchcriteria)
-      .then(result => {
-        if (result !== null || result !== []) {
-          CONSTANTS.createLogMessage(
-            FILE_NAME,
-            'Data Found Successfully',
-            'SUCCESS'
-          )
-          //Send the response
-          CONSTANTS.createResponses(
-            res,
-            CONSTANTS.ERROR_CODE.SUCCESS,
-            result,
-            next
-          )
-        } else {
-          CONSTANTS.createLogMessage(
-            FILE_NAME,
-            CONSTANTS.ERROR_CODE.NOT_FOUND,
-            'NODATA'
-          )
-          //Send the response
-          CONSTANTS.createResponses(
-            res,
-            CONSTANTS.ERROR_CODE.NOT_FOUND,
-            'No Data',
-            next
-          )
-        }
-      })
+    mongooseMiddleware.findallbasedonCriteria(
+      User,
+      res,
+      next,
+      FILE_NAME,
+      searchcriteria
+    )
   }
 }
 module.exports = {
