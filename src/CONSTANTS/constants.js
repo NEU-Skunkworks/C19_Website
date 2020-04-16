@@ -7,39 +7,39 @@
  */
 
 //const mongoDBUrl='mongodb://skunk:skunkcovid19@54.226.1.143:27017/CVD19DEV'
-const mongoDBUrl='mongodb://localhost:27017/CVD19DEV'
+const mongoDBUrl = 'mongodb://localhost:27017/CVD19DEV';
 //importing logger file
-const LOGGER = require('../Logger/logger')
+const LOGGER = require('../Logger/logger');
 //Specifying the verifying options for json web token
 var verifyOptions = {
   expiresIn: '12h',
-  algorithm: ['RS256']
-}
+  algorithm: ['RS256'],
+};
 //Specifying the sign in options for creating the token
 var signOptions = {
   expiresIn: '12h',
-  algorithm: 'RS256'
-}
-var generator = require('generate-password')
-var createTime=()=>{
-//Declare a date variable
-let today = new Date()
-//Extract all the information needed from the above variable
-let date =
-  today.getFullYear() +
-  '-' +
-  (today.getMonth() + 1) +
-  '-' +
-  today.getDate() +
-  '-' +
-  today.getHours() +
-  ':' +
-  today.getMinutes() +
-  ':' +
-  today.getSeconds()
+  algorithm: 'RS256',
+};
+var generator = require('generate-password');
+var createTime = () => {
+  //Declare a date variable
+  let today = new Date();
+  //Extract all the information needed from the above variable
+  let date =
+    today.getFullYear() +
+    '-' +
+    (today.getMonth() + 1) +
+    '-' +
+    today.getDate() +
+    '-' +
+    today.getHours() +
+    ':' +
+    today.getMinutes() +
+    ':' +
+    today.getSeconds();
 
-  return date
-}
+  return date;
+};
 //Specifying the error codes
 const ERROR_CODE = {
   NOT_FOUND: 409,
@@ -50,8 +50,8 @@ const ERROR_CODE = {
   SUCCESS: 200,
   FAILED: 500,
   BAD_REQUEST: 400,
-  NO_CONTENT: 204
-}
+  NO_CONTENT: 204,
+};
 
 //Specifying the error descriptions
 const ERROR_DESCRIPTION = {
@@ -60,15 +60,15 @@ const ERROR_DESCRIPTION = {
   LOGINERROR: 'Invalid email/password',
   SERVERERROR: 'Server error',
   ATTEMPTERROR: 'Too many login attempts',
-  TOKENEXPIRED: 'Your session has ended please login again'
-}
+  TOKENEXPIRED: 'Your session has ended please login again',
+};
 
 //Specifying the success messages
 const SUCCESS_DESCRIPTION = {
   SUCCESS: 'Added successfull',
   SUCCESS_UPDATE: 'Updated Successfully',
-  SUCCESS_DELETE: 'Deleted Successfully'
-}
+  SUCCESS_DELETE: 'Deleted Successfully',
+};
 
 /*
 Function to create the log message and insert it in the log file. Takes the following input
@@ -77,10 +77,11 @@ Function to create the log message and insert it in the log file. Takes the foll
 3. type = What type of message
 */
 const createLogMessage = (FILE_NAME, message, type) => {
-  
   //Log the data in the log into
-  LOGGER.info(createTime() + ' ' + type + ' ' + FILE_NAME + ' message: ' + message)
-}
+  LOGGER.info(
+    createTime() + ' ' + type + ' ' + FILE_NAME + ' message: ' + message
+  );
+};
 /*
 Function to create a response. Takes the following input
 1. res = response
@@ -89,13 +90,13 @@ Function to create a response. Takes the following input
 4. next 
 */
 const createResponses = (res, statuscode, data, next) => {
-  res.status(statuscode)
+  res.status(statuscode);
   var responsedata = {
-    message: data
-  }
-  res.json(responsedata)
-  next
-}
+    message: data,
+  };
+  res.json(responsedata);
+  next;
+};
 
 /*
 Function to create a response without next. Takes the following input
@@ -104,18 +105,18 @@ Function to create a response without next. Takes the following input
 3. data = data to be sent
 */
 const createResponseWithoutNext = (res, statuscode, data) => {
-  res.status(statuscode)
+  res.status(statuscode);
   var responsedata = {
-    message: data
-  }
-  res.json(responsedata)
-  return
-}
+    message: data,
+  };
+  res.json(responsedata);
+  return;
+};
 
 var temppassword = generator.generateMultiple(1, {
   length: 15,
-  uppercase: false
-})
+  uppercase: false,
+});
 //Export the modules
 module.exports = {
   ERROR_CODE,
@@ -128,5 +129,5 @@ module.exports = {
   createResponseWithoutNext,
   createTime,
   temppassword,
-  mongoDBUrl
-}
+  mongoDBUrl,
+};
