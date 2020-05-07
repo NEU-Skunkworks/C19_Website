@@ -216,6 +216,7 @@ Everyone working on this Repository please follow the below rules:
 | /jobPosting/delete/:jobID | Deletes a job posting based on jobID | http://localhost:3000/dev/jobPosting/delete/_id| DELETE | Yes |
 | /jobPosting/update/:jobID/ | Updates a job Posting | http://localhost:3000/dev/jobPosting/update/_id | PUT | Yes |
 | /jobPosting/searchjobs/:search | Searches for jobs based on skills or years of work exeprience | http://localhost:3000/dev/researcherinfo/searchjobs/value_to_search | GET | No |
+| /jobPosting/searchjobs/:search?page={pageNumber}&limit={limitCount} | Paginated search for jobs based on skills or years of work exeprience | http://localhost:3000/dev/researcherinfo/searchjobs/value_to_search?page=5&limit=10 | GET | No |
 | /jobPosting/myjobpostings/:userID | Searchees for jobs posted by a reasearcher | http://localhost:3000/dev/jobPosting/myjobpostings/_id | GET | Yes |
 
 ### 3. `Job Application API's`
