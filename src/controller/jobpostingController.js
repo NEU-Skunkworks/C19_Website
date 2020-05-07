@@ -216,13 +216,29 @@ const getJobPostingbySearch = (req, res, next) => {
     var searchArr = [req.params.search.toString()];
     var searchcriteria = { skills: { $in: searchArr } };
   }
-  mongooseMiddleware.findallbasedonCriteria(
-    JobPosting,
-    res,
-    next,
-    FILE_NAME,
-    searchcriteria
-  );
+
+  // If search has pagination options, return paginated result
+  if (req.query && req.query.page && req.query.limit) {
+    const { page, limit } = req.query;
+    console.log(page, limit);
+
+    mongooseMiddleware.paginatedFindAllBasedOnCriteria(
+      JobPosting,
+      res,
+      next,
+      FILE_NAME,
+      searchcriteria,
+      { page, limit }
+    );
+  } else {
+    mongooseMiddleware.findallbasedonCriteria(
+      JobPosting,
+      res,
+      next,
+      FILE_NAME,
+      searchcriteria
+    );
+  }
 };
 
 //Search Job Postings based on Researcher ID
