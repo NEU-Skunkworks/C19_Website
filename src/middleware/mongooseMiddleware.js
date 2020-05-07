@@ -272,6 +272,71 @@ const findallbasedonCriteria = (
   } catch (Exception) {}
 };
 
+const paginatedFindAllBasedOnCriteria = (
+  schema,
+  res,
+  next,
+  FILE_NAME,
+  searchCriteria,
+  paginationOptions
+) => {
+  const { page, limit } = paginationOptions;
+  const skipCount = page > 0 ? (page - 1) * limit : 0;
+  try {
+    return schema
+      .find(searchCriteria)
+      .countDocuments()
+      .exec((countErr, count) => {
+        if (countErr) {
+          //Log the error
+          CONSTANTS.createLogMessage(FILE_NAME, countErr.errmsg, 'ERROR');
+          return;
+        }
+
+        return schema.find(
+          searchCriteria,
+          null,
+          { skip: parseInt(skipCount), limit: parseInt(limit) },
+          (dataErr, data) => {
+            if (dataErr) {
+              //Log the error
+              CONSTANTS.createLogMessage(FILE_NAME, dataErr.errmsg, 'ERROR');
+              return;
+            }
+            if (data !== null && data.length > 0) {
+              //Log success message
+              CONSTANTS.createLogMessage(
+                FILE_NAME,
+                'Successfully searched all data',
+                'SUCCESS'
+              );
+
+              //Send back the response
+              CONSTANTS.createResponses(
+                res,
+                CONSTANTS.ERROR_CODE.SUCCESS,
+                { result: data, total: count },
+                next
+              );
+            } else {
+              //Log success message
+              CONSTANTS.createLogMessage(FILE_NAME, 'No data Found', 'NODATA');
+              //Send back the response
+              CONSTANTS.createResponses(
+                res,
+                CONSTANTS.ERROR_CODE.NOT_FOUND,
+                'No Data Found',
+                next
+              );
+            }
+          }
+        );
+      });
+  } catch (err) {
+    CONSTANTS.createLogMessage(FILE_NAME, err.errmsg, 'ERROR');
+  }
+};
+
 //Get count of the document
 const getCount = (schema, FILE_NAME, criteria) => {
   try {
@@ -350,6 +415,7 @@ module.exports = {
   deleteData,
   findOne,
   findallbasedonCriteria,
+  paginatedFindAllBasedOnCriteria,
   getCount,
   addNewUser,
   searchMultipleDatawithuserID,

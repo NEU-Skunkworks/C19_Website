@@ -227,6 +227,7 @@ Everyone working on this Repository please follow the below rules:
 
 <p>PS: The <i>userid</i> and <i>jobID</i> mentioned here means the auto generated id from mongoDB (_id)</p>
 
+<<<<<<< HEAD
 | API's                             | Functionality                                                                                         | Example URL                                                         | Method | Requires Token Authentication |
 | --------------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- | ------ | ----------------------------- |
 | /jobPosting/                      | Gets all the job postings in the database (Can be used for analytical purposes)                       | http://localhost:3000/dev/jobPosting/                               | GET    | No                            |
@@ -236,6 +237,18 @@ Everyone working on this Repository please follow the below rules:
 | /jobPosting/update/:jobID/        | Updates a job Posting                                                                                 | http://localhost:3000/dev/jobPosting/update/_id                     | PUT    | Yes                           |
 | /jobPosting/searchjobs/:search    | Searches for jobs based on skills or years of work exeprience                                         | http://localhost:3000/dev/researcherinfo/searchjobs/value_to_search | GET    | No                            |
 | /jobPosting/myjobpostings/:userID | Searchees for jobs posted by a reasearcher                                                            | http://localhost:3000/dev/jobPosting/myjobpostings/_id              | GET    | Yes                           |
+=======
+| API's  | Functionality  | Example URL   | Method | Requires Token Authentication |
+|----------------- |------------ | -------------- | -------------- | -------------- |
+| /jobPosting/ | Gets all the job postings in the database (Can be used for analytical purposes) | http://localhost:3000/dev/jobPosting/ | GET | No |
+| /jobPosting/addJob/:userID | Adds the jobs posting information to the database and sends out an email to the user for confirmation | http://localhost:3000/dev/jobPosting/addJob/_id | POST | Yes |
+| /jobPosting/:jobID | Gets the job posting information | http://localhost:3000/dev/jobPosting/_id | GET | No |
+| /jobPosting/delete/:jobID | Deletes a job posting based on jobID | http://localhost:3000/dev/jobPosting/delete/_id| DELETE | Yes |
+| /jobPosting/update/:jobID/ | Updates a job Posting | http://localhost:3000/dev/jobPosting/update/_id | PUT | Yes |
+| /jobPosting/searchjobs/:search | Searches for jobs based on skills or years of work exeprience | http://localhost:3000/dev/researcherinfo/searchjobs/value_to_search | GET | No |
+| /jobPosting/searchjobs/:search?page={pageNumber}&limit={limitCount} | Paginated search for jobs based on skills or years of work exeprience | http://localhost:3000/dev/researcherinfo/searchjobs/value_to_search?page=5&limit=10 | GET | No |
+| /jobPosting/myjobpostings/:userID | Searchees for jobs posted by a reasearcher | http://localhost:3000/dev/jobPosting/myjobpostings/_id | GET | Yes |
+>>>>>>> develop
 
 ### 3. `Job Application API's`
 
@@ -259,7 +272,14 @@ Everyone working on this Repository please follow the below rules:
 
 ### 5. `Password Management API's`
 
+<<<<<<< HEAD
 | API's                          | Functionality                                                                                                                | Example URL                                             | Method | Requires Token Authentication |
 | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | ------ | ----------------------------- |
 | /password/passwordreset        | Used to provide the user with a temporary password in their email to then reset their password                               | http://localhost:3000/dev/password/passwordreset        | POST   | Yes                           |
 | /password/confirmresetpassword | This will compare the temporary password with the password provided by the user and then allow them to reset their password. | http://localhost:3000/dev/password/confirmresetpassword | POST   | Yes                           |
+=======
+| API's  | Functionality  | Example URL   | Method | Requires Token Authentication |
+|----------------- |------------ | -------------- | -------------- | -------------- |
+| /password/passwordreset | Used to provide the user with a temporary password in their email to then reset their password | http://localhost:3000/dev/password/passwordreset | POST | Yes |
+| /password/confirmresetpassword | This will compare the temporary password with the password provided by the user and then allow them to reset their password. | http://localhost:3000/dev/password/confirmresetpassword | POST | Yes |
+>>>>>>> develop
