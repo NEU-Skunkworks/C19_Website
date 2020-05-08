@@ -5,52 +5,66 @@
  * createdDate: 04/03/2020
  */
 
-//importing file system to get the public and private key for creating public and private keys.
-const fs = require('fs')
-//importing the email constants
-const emailConstants = require('../../.env/emailConstants/emailConstants')
-//importing nodemailer
-const nodemailer = require('nodemailer')
 //import constants file
 const CONSTANTS = require('../CONSTANTS/constants')
-
+// Load the AWS SDK for Node.js
+var AWS = require('aws-sdk')
+// Set the region
+AWS.config.update({ region: 'us-east-1' })
 //Function to send the email
-const sendEmail = (from, to, subject, message, res, FILE_NAME) => {
-  nodemailer.createTestAccount((err, account) => {
-    let transporter = nodemailer.createTransport({
-      host:emailConstants.emailconstants.HOST,
-      port:emailConstants.emailconstants.PORT,
-      secure:emailConstants.emailconstants.SECURE,
-      auth: {
-        user: emailConstants.emailconstants.USER,
-        pass: emailConstants.emailconstants.PASSWORD
+function sendEmail (from, to, subject, message, res, FILE_NAME) {
+  console.log(from)
+  console.log(to)
+  console.log(subject)
+  console.log(message)
+  // Create sendEmail params
+  var eParams = {
+    Destination: {
+      /* required */
+      ToAddresses: [
+        to
+        /* more items */
+      ]
+    },
+    Message: {
+      /* required */
+      Body: {
+        /* required */
+        Html: {
+          Charset: 'UTF-8',
+          Data: createBody(message)
+        }
+      },
+      Subject: {
+        Charset: 'UTF-8',
+        Data: subject
       }
-    })
+    },
+    Source: from /* required */
+  }
+  // Create the promise and SES service object
+  var sendPromise = new AWS.SES({ apiVersion: '2010-12-01' })
+    .sendEmail(eParams)
+    .promise()
 
-    let mailOptions = {
-      from: from,
-      to: to,
-      subject: subject,
-      html: createBody(message)
-    }
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        CONSTANTS.createLogMessage(FILE_NAME, error, 'ERROR')
-        //Send the response
-        res.status(CONSTANTS.ERROR_CODE.FAILED)
-        res.json({ message: 'Error in sending email' })
-        res.end()
-      } else {
-        CONSTANTS.createLogMessage(FILE_NAME, info, 'SUCCESS')
-        //Send the response
-        res.status(CONSTANTS.ERROR_CODE.SUCCESS)
-        res.json({ message: 'Email Successfully sent' })
-        res.end()
-      }
+  // Handle promise's fulfilled/rejected states
+  sendPromise
+    .then(function (data) {
+      CONSTANTS.createLogMessage(FILE_NAME, data, 'SUCCESS')
+      //Send the response
+      res.status(CONSTANTS.ERROR_CODE.SUCCESS)
+      res.json({ message: 'Email Successfully sent' })
+      res.end()
     })
-  })
+    .catch(function (err) {
+      CONSTANTS.createLogMessage(FILE_NAME, err, 'ERROR')
+      //Send the response
+      res.status(CONSTANTS.ERROR_CODE.FAILED)
+      res.json({ message: 'Error in sending email' })
+      res.end()
+    })
 }
-
+// Create sendEmail params
 const createBody = message => {
   var htmlBody =
     `<!DOCTYPE html>
@@ -74,7 +88,7 @@ const createBody = message => {
     </style>
     </head>
     <body>` +
-         message +
+    message +
     `</body>
     </html>`
   return htmlBody

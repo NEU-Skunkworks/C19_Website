@@ -11,13 +11,13 @@ const mongoose = require('mongoose')
 const app = express()
 const cors = require('cors')
 const path = require('path')
-const CONSTANTS=require('./src/CONSTANTS/constants')
+const CONSTANTS = require('./src/CONSTANTS/constants')
 //Save the log details
 const LOGGER = require(path.resolve('.') + '/src/Logger/logger.js')
-const FILE_NAME='server.js'
+const FILE_NAME = 'server.js'
 //Port to expose
 const port = 3000
-
+const fs = require('fs')
 //import the basic routes folder
 const basicRoutes = require(path.resolve('.') + '/src/Routes/basicroutes.js')
 //import the user routes
@@ -34,34 +34,29 @@ const emailRoutes = require(path.resolve('.') + '/src/Routes/emailRoutes.js')
 const passwordRoutes = require(path.resolve('.') +
   '/src/Routes/passwordRoutes.js')
 
-
+var ca = [fs.readFileSync('rds-combined-ca-bundle.pem')]
 //mongoose connection
 mongoose.Promise = global.Promise
 mongoose.connect(
   CONSTANTS.mongoDBUrl,
   {
-    useNewUrlParser: 'true',
-    useUnifiedTopology: 'true'
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    sslValidate: true,
+    sslCA:ca,
   },
   (err, db) => {
-    //
     if (err) {
-      CONSTANTS.createLogMessage(
-        FILE_NAME,
-        err,
-        'MONGODBCONNECTIONERROR'
-      )
-      
+      CONSTANTS.createLogMessage(FILE_NAME, err, 'MONGODBCONNECTIONERROR')
     } else {
       CONSTANTS.createLogMessage(
         FILE_NAME,
-        'Connection established to '+CONSTANTS.mongoDBUrl,
+        'Connection established to ' + CONSTANTS.mongoDBUrl,
         'MONGODBCONNECTIONSUCCESS'
       )
     }
   }
 )
-
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(cors())

@@ -58,7 +58,7 @@ const addnewUser = (
                 '. Please click the link below to confirm your email<p><br><br>' +
                 emailMiddleware.createEmailAuthenticationMail(link)
               emailMiddleware.sendEmail(
-                'admin@skunkworks.com',
+                'admin@skunks.ai',
                 result.email,
                 'Welcome to NEU SKUNKWORKS',
                 message,

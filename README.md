@@ -78,10 +78,6 @@ Everyone working on this Repository please follow the below rules:
     `PS: These steps are temporary just to test the application`
 
     ```bash
-
-        ├───emailConstants            # Contains all the email constants required to set up the smtp server
-        │       emailConstants.js
-        │
         ├───researcher_keys           # The private and public key used to authenticate the researcher
         │       private.key
         │       public.key
@@ -95,24 +91,6 @@ Everyone working on this Repository please follow the below rules:
     https://csfieldguide.org.nz/en/interactives/rsa-key-generator/
 
     `Note: The private and public keys should be different for volunteer and researcher. Do not copy the same public and private keys in the files or else it will give you errors.`
-
-    In the email constants file create a variable as shown below:
-
-    ```js
-    const emailconstants = {
-      HOST: 'smtp.googlemail.com',
-      PORT: 465,
-      SECURE: true,
-      USER: 'YOUR_GMAIL_EMAIL_ID',
-      PASSWORD: 'YOUR_GMAIL_PASSWORD',
-    };
-
-    module.exports = { emailconstants };
-    ```
-
-    Follow the steps in the below given link to setup your Gmail SMTP:
-
-    https://artisansweb.net/sending-email-via-gmail-smtp-server-in-nodejs/
 
 5.  Once all the packages are installed and folders created run the command below to start the api.
 

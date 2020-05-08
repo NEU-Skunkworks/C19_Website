@@ -6,8 +6,8 @@
  * @description constants
  */
 
-//const mongoDBUrl='mongodb://skunk:skunkcovid19@54.226.1.143:27017/CVD19DEV'
-const mongoDBUrl = 'mongodb://localhost:27017/CVD19DEV';
+//const mongoDBUrl = 'mongodb://localhost:27017/CVD19DEV';
+const mongoDBUrl='mongodb://Skunks:Skunks2019@covid-mongo.cluster-cpzbdytelbqi.us-east-1.docdb.amazonaws.com:27017/CVD19DEV?ssl=true&ssl_ca_certs=rds-combined-ca-bundle.pem&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false'
 //importing logger file
 const LOGGER = require('../Logger/logger');
 //Specifying the verifying options for json web token
