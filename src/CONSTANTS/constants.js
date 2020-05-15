@@ -6,19 +6,19 @@
  * @description constants
  */
 
-//const mongoDBUrl = 'mongodb://localhost:27017/CVD19DEV';
-const mongoDBUrl='mongodb://Skunks:Skunks2019@covid-mongo.cluster-cpzbdytelbqi.us-east-1.docdb.amazonaws.com:27017/CVD19DEV?ssl=true&ssl_ca_certs=rds-combined-ca-bundle.pem&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false'
+const dotenv = require("dotenv");
+dotenv.config();
 //importing logger file
 const LOGGER = require('../Logger/logger');
 //Specifying the verifying options for json web token
 var verifyOptions = {
-  expiresIn: '12h',
-  algorithm: ['RS256'],
+  expiresIn: process.env.VERIFY_OPTIONS_EXPIRES_IN,
+  algorithm: process.env.VERIFY_OPTIONS_ALGORITHM,
 };
 //Specifying the sign in options for creating the token
 var signOptions = {
-  expiresIn: '12h',
-  algorithm: 'RS256',
+  expiresIn: process.env.VERIFY_OPTIONS_EXPIRES_IN,
+  algorithm: process.env.VERIFY_OPTIONS_ALGORITHM,
 };
 var generator = require('generate-password');
 var createTime = () => {
@@ -114,7 +114,7 @@ const createResponseWithoutNext = (res, statuscode, data) => {
 };
 
 var temppassword = generator.generateMultiple(1, {
-  length: 15,
+  length: process.env.TEMP_PASSWORD_LENGTH,
   uppercase: false,
 });
 //Export the modules
@@ -128,6 +128,5 @@ module.exports = {
   createResponses,
   createResponseWithoutNext,
   createTime,
-  temppassword,
-  mongoDBUrl,
+  temppassword
 };

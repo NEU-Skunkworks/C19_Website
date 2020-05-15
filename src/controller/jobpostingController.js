@@ -13,10 +13,10 @@ const CONSTANTS = require('../CONSTANTS/constants');
 const JobPostingSchema = require('../model/jobPostingModel');
 //Create a variable of type mongoose schema for Job Posting
 const JobPosting = mongoose.model('JobPostingSchema', JobPostingSchema);
-//import file systems
-const fs = require('fs');
+const dotenv = require("dotenv");
+dotenv.config();
 //public key path
-var publicKEY = fs.readFileSync('./.env/researcher_keys/public.key', 'utf8');
+var publicKEY = process.env.RESEARCHER_PUBLIC_KEY.replace(/\\n/g, '\n');
 //import post authentication controller
 const postAuthentication = require('./common_controllers/postAuthenticationController');
 //import mongoose queries

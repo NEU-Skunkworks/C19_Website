@@ -5,6 +5,9 @@
  * createdDate: 02/04/2020
  */
 
+ 
+const dotenv = require("dotenv");
+dotenv.config();
 //Declare the file name
 const FILE_NAME = 'userController.js'
 //import constants file
@@ -17,28 +20,14 @@ const UserSchema = require('../model/userModel')
 const User = mongoose.model('UserSchema', UserSchema)
 //importing bcrypt to hash the user entered password for security.
 const bcrypt = require('bcrypt')
-//importing file system to get the public and private key for creating public and private keys.
-const fs = require('fs')
 //private key path
-var researcherprivateKEY = fs.readFileSync(
-  './.env/researcher_keys/private.key',
-  'utf8'
-)
+var researcherprivateKEY = process.env.RESEARCHER_PRIVATE_KEY.replace(/\\n/g, '\n');
 //public key path
-var researcherpublicKEY = fs.readFileSync(
-  './.env/researcher_keys/public.key',
-  'utf8'
-)
+var researcherpublicKEY = process.env.RESEARCHER_PUBLIC_KEY.replace(/\\n/g, '\n');
 //private key path
-var volunteerprivateKEY = fs.readFileSync(
-  './.env/researcher_keys/private.key',
-  'utf8'
-)
+var volunteerprivateKEY = process.env.VOLUNTEER_PRIVATE_KEY.replace(/\\n/g, '\n');
 //public key path
-var volunteerpublicKEY = fs.readFileSync(
-  './.env/researcher_keys/public.key',
-  'utf8'
-)
+var volunteerpublicKEY = process.env.VOLUNTEER_PUBLIC_KEY.replace(/\\n/g, '\n');
 //import mongoose queries
 const mongooseMiddleware = require('../middleware/mongooseMiddleware')
 //import login controller
@@ -69,7 +58,7 @@ const addNewUser = (req, res, next) => {
     skills: skillsArr,
     type: req.body.type,
     portfolioLink: req.body.portfolioLink,
-    emailAuthenticated: 'No'
+    emailAuthenticated: 'Yes'
   })
   adduser.addnewUser(
     req,

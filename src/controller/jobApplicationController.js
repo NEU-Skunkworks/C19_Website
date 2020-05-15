@@ -5,6 +5,8 @@
  * createdDate: 03/28/2020
  */
 
+const dotenv = require("dotenv");
+dotenv.config();
 //import mongoose
 const mongoose = require('mongoose')
 //import Schema
@@ -18,10 +20,8 @@ const JobApplication = mongoose.model(
 const FILE_NAME = 'jobApplicationController.js'
 //import constants file
 const CONSTANTS = require('../CONSTANTS/constants')
-//importing file system to get the public and private key for creating public and private keys.
-const fs = require('fs')
 //public key path
-var publicKEY = fs.readFileSync('./.env/volunteer_keys/public.key', 'utf8')
+var publicKEY = process.env.VOLUNTEER_PUBLIC_KEY.replace(/\\n/g, '\n');
 //import login constants
 const loginMiddleware = require('../middleware/loginMiddleware')
 //import post authentication controller
@@ -33,10 +33,7 @@ const UserSchema = require('../model/userModel')
 //Create a variable of type mongoose schema for Researcher
 const User = mongoose.model('UserSchema', UserSchema)
 //public key path
-var researcherpublicKEY = fs.readFileSync(
-  './.env/researcher_keys/public.key',
-  'utf8'
-)
+var researcherpublicKEY = process.env.RESEARCHER_PUBLIC_KEY.replace(/\\n/g, '\n');
 //import Job Posting Schema
 const JobPostingSchema = require('../model/jobPostingModel')
 //Create a variable of type mongoose schema for Job Posting
