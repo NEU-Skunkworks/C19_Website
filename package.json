@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js",
+    "start": "node server.js",
     "seed": "node src/temp/seed/index.js"
   },
   "repository": {
@@ -31,7 +31,6 @@
     "jsonwebtoken": "^8.5.1",
     "log4js": "^6.1.2",
     "mongoose": "^5.9.6",
-    "nodemailer": "^6.4.6",
     "nodemon": "^2.0.2"
   }
 }
