@@ -2,7 +2,7 @@ version: 2.1
 orbs:
   node: circleci/node@1.1.6
 jobs:
-  build-and-start:
+  build-and-test:
     executor:
       name: node/default
     steps:
@@ -10,8 +10,8 @@ jobs:
       - node/with-cache:
           steps:
             - run: npm install
-            - run: npm start
+            - run: npm test
 workflows:
-    build-and-start:
+    build-and-test:
       jobs:
-        - build-and-start
+        - build-and-test
