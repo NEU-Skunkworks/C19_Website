@@ -11,7 +11,7 @@ const express = require('express')
 const router = express.Router()
 
 //Confirm Email
-router.post('/confirmEmail/:userID', function (req, res, next) {
+router.get('/confirmEmail/:userID', function (req, res, next) {
   emailController.confirmEmail(req, res, next)
 })
 

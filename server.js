@@ -5,19 +5,21 @@
  * createdDate: 03/27/2020
  */
 
+const dotenv = require("dotenv");
+dotenv.config();
 const express = require('express')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const app = express()
 const cors = require('cors')
 const path = require('path')
-const CONSTANTS=require('./src/CONSTANTS/constants')
+const CONSTANTS = require('./src/CONSTANTS/constants')
 //Save the log details
 const LOGGER = require(path.resolve('.') + '/src/Logger/logger.js')
-const FILE_NAME='server.js'
+const FILE_NAME = 'server.js'
 //Port to expose
 const port = 3000
-
+const fs = require('fs')
 //import the basic routes folder
 const basicRoutes = require(path.resolve('.') + '/src/Routes/basicroutes.js')
 //import the user routes
@@ -34,34 +36,30 @@ const emailRoutes = require(path.resolve('.') + '/src/Routes/emailRoutes.js')
 const passwordRoutes = require(path.resolve('.') +
   '/src/Routes/passwordRoutes.js')
 
-
+const MONGO_DB_URL = process.env.MONGO_DB_URL_LOCAL;
+var ca = [fs.readFileSync(process.env.RDS_FILE)]
+// sslValidate: true,
+//     sslCA:ca,
 //mongoose connection
 mongoose.Promise = global.Promise
 mongoose.connect(
-  CONSTANTS.mongoDBUrl,
+  MONGO_DB_URL,
   {
-    useNewUrlParser: 'true',
-    useUnifiedTopology: 'true'
+    useNewUrlParser: true,
+    useUnifiedTopology: true    
   },
   (err, db) => {
-    //
     if (err) {
-      CONSTANTS.createLogMessage(
-        FILE_NAME,
-        err,
-        'MONGODBCONNECTIONERROR'
-      )
-      
+      CONSTANTS.createLogMessage(FILE_NAME, err, 'MONGODBCONNECTIONERROR')
     } else {
       CONSTANTS.createLogMessage(
         FILE_NAME,
-        'Connection established to '+CONSTANTS.mongoDBUrl,
+        'Connection established to ' + MONGO_DB_URL,
         'MONGODBCONNECTIONSUCCESS'
       )
     }
   }
 )
-
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(cors())

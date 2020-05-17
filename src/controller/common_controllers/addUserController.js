@@ -27,7 +27,7 @@ const addnewUser = (
   data
 ) => {
   loginMiddleware
-    .checkifDataExists(schema,req,res,next, searchcriteria, FILE_NAME)
+    .checkifDataExists(schema, req, res, next, searchcriteria, FILE_NAME)
     .then(result => {
       if (result === null) {
         //Encrypt the password
@@ -49,7 +49,9 @@ const addnewUser = (
           mongooseMiddleware.addNewUser(data, FILE_NAME).then(result => {
             if (result != undefined && result != null) {
               var link =
-                '"http://'+req.hostname+':3000/dev/email/confirmEmail/' +
+                '"http://' +
+                req.hostname +
+                ':3000/dev/email/confirmEmail/' +
                 result._id +
                 '"'
               var message =
@@ -57,8 +59,18 @@ const addnewUser = (
                 result.type +
                 '. Please click the link below to confirm your email<p><br><br>' +
                 emailMiddleware.createEmailAuthenticationMail(link)
+              // //To remove
+              // CONSTANTS.createLogMessage(FILE_NAME, 'No data Found', 'NODATA')
+              // //Send the response
+              // CONSTANTS.createResponses(
+              //   res,
+              //   CONSTANTS.ERROR_CODE.SUCCESS,
+              //   CONSTANTS.SUCCESS_DESCRIPTION.SUCCESS,
+              //   next
+              // )
+              // //To Remove
               emailMiddleware.sendEmail(
-                'admin@skunkworks.com',
+                'admin@skunks.ai',
                 result.email,
                 'Welcome to NEU SKUNKWORKS',
                 message,

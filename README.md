@@ -73,54 +73,14 @@ Everyone working on this Repository please follow the below rules:
     ```bash
     npm i
     ```
-4.  Create a .env folder in your root directory of the project and create the following folders and files in it<br>
 
-    `PS: These steps are temporary just to test the application`
-
-    ```bash
-
-        ├───emailConstants            # Contains all the email constants required to set up the smtp server
-        │       emailConstants.js
-        │
-        ├───researcher_keys           # The private and public key used to authenticate the researcher
-        │       private.key
-        │       public.key
-        │
-        └───volunteer_keys            # The private and public key used to authenticate the volunteer
-                private.key
-                public.key
-    ```
-
-    To create the public and private keys go to the below website and create them and place them in the private.key and public.key files shown in the above directory. Remember to select PKCS #8 (base64) from the dropdown.
-    https://csfieldguide.org.nz/en/interactives/rsa-key-generator/
-
-    `Note: The private and public keys should be different for volunteer and researcher. Do not copy the same public and private keys in the files or else it will give you errors.`
-
-    In the email constants file create a variable as shown below:
-
-    ```js
-    const emailconstants = {
-      HOST: 'smtp.googlemail.com',
-      PORT: 465,
-      SECURE: true,
-      USER: 'YOUR_GMAIL_EMAIL_ID',
-      PASSWORD: 'YOUR_GMAIL_PASSWORD',
-    };
-
-    module.exports = { emailconstants };
-    ```
-
-    Follow the steps in the below given link to setup your Gmail SMTP:
-
-    https://artisansweb.net/sending-email-via-gmail-smtp-server-in-nodejs/
-
-5.  Once all the packages are installed and folders created run the command below to start the api.
+4.  Once all the packages are installed and folders created run the command below to start the api.
 
     ```bash
     npm start
     ```
 
-6.  Make sure you have your mongoDB instance running in the local machine. Run the following command in your local machine<br>
+5.  Make sure you have your mongoDB instance running in the local machine. Run the following command in your local machine<br>
 
     `PS: This is temporary as well`
 
@@ -137,7 +97,7 @@ Everyone working on this Repository please follow the below rules:
     npm run seed
     ```
 
-7)  To test if your application running go to http://localhost:3000/. It should give you the count of users, job applications and job postings in the database.
+6.  To test if your application running go to http://localhost:3000/. It should give you the count of users, job applications and job postings in the database.
 
 <hr>
 
