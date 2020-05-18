@@ -2,6 +2,7 @@ FROM node:10.13-alpine
 ENV NODE_ENV production
 WORKDIR /usr/src/app
 
+#Declaring Arguments
 ARG MONGO_DB_URL_DEV
 ARG VOLUNTEER_PRIVATE_KEY
 ARG VOLUNTEER_PUBLIC_KEY
@@ -11,6 +12,7 @@ ARG VERIFY_OPTIONS_EXPIRES_IN
 ARG VERIFY_OPTIONS_ALGORITHM
 ARG TEMP_PASSWORD_LENGTH
 ARG RDS_FILE
+
 # Declaring environment variables
 ENV MONGO_DB_URL_DEV=$MONGO_DB_URL_DEV
 ENV VOLUNTEER_PRIVATE_KEY=$VOLUNTEER_PRIVATE_KEY
@@ -36,5 +38,6 @@ RUN wget https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem
 
 #Exposing port 3000
 EXPOSE 3000
+
 #Running the command
 CMD [ "node", "server.js" ]
