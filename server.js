@@ -36,10 +36,8 @@ const emailRoutes = require(path.resolve('.') + '/src/Routes/emailRoutes.js')
 const passwordRoutes = require(path.resolve('.') +
   '/src/Routes/passwordRoutes.js')
 
-const MONGO_DB_URL = process.env.MONGO_DB_URL_LOCAL
-//var ca = [fs.readFileSync(process.env.RDS_FILE)]
-// sslValidate: true,
-//     sslCA: ca
+const MONGO_DB_URL = process.env.MONGO_DB_URL_DEV
+var ca = [fs.readFileSync(process.env.RDS_FILE)]
 //mongoose connection
 mongoose.Promise = global.Promise
 mongoose.connect(
@@ -47,7 +45,8 @@ mongoose.connect(
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    
+    sslValidate: true,
+    sslCA: ca
   },
   (err, db) => {
     if (err) {

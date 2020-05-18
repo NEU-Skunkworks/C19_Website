@@ -2,7 +2,16 @@ version: 2.1
 executors:
       docker-publisher:
         environment:
-          IMAGE_NAME: rahulh25/covid19api:1.4
+          IMAGE_NAME: rahulh25/covid19api:1.5
+          MONGO_DB_URL_DEV: $MONGO_DB_URL_DEV
+          VOLUNTEER_PRIVATE_KEY: $VOLUNTEER_PRIVATE_KEY
+          VOLUNTEER_PUBLIC_KEY: $VOLUNTEER_PUBLIC_KEY
+          RESEARCHER_PRIVATE_KEY: $RESEARCHER_PRIVATE_KEY
+          RESEARCHER_PUBLIC_KEY: $RESEARCHER_PUBLIC_KEY
+          VERIFY_OPTIONS_EXPIRES_IN: $VERIFY_OPTIONS_EXPIRES_IN
+          VERIFY_OPTIONS_ALGORITHM: $VERIFY_OPTIONS_ALGORITHM
+          TEMP_PASSWORD_LENGTH: $TEMP_PASSWORD_LENGTH
+          RDS_FILE: $RDS_FILE
         docker:
           - image: circleci/buildpack-deps:stretch
 orbs:
@@ -67,7 +76,7 @@ workflows:
                   only: master
           - aws-eks/update-container-image:
                 cluster-name: covidcluster
-                container-image-updates: 'covidapicontainer=rahulh25/covid19api:1.4'
+                container-image-updates: 'covidapicontainer=rahulh25/covid19api:1.5'
                 record: true
                 requires:
                   - publish-latest
