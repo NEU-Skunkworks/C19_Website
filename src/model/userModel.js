@@ -23,8 +23,7 @@ module.exports = UserSchema = new Schema({
     required: 'Email ID is required'
   },
   password: {
-    type: String,
-    required: 'Password is required'
+    type: String
   },
   gender: {
     type: String

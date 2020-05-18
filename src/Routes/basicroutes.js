@@ -67,12 +67,12 @@ router.get('/', function (req, res) {
         })
     })
 })
-router.get('/hello', function (req, res) {
+router.get('/health', function (req, res) {
   let responseObj = {}
   LOGGER.info('Hello world ' + FILE_NAME)
   res.statusCode = CONSTANTS.ERROR_CODE.SUCCESS
   res.statusMessage = CONSTANTS.ERROR_DESCRIPTION.SUCCESS
-  responseObj.result = 'Hello World'
+  responseObj.result = 'API is healthy'
   res.send(responseObj)
 })
 
