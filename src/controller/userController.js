@@ -5,9 +5,8 @@
  * createdDate: 02/04/2020
  */
 
- 
-const dotenv = require("dotenv");
-dotenv.config();
+const dotenv = require('dotenv')
+dotenv.config()
 //Declare the file name
 const FILE_NAME = 'userController.js'
 //import constants file
@@ -21,13 +20,22 @@ const User = mongoose.model('UserSchema', UserSchema)
 //importing bcrypt to hash the user entered password for security.
 const bcrypt = require('bcrypt')
 //private key path
-var researcherprivateKEY = process.env.RESEARCHER_PRIVATE_KEY.replace(/\\n/g, '\n');
+var researcherprivateKEY = process.env.RESEARCHER_PRIVATE_KEY.replace(
+  /\\n/g,
+  '\n'
+)
 //public key path
-var researcherpublicKEY = process.env.RESEARCHER_PUBLIC_KEY.replace(/\\n/g, '\n');
+var researcherpublicKEY = process.env.RESEARCHER_PUBLIC_KEY.replace(
+  /\\n/g,
+  '\n'
+)
 //private key path
-var volunteerprivateKEY = process.env.VOLUNTEER_PRIVATE_KEY.replace(/\\n/g, '\n');
+var volunteerprivateKEY = process.env.VOLUNTEER_PRIVATE_KEY.replace(
+  /\\n/g,
+  '\n'
+)
 //public key path
-var volunteerpublicKEY = process.env.VOLUNTEER_PUBLIC_KEY.replace(/\\n/g, '\n');
+var volunteerpublicKEY = process.env.VOLUNTEER_PUBLIC_KEY.replace(/\\n/g, '\n')
 //import mongoose queries
 const mongooseMiddleware = require('../middleware/mongooseMiddleware')
 //import login controller
@@ -141,43 +149,36 @@ const updateUser = (req, res, next) => {
           } else {
             var publicKEY = researcherpublicKEY
           }
-          bcrypt.hash(req.body.password, 10, (err, hash) => {
-            if (err) {
-              CONSTANTS.createLogMessage(FILE_NAME, 'Server Error', 'ERROR')
-            } else {
-              if (req.body.skills.toString().includes(',')) {
-                var skills = req.body.skills
-                var skillsArr = skills.split(',')
-              } else {
-                var skillsArr = req.body.skills.toString()
-              }
-              let newUser = new User({
-                firstName: req.body.firstName,
-                lastName: req.body.lastName,
-                email: req.body.email,
-                age: req.body.age,
-                gender: req.body.gender,
-                institute: req.body.institute,
-                skills: skillsArr,
-                type: req.body.type,
-                portfolioLink: req.body.portfolioLink,
-                password: hash
-              })
-              var upsertData = newUser.toObject()
-              delete upsertData._id
-              postAuthentication.postAuthentication(
-                req,
-                res,
-                next,
-                publicKEY,
-                FILE_NAME,
-                req.params.userID,
-                mongooseMiddleware.updateData,
-                User,
-                upsertData
-              )
-            }
+          if (req.body.skills.toString().includes(',')) {
+            var skills = req.body.skills
+            var skillsArr = skills.split(',')
+          } else {
+            var skillsArr = req.body.skills.toString()
+          }
+          let newUser = new User({
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            email: req.body.email,
+            age: req.body.age,
+            gender: req.body.gender,
+            institute: req.body.institute,
+            skills: skillsArr,
+            type: req.body.type,
+            portfolioLink: req.body.portfolioLink
           })
+          var upsertData = newUser.toObject()
+          delete upsertData._id
+          postAuthentication.postAuthentication(
+            req,
+            res,
+            next,
+            publicKEY,
+            FILE_NAME,
+            req.params.userID,
+            mongooseMiddleware.updateData,
+            User,
+            upsertData
+          )
         }
       } else {
         //Create the log message

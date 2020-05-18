@@ -1,6 +1,23 @@
 version: 2.1
+executors:
+      docker-publisher:
+        environment:
+          IMAGE_NAME: rahulh25/c19api:1.0
+          MONGO_DB_URL_DEV: $MONGO_DB_URL_DEV
+          VOLUNTEER_PRIVATE_KEY: $VOLUNTEER_PRIVATE_KEY
+          VOLUNTEER_PUBLIC_KEY: $VOLUNTEER_PUBLIC_KEY
+          RESEARCHER_PRIVATE_KEY: $RESEARCHER_PRIVATE_KEY
+          RESEARCHER_PUBLIC_KEY: $RESEARCHER_PUBLIC_KEY
+          VERIFY_OPTIONS_EXPIRES_IN: $VERIFY_OPTIONS_EXPIRES_IN
+          VERIFY_OPTIONS_ALGORITHM: $VERIFY_OPTIONS_ALGORITHM
+          TEMP_PASSWORD_LENGTH: $TEMP_PASSWORD_LENGTH
+          RDS_FILE: $RDS_FILE
+        docker:
+          - image: circleci/buildpack-deps:stretch
 orbs:
   node: circleci/node@1.1.6
+  # aws-eks: circleci/aws-eks@0.2.7
+  # kubernetes: circleci/kubernetes@0.11.0
 jobs:
   build-and-test:
     executor:
@@ -10,8 +27,57 @@ jobs:
       - node/with-cache:
           steps:
             - run: npm install
-            - run: npm test
+            - run: npm run-script test
+  build:
+      executor: docker-publisher
+      steps:
+        - checkout
+        - setup_remote_docker
+        - run:
+            name: Build Docker image
+            command: |
+              docker build -f Dockerfile -t $IMAGE_NAME .
+        - run:
+            name: Archive Docker image
+            command: docker save -o image.tar $IMAGE_NAME
+        - persist_to_workspace:
+            root: .
+            paths:
+              - ./image.tar
+  publish-latest:
+        executor: docker-publisher
+        steps:
+          - attach_workspace:
+              at: /tmp/workspace
+          - setup_remote_docker
+          - run:
+              name: Load archived Docker image
+              command: docker load -i /tmp/workspace/image.tar
+          - run:
+              name: Publish Docker Image to Docker Hub
+              command: |
+                echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+                docker push $IMAGE_NAME
 workflows:
     build-and-test:
       jobs:
         - build-and-test
+    build-master:
+        jobs:
+          - build:
+              filters:
+                branches:
+                  only: master
+          - publish-latest:
+              requires:
+                - build
+              filters:
+                branches:
+                  only: master
+          # - aws-eks/update-container-image:
+          #       cluster-name: covidcluster
+          #       container-image-updates: 'covidapi=rahulh25/c19api:1.0'
+          #       record: true
+          #       requires:
+          #         - publish-latest
+          #       resource-name: deployment/covidapideployment
