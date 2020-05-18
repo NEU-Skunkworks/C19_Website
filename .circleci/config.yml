@@ -2,7 +2,7 @@ version: 2.1
 executors:
       docker-publisher:
         environment:
-          IMAGE_NAME: rahulh25/covid19api:1.0
+          IMAGE_NAME: rahulh25/covid19api:1.1
         docker:
           - image: circleci/buildpack-deps:stretch
 orbs:
@@ -67,7 +67,7 @@ workflows:
                   only: master
           - aws-eks/update-container-image:
                 cluster-name: covidcluster
-                container-image-updates: 'covidapicontainer=rahulh25/covid19api:1.0'
+                container-image-updates: 'covidapicontainer=rahulh25/covid19api:1.1'
                 record: true
                 requires:
                   - publish-latest
