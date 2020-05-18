@@ -24,7 +24,7 @@ RUN npm install
 #Copying over all the files
 COPY . .
 RUN wget https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem
-
+RUN echo "$MONGO_DB_URL_DEV"
 #Exposing port 3000
 EXPOSE 3000
 #Running the command
