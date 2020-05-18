@@ -41,7 +41,7 @@ var ca = [fs.readFileSync(process.env.RDS_FILE)]
 //mongoose connection
 mongoose.Promise = global.Promise
 mongoose.connect(
-  MONGO_DB_URL_TEST,
+  MONGO_DB_URL,
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
