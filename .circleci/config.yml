@@ -2,7 +2,7 @@ version: 2.1
 executors:
       docker-publisher:
         environment:
-          IMAGE_NAME: rahulh25/c19api:1.0
+          IMAGE_NAME: rahulh25/covid19api:1.0
           MONGO_DB_URL_DEV: $MONGO_DB_URL_DEV
           VOLUNTEER_PRIVATE_KEY: $VOLUNTEER_PRIVATE_KEY
           VOLUNTEER_PUBLIC_KEY: $VOLUNTEER_PUBLIC_KEY
@@ -16,8 +16,8 @@ executors:
           - image: circleci/buildpack-deps:stretch
 orbs:
   node: circleci/node@1.1.6
-  # aws-eks: circleci/aws-eks@0.2.7
-  # kubernetes: circleci/kubernetes@0.11.0
+  aws-eks: circleci/aws-eks@0.2.7
+  kubernetes: circleci/kubernetes@0.11.0
 jobs:
   build-and-test:
     executor:
@@ -74,10 +74,10 @@ workflows:
               filters:
                 branches:
                   only: master
-          # - aws-eks/update-container-image:
-          #       cluster-name: covidcluster
-          #       container-image-updates: 'covidapi=rahulh25/c19api:1.0'
-          #       record: true
-          #       requires:
-          #         - publish-latest
-          #       resource-name: deployment/covidapideployment
+          - aws-eks/update-container-image:
+                cluster-name: covidcluster
+                container-image-updates: 'covidapicontainer=rahulh25/covid19api:1.0'
+                record: true
+                requires:
+                  - publish-latest
+                resource-name: deployment/covidapi
