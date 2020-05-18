@@ -3,15 +3,6 @@ executors:
   docker-publisher:
     environment:
       IMAGE_NAME: rahulh25/covid19api:1.9
-      # MONGO_DB_URL_DEV: echo {$MONGO_DB_URL_DEV}
-      # VOLUNTEER_PRIVATE_KEY: echo {$VOLUNTEER_PRIVATE_KEY}
-      # VOLUNTEER_PUBLIC_KEY: echo {$VOLUNTEER_PUBLIC_KEY}
-      # RESEARCHER_PRIVATE_KEY: echo {$RESEARCHER_PRIVATE_KEY}
-      # RESEARCHER_PUBLIC_KEY: echo {$RESEARCHER_PUBLIC_KEY}
-      # VERIFY_OPTIONS_EXPIRES_IN: echo {$VERIFY_OPTIONS_EXPIRES_IN}
-      # VERIFY_OPTIONS_ALGORITHM: echo {$VERIFY_OPTIONS_ALGORITHM}
-      # TEMP_PASSWORD_LENGTH: echo {$TEMP_PASSWORD_LENGTH}
-      # RDS_FILE: $RDS_FILE
     docker:
       - image: circleci/buildpack-deps:stretch
 orbs:
