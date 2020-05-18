@@ -2,6 +2,15 @@ FROM node:10.13-alpine
 ENV NODE_ENV production
 WORKDIR /usr/src/app
 
+ARG MONGO_DB_URL_DEV="mongo"
+ARG VOLUNTEER_PRIVATE_KEY="volunteer_private_key"
+ARG VOLUNTEER_PUBLIC_KEY="volunteer_public_key"
+ARG RESEARCHER_PRIVATE_KEY="researcher_private_key"
+ARG RESEARCHER_PUBLIC_KEY="researcher_public_key"
+ARG VERIFY_OPTIONS_EXPIRES_IN="verify_options"
+ARG VERIFY_OPTIONS_ALGORITHM="verify_algorithm"
+ARG TEMP_PASSWORD_LENGTH="temp_password"
+ARG RDS_FILE="RDS_FILE"
 # Declaring environment variables
 ENV MONGO_DB_URL_DEV=$MONGO_DB_URL_DEV
 ENV VOLUNTEER_PRIVATE_KEY=$VOLUNTEER_PRIVATE_KEY
@@ -24,6 +33,7 @@ RUN npm install
 #Copying over all the files
 COPY . .
 RUN wget https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem
+
 #Exposing port 3000
 EXPOSE 3000
 #Running the command
