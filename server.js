@@ -5,8 +5,8 @@
  * createdDate: 03/27/2020
  */
 
-const dotenv = require("dotenv");
-dotenv.config();
+const dotenv = require('dotenv')
+dotenv.config()
 const express = require('express')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
@@ -36,17 +36,17 @@ const emailRoutes = require(path.resolve('.') + '/src/Routes/emailRoutes.js')
 const passwordRoutes = require(path.resolve('.') +
   '/src/Routes/passwordRoutes.js')
 
-const MONGO_DB_URL = process.env.MONGO_DB_URL_LOCAL;
+const MONGO_DB_URL = process.env.MONGO_DB_URL_TEST
 var ca = [fs.readFileSync(process.env.RDS_FILE)]
-// sslValidate: true,
-//     sslCA:ca,
 //mongoose connection
 mongoose.Promise = global.Promise
 mongoose.connect(
-  MONGO_DB_URL,
+  MONGO_DB_URL_TEST,
   {
     useNewUrlParser: true,
-    useUnifiedTopology: true    
+    useUnifiedTopology: true,
+    sslValidate: true,
+    sslCA: ca
   },
   (err, db) => {
     if (err) {
