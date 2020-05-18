@@ -59,16 +59,6 @@ const addnewUser = (
                 result.type +
                 '. Please click the link below to confirm your email<p><br><br>' +
                 emailMiddleware.createEmailAuthenticationMail(link)
-              // //To remove
-              // CONSTANTS.createLogMessage(FILE_NAME, 'No data Found', 'NODATA')
-              // //Send the response
-              // CONSTANTS.createResponses(
-              //   res,
-              //   CONSTANTS.ERROR_CODE.SUCCESS,
-              //   CONSTANTS.SUCCESS_DESCRIPTION.SUCCESS,
-              //   next
-              // )
-              // //To Remove
               emailMiddleware.sendEmail(
                 'admin@skunks.ai',
                 result.email,

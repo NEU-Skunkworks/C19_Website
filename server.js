@@ -38,6 +38,7 @@ const passwordRoutes = require(path.resolve('.') +
 
 const MONGO_DB_URL = process.env.MONGO_DB_URL_DEV
 var ca = [fs.readFileSync(process.env.RDS_FILE)]
+
 //mongoose connection
 mongoose.Promise = global.Promise
 mongoose.connect(

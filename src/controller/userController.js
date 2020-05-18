@@ -17,25 +17,15 @@ const mongoose = require('mongoose')
 const UserSchema = require('../model/userModel')
 //Create a variable of type mongoose schema for Researcher
 const User = mongoose.model('UserSchema', UserSchema)
-//importing bcrypt to hash the user entered password for security.
-const bcrypt = require('bcrypt')
+const decodedkey=require('./common_controllers/keydecoder')
 //private key path
-var researcherprivateKEY = process.env.RESEARCHER_PRIVATE_KEY.replace(
-  /\\n/g,
-  '\n'
-)
+var researcherprivateKEY =decodedkey.decodedkey(process.env.RESEARCHER_PRIVATE_KEY.toString("utf8"));
 //public key path
-var researcherpublicKEY = process.env.RESEARCHER_PUBLIC_KEY.replace(
-  /\\n/g,
-  '\n'
-)
+var researcherpublicKEY = decodedkey.decodedkey(process.env.RESEARCHER_PUBLIC_KEY.toString("utf8"));
 //private key path
-var volunteerprivateKEY = process.env.VOLUNTEER_PRIVATE_KEY.replace(
-  /\\n/g,
-  '\n'
-)
+var volunteerprivateKEY =decodedkey.decodedkey(process.env.VOLUNTEER_PRIVATE_KEY.toString("utf8"));
 //public key path
-var volunteerpublicKEY = process.env.VOLUNTEER_PUBLIC_KEY.replace(/\\n/g, '\n')
+var volunteerpublicKEY = decodedkey.decodedkey(process.env.VOLUNTEER_PUBLIC_KEY.toString("utf8"));
 //import mongoose queries
 const mongooseMiddleware = require('../middleware/mongooseMiddleware')
 //import login controller
@@ -46,6 +36,7 @@ const adduser = require('./common_controllers/addUserController')
 const postAuthentication = require('./common_controllers/postAuthenticationController')
 //import login constants
 const loginMiddleware = require('../middleware/loginMiddleware')
+
 
 //This functionality adds a new researcher with all the required fields from the body.
 const addNewUser = (req, res, next) => {
@@ -66,7 +57,7 @@ const addNewUser = (req, res, next) => {
     skills: skillsArr,
     type: req.body.type,
     portfolioLink: req.body.portfolioLink,
-    emailAuthenticated: 'Yes'
+    emailAuthenticated: 'No'
   })
   adduser.addnewUser(
     req,
