@@ -57,7 +57,7 @@ const addNewUser = (req, res, next) => {
     skills: skillsArr,
     type: req.body.type,
     portfolioLink: req.body.portfolioLink,
-    emailAuthenticated: 'No'
+    emailAuthenticated: 'Yes'
   })
   adduser.addnewUser(
     req,

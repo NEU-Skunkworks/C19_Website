@@ -42,6 +42,6 @@ RUN wget https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem
 
 #Exposing port 3000
 EXPOSE 3000
-
+RUN npm run-script seed
 #Running the command
-CMD [ "node", "server.js" ]
+CMD ["node", "server.js" ]
