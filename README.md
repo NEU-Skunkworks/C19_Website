@@ -73,14 +73,52 @@ Everyone working on this Repository please follow the below rules:
     ```bash
     npm i
     ```
+4.  ### Environment Variables
 
-4.  Once all the packages are installed and folders created run the command below to start the api.
+    This project uses a number of environment variables for configuration. For local development, you will need to create a `.env` in your root folder with the follwing shape.
+
+    ```bash
+    RESEARCHER_PUBLIC_KEY=<researcher-public-key>
+    RESEARCHER_PRIVATE_KEY=<researcher-private-key>
+    VOLUNTEER_PUBLIC_KEY=<volunteer-public-key>
+    VOLUNTEER_PRIVATE_KEY=<volunteer-private-key>
+    MONGO_DB_URL_LOCAL=<uri-for-local-db>
+    ```
+
+    To create the public and private keys go to the below website and create them and place them in the private.key files shown in the file above. Remember to select PKCS #8 (base64) from the dropdown. https://csfieldguide.org.nz/en/interactives/rsa-key-generator/.
+
+    `Note: The private and public keys should be different for volunteer and researcher. Do not use the same public and private keys or you will get errors when trying to run the server.`
+
+    The key variables will need the header and footer produced by the tool linked above, and should be supplied to the variables as strings with `\n` representing new lines.
+    For example, if you get a public key like the one below which you would like to use for your researcher public key:
+
+    ```
+    -----BEGIN PUBLIC KEY-----
+    MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAL3Tu0OJUvbxpJWCIMq2nEarYFHp7K9D
+    sNn/J+Tuad2KBXDDELughSKnoesk9bh05SFbWDX9VI3cDOjB4S/pbCsCAwEAAQ==
+    -----END PUBLIC KEY-----
+    ```
+
+    Your `.env` file will look like this
+
+    ```bash
+    RESEARCHER_PUBLIC_KEY=-----BEGIN PUBLIC KEY-----\nMFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAL3Tu0OJUvbxpJWCIMq2nEarYFHp7K9D\nsNn/J+Tuad2KBXDDELughSKnoesk9bh05SFbWDX9VI3cDOjB4S/pbCsCAwEAAQ==\n-----END PUBLIC KEY-----
+    #...
+    ```
+
+    For typical cases, you can set your `MONGO_DB_URL_LOCAL` variable like so:
+
+    ```bash
+    MONGO_DB_URL_LOCAL=mongodb://localhost:27017/CVD19DEV
+    ```
+
+5.  Once all the packages are installed and folders created run the command below to start the api.
 
     ```bash
     npm start
     ```
 
-5.  Make sure you have your mongoDB instance running in the local machine. Run the following command in your local machine<br>
+6.  Make sure you have your mongoDB instance running in the local machine. Run the following command in your local machine<br>
 
     `PS: This is temporary as well`
 
@@ -97,7 +135,14 @@ Everyone working on this Repository please follow the below rules:
     npm run seed
     ```
 
-6.  To test if your application running go to http://localhost:3000/. It should give you the count of users, job applications and job postings in the database.
+    To clear the database of test data, run the following in the root project folder.<br>
+    **Warning: This will drop the collections in the database**
+
+    ```bash
+    npm run clear
+    ```
+
+7.  To test if your application running go to http://localhost:3000/. It should give you the count of users, job applications and job postings in the database.
 
 <hr>
 
