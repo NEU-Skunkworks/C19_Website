@@ -1,11 +1,12 @@
 const mongoose = require('mongoose')
-const CONSTANTS = require('../../CONSTANTS/constants')
 const JobPostingSchema = require('../../model/jobPostingModel')
 const UserSchema = require('../../model/userModel')
 const testJobs = require('./data/test_jobs.json')
 const testResearchers = require('./data/test_researchers.json')
 const testVolunteers = require('./data/test_volunteers.json')
-
+const dotenv = require('dotenv')
+const fs = require('fs')
+dotenv.config()
 const seedUsers = db => {
   try {
     const User = db.model('UserSchema', UserSchema)
@@ -64,22 +65,26 @@ const seedJobs = db => {
 }
 
 const seed = async () => {
-  var ca = [fs.readFileSync('rds-combined-ca-bundle.pem')]
+  var ca = [fs.readFileSync('rds-combined-ca-bundle.pem')] 
+  const MONGO_DB_URL = process.env.MONGO_DB_URL_DEV
   console.log('[SEED]: running...')
   try {
-    const db = await mongoose.connect(CONSTANTS.mongoDBUrl, {
+    const db = await mongoose.connect(MONGO_DB_URL, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       sslValidate: true,
       sslCA: ca
     })
 
-    seedUsers(db)
-    seedJobs(db)
-
-    console.log('[SEED]: success')
+    await seedUsers(db)
+    await seedJobs(db)
+    setTimeout(function () {
+      console.log('[SEED]: success')
+      return process.exit(0)
+    }, 5000)
   } catch (error) {
     console.log(error)
+    process.exit(1)
   }
 }
 

@@ -48,35 +48,40 @@ const addnewUser = (
           //Save the data
           mongooseMiddleware.addNewUser(data, FILE_NAME).then(result => {
             if (result != undefined && result != null) {
-              var link =
-                '"http://' +
-                req.hostname +
-                ':3000/dev/email/confirmEmail/' +
-                result._id +
-                '"'
-              var message =
-                '<p>You have successfully registered to our website as a ' +
-                result.type +
-                '. Please click the link below to confirm your email<p><br><br>' +
-                emailMiddleware.createEmailAuthenticationMail(link)
-              // //To remove
-              // CONSTANTS.createLogMessage(FILE_NAME, 'No data Found', 'NODATA')
-              // //Send the response
-              // CONSTANTS.createResponses(
-              //   res,
-              //   CONSTANTS.ERROR_CODE.SUCCESS,
-              //   CONSTANTS.SUCCESS_DESCRIPTION.SUCCESS,
-              //   next
-              // )
-              // //To Remove
-              emailMiddleware.sendEmail(
-                'admin@skunks.ai',
-                result.email,
-                'Welcome to NEU SKUNKWORKS',
-                message,
-                res,
-                FILE_NAME
+              //To Remove
+              //Add data to the logger file
+              CONSTANTS.createLogMessage(
+                FILE_NAME,
+                'USER CREATED SUCCESSFULLY',
+                'SUCCESS'
               )
+              //send back the json response
+              CONSTANTS.createResponses(
+                res,
+                CONSTANTS.ERROR_CODE.SUCCESS,
+                'User created Successfully',
+                next
+              )
+              //To Remove
+              // var link =
+              //   '"http://' +
+              //   req.hostname +
+              //   ':3000/dev/email/confirmEmail/' +
+              //   result._id +
+              //   '"'
+              // var message =
+              //   '<p>You have successfully registered to our website as a ' +
+              //   result.type +
+              //   '. Please click the link below to confirm your email<p><br><br>' +
+              //   emailMiddleware.createEmailAuthenticationMail(link)
+              // emailMiddleware.sendEmail(
+              //   'admin@skunks.ai',
+              //   result.email,
+              //   'Welcome to NEU SKUNKWORKS',
+              //   message,
+              //   res,
+              //   FILE_NAME
+              // )
             }
           })
         })

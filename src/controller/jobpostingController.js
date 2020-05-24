@@ -15,8 +15,9 @@ const JobPostingSchema = require('../model/jobPostingModel');
 const JobPosting = mongoose.model('JobPostingSchema', JobPostingSchema);
 const dotenv = require("dotenv");
 dotenv.config();
+const decodedkey=require('./common_controllers/keydecoder')
 //public key path
-var publicKEY = process.env.RESEARCHER_PUBLIC_KEY.replace(/\\n/g, '\n');
+var publicKEY = decodedkey.decodedkey(process.env.RESEARCHER_PUBLIC_KEY.toString("utf8"));
 //import post authentication controller
 const postAuthentication = require('./common_controllers/postAuthenticationController');
 //import mongoose queries

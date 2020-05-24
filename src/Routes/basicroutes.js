@@ -72,7 +72,7 @@ router.get('/health', function (req, res) {
   LOGGER.info('Hello world ' + FILE_NAME)
   res.statusCode = CONSTANTS.ERROR_CODE.SUCCESS
   res.statusMessage = CONSTANTS.ERROR_DESCRIPTION.SUCCESS
-  responseObj.result = 'API is healthy'
+  responseObj.result = 'API is still healthy'
   res.send(responseObj)
 })
 

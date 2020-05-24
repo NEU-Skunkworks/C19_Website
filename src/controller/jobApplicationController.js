@@ -20,8 +20,9 @@ const JobApplication = mongoose.model(
 const FILE_NAME = 'jobApplicationController.js'
 //import constants file
 const CONSTANTS = require('../CONSTANTS/constants')
+const decodedkey=require('./common_controllers/keydecoder')
 //public key path
-var publicKEY = process.env.VOLUNTEER_PUBLIC_KEY.replace(/\\n/g, '\n');
+var publicKEY = decodedkey.decodedkey(process.env.VOLUNTEER_PUBLIC_KEY.toString("utf8"));
 //import login constants
 const loginMiddleware = require('../middleware/loginMiddleware')
 //import post authentication controller
@@ -33,7 +34,7 @@ const UserSchema = require('../model/userModel')
 //Create a variable of type mongoose schema for Researcher
 const User = mongoose.model('UserSchema', UserSchema)
 //public key path
-var researcherpublicKEY = process.env.RESEARCHER_PUBLIC_KEY.replace(/\\n/g, '\n');
+var researcherpublicKEY = decodedkey.decodedkey(process.env.RESEARCHER_PUBLIC_KEY.toString("utf8"));
 //import Job Posting Schema
 const JobPostingSchema = require('../model/jobPostingModel')
 //Create a variable of type mongoose schema for Job Posting
