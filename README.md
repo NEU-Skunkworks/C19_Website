@@ -85,11 +85,16 @@ Everyone working on this Repository please follow the below rules:
     MONGO_DB_URL_LOCAL=<uri-for-local-db>
     ```
 
-    To create the public and private keys go to the below website and create them and place them in the private.key files shown in the file above. Remember to select PKCS #8 (base64) from the dropdown. https://csfieldguide.org.nz/en/interactives/rsa-key-generator/.
+    #### Generating User Keys
+
+    The public keys are RSA keys which will then need to be base64 encoded:
+
+    1.  To create the public and private keys go to this [RSA key generator website](https://csfieldguide.org.nz/en/interactives/rsa-key-generator/) website and create them and place them in the private.key files shown in the file above. Remember to select PKCS #8 (base64) from the dropdown.
+
+    2.  Then go this [base-64 encoding website](https://www.base64encode.org/) and paste in generated RSA key from the step above. The value returned from the website will be the value of the environment variable in the `.env` file.
 
     `Note: The private and public keys should be different for volunteer and researcher. Do not use the same public and private keys or you will get errors when trying to run the server.`
 
-    The key variables will need the header and footer produced by the tool linked above, and should be supplied to the variables as strings with `\n` representing new lines.
     For example, if you get a public key like the one below which you would like to use for your researcher public key:
 
     ```
@@ -99,10 +104,16 @@ Everyone working on this Repository please follow the below rules:
     -----END PUBLIC KEY-----
     ```
 
-    Your `.env` file will look like this
+    The output after base-64 encoding will be:
+
+    ```
+    LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUZ3d0RRWUpLb1pJaHZjTkFRRUJCUUFEU3dBd1NBSkJBTDNUdTBPSlV2YnhwSldDSU1xMm5FYXJZRkhwN0s5RApzTm4vSitUdWFkMktCWERERUx1Z2hTS25vZXNrOWJoMDVTRmJXRFg5VkkzY0RPakI0Uy9wYkNzQ0F3RUFBUT09Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQ==
+    ```
+
+    And your `.env` file will look like this
 
     ```bash
-    RESEARCHER_PUBLIC_KEY=-----BEGIN PUBLIC KEY-----\nMFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAL3Tu0OJUvbxpJWCIMq2nEarYFHp7K9D\nsNn/J+Tuad2KBXDDELughSKnoesk9bh05SFbWDX9VI3cDOjB4S/pbCsCAwEAAQ==\n-----END PUBLIC KEY-----
+    RESEARCHER_PUBLIC_KEY=LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUZ3d0RRWUpLb1pJaHZjTkFRRUJCUUFEU3dBd1NBSkJBTDNUdTBPSlV2YnhwSldDSU1xMm5FYXJZRkhwN0s5RApzTm4vSitUdWFkMktCWERERUx1Z2hTS25vZXNrOWJoMDVTRmJXRFg5VkkzY0RPakI0Uy9wYkNzQ0F3RUFBUT09Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQ==
     #...
     ```
 
