@@ -53,7 +53,7 @@ module.exports = UserSchema = new Schema({
   },
   emailAuthenticated: {
     type: String,
-    default:'Yes'
+    default:'No'
   },
   temporaryPassword: {
     type: String
