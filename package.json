@@ -6,7 +6,8 @@
   "scripts": {
     "test": "mocha --reporter spec",
     "start": "node server.js",
-    "seed": "node src/temp/seed/index.js"
+    "seed": "node src/temp/seed/index.js",
+    "clear": "node src/temp/clear/index.js"
   },
   "repository": {
     "type": "git",
