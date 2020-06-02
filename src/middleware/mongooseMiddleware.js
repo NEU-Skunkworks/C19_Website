@@ -7,6 +7,7 @@
 
 //import constants file
 const CONSTANTS = require('../CONSTANTS/constants');
+const { getSortOption } = require('../utils');
 
 //Function add new Data
 const addNewData = (schema, res, next, FILE_NAME) => {
@@ -280,8 +281,9 @@ const paginatedFindAllBasedOnCriteria = (
   searchCriteria,
   paginationOptions
 ) => {
-  const { page, limit } = paginationOptions;
+  const { page, limit, filter } = paginationOptions;
   const skipCount = page > 0 ? (page - 1) * limit : 0;
+  const sortOption = getSortOption(filter);
   try {
     return schema
       .find(searchCriteria)
@@ -296,7 +298,11 @@ const paginatedFindAllBasedOnCriteria = (
         return schema.find(
           searchCriteria,
           null,
-          { skip: parseInt(skipCount), limit: parseInt(limit) },
+          {
+            skip: parseInt(skipCount),
+            limit: parseInt(limit),
+            sort: sortOption,
+          },
           (dataErr, data) => {
             if (dataErr) {
               //Log the error
