@@ -21,6 +21,7 @@ const jobPostingRoutes = require('./src/Routes/jobPostingRoutes.js');
 const jobApplicationsRoutes = require('./src/Routes/jobApplicationsRoutes.js');
 const emailRoutes = require('./src/Routes/emailRoutes.js');
 const passwordRoutes = require('./src/Routes/passwordRoutes.js');
+const contributorRoutes = require('./src/Routes/contributorRoutes.js');
 
 const mount = async (app) => {
   // Open connection to DB
@@ -37,6 +38,7 @@ const mount = async (app) => {
   app.use('/dev/jobApplication', jobApplicationsRoutes);
   app.use('/dev/email', emailRoutes);
   app.use('/dev/password', passwordRoutes);
+  app.use('/dev/contributor', contributorRoutes)
 
   app.listen(port, function () {
     LOGGER.debug('Express server listening on port %s.', port);
