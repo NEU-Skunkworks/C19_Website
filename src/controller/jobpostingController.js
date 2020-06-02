@@ -13,11 +13,13 @@ const CONSTANTS = require('../CONSTANTS/constants');
 const JobPostingSchema = require('../model/jobPostingModel');
 //Create a variable of type mongoose schema for Job Posting
 const JobPosting = mongoose.model('JobPostingSchema', JobPostingSchema);
-const dotenv = require("dotenv");
+const dotenv = require('dotenv');
 dotenv.config();
-const decodedkey=require('./common_controllers/keydecoder')
+const decodedkey = require('./common_controllers/keydecoder');
 //public key path
-var publicKEY = decodedkey.decodedkey(process.env.RESEARCHER_PUBLIC_KEY.toString("utf8"));
+var publicKEY = decodedkey.decodedkey(
+  process.env.RESEARCHER_PUBLIC_KEY.toString('utf8')
+);
 //import post authentication controller
 const postAuthentication = require('./common_controllers/postAuthenticationController');
 //import mongoose queries
@@ -219,9 +221,9 @@ const getJobPostingbySearch = (req, res, next) => {
   }
 
   // If search has pagination options, return paginated result
-  if (req.query && req.query.page && req.query.limit) {
-    const { page, limit } = req.query;
-    console.log(page, limit);
+  if (req.query && req.query.page && req.query.limit && req.query.filter) {
+    const { page, limit, filter } = req.query;
+    console.log(page, limit, filter);
 
     mongooseMiddleware.paginatedFindAllBasedOnCriteria(
       JobPosting,
@@ -229,7 +231,7 @@ const getJobPostingbySearch = (req, res, next) => {
       next,
       FILE_NAME,
       searchcriteria,
-      { page, limit }
+      { page, limit, filter }
     );
   } else {
     mongooseMiddleware.findallbasedonCriteria(
