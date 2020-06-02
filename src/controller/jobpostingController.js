@@ -223,7 +223,6 @@ const getJobPostingbySearch = (req, res, next) => {
   // If search has pagination options, return paginated result
   if (req.query && req.query.page && req.query.limit && req.query.filter) {
     const { page, limit, filter } = req.query;
-    console.log(page, limit, filter);
 
     mongooseMiddleware.paginatedFindAllBasedOnCriteria(
       JobPosting,
