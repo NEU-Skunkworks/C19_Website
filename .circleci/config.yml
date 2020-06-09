@@ -54,7 +54,7 @@ workflows:
               only: master
       - aws-eks/update-container-image:
           cluster-name: covidcluster
-          container-image-updates: 'covidapicontainer=skunks/covid19api:1.1'
+          container-image-updates: 'covidapicontainer=skunks/covid19api:1.0.0'
           record: true
           get-rollout-status: true
           watch-rollout-status: true
