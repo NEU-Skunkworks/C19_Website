@@ -2,23 +2,13 @@ version: 2.1
 executors:
   docker-publisher:
     environment:
-      IMAGE_NAME: skunks/covid19api:1.1
+      IMAGE_NAME: skunks/covid19api:1.0.0
     docker:
       - image: circleci/buildpack-deps:stretch
 orbs:
-  node: circleci/node@1.1.6
   aws-eks: circleci/aws-eks@0.2.7
   kubernetes: circleci/kubernetes@0.11.0
 jobs:
-  build-and-test:
-    executor:
-      name: node/default
-    steps:
-      - checkout
-      - node/with-cache:
-          steps:
-            - run: npm install
-            - run: npm run-script test
   build:
     executor: docker-publisher
     steps:
@@ -50,9 +40,6 @@ jobs:
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
             docker push $IMAGE_NAME
 workflows:
-  build-and-test:
-    jobs:
-      - build-and-test
   build-master:
     jobs:
       - build:

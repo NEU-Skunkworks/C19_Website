@@ -13,10 +13,9 @@ const CONSTANTS = require('../CONSTANTS/constants');
 const ContributorSchema = require('../model/contributorModel');
 //Create a variable of type mongoose schema for contributor
 const Contributor = mongoose.model('ContributorSchema', ContributorSchema);
-//import file systems
-const fs = require('fs');
 //public key path
-var publicKEY = process.env.RESEARCHER_PUBLIC_KEY.replace(/\\n/g, '\n');
+const decodedkey=require('./common_controllers/keydecoder')
+var publicKEY = decodedkey.decodedkey(process.env.RESEARCHER_PUBLIC_KEY.toString("utf8"));
 //import post authentication controller
 const postAuthentication = require('./common_controllers/postAuthenticationController');
 //import mongoose queries

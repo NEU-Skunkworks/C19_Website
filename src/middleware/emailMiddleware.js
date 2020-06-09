@@ -13,10 +13,6 @@ var AWS = require('aws-sdk')
 AWS.config.update({ region: 'us-east-1' })
 //Function to send the email
 function sendEmail (from, to, subject, message, res, FILE_NAME) {
-  console.log(from)
-  console.log(to)
-  console.log(subject)
-  console.log(message)
   // Create sendEmail params
   var eParams = {
     Destination: {
