@@ -9,7 +9,7 @@ const connectDatabase = async (callingFileName) => {
       ? [fs.readFileSync('rds-combined-ca-bundle.pem')]
       : null;
   const connectionOptions =
-    process.env.NODE_ENV == 'production'
+    process.env.NODE_ENV === 'production'
       ? {
           useNewUrlParser: true,
           useUnifiedTopology: true,

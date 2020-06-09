@@ -28,7 +28,7 @@ const loginAuthentication = (
   //Check the type of user to be authenticated
   var searchCriteria = { email: req.body.email }
   loginMiddleware
-    .checkifDataExists(schema,req,res,next, searchCriteria, FILE_NAME)
+    .checkifDataExists(schema, req, res, next, searchCriteria, FILE_NAME)
     .then(result => {
       if (result === null) {
         //Error
@@ -40,7 +40,7 @@ const loginAuthentication = (
           next
         )
       } else if (result !== null) {
-        if (parseInt(result.loginAttempts) ===6) {
+        if (parseInt(result.loginAttempts) === 6) {
           CONSTANTS.createLogMessage(
             FILE_NAME,
             'Too many login attempts',
@@ -53,7 +53,7 @@ const loginAuthentication = (
             next
           )
         } else {
-          var pwd=result.password.toString()
+          var pwd = result.password.toString()
           bcrypt.compare(password, pwd.toString(), (err, match) => {
             if (err) {
               CONSTANTS.createLogMessage(FILE_NAME, 'Server Error', 'ERROR')
