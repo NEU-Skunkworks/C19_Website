@@ -31,7 +31,7 @@
     "generate-password": "^1.5.1",
     "install": "^0.13.0",
     "jsonwebtoken": "^8.5.1",
-    "log4js": "^6.1.2",
+    "log4js": "^6.4.0",
     "mocha": "^7.1.2",
     "mongoose": "^5.9.6",
     "nodemon": "^2.0.2"
